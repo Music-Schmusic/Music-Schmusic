@@ -1,5 +1,5 @@
 ##### Team Members:
-Garrett Reinhard,
-Jared Hammett,
-Parastou Ardebilianfard,
-Noah Snodgrass,
+Garrett Reinhard,\
+Jared Hammett,\
+Parastou Ardebilianfard,\
+Noah Snodgrass,\
