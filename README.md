@@ -2,4 +2,4 @@
 Garrett Reinhard,\
 Jared Hammett,\
 Parastou Ardebilianfard,\
-Noah Snodgrass,\
+Noah Snodgrass
