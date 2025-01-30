@@ -1,3 +1,4 @@
 Team Members:
-Garrett Reinhard
-Jared Hammett
+Garrett Reinhard,
+Jared Hammett,
+Parastou Ardebilianfard,
