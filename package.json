@@ -3,5 +3,14 @@
   "devDependencies": {
     "eslint-config-prettier": "^10.0.1",
     "prettier": "3.4.2"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "jest": "^29.7.0"
   }
 }
