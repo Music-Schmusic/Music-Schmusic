@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import "./main.css";
 
@@ -8,6 +8,16 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1>Welcome to Music Shmusic</h1>
+      {/*Free Animated Logo from lordicon.com*/}
+      <lord-icon
+        src="https://cdn.lordicon.com/jpzhmobh.json"
+        trigger="loop"
+        delay="2000"
+        stroke="bold"
+        colors="primary:#30e849,secondary:#16c72e"
+        style={{ width: "150px", height: "150px" }}
+      ></lord-icon>
+      
       <button className="get-started-btn" onClick={() => navigate("/login")}>
         Get Started
       </button>
@@ -55,6 +65,17 @@ const SignUp = () => {
 };
 
 function App() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.lordicon.com/lordicon.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return (
     <Router>
       <Routes>
