@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 /*! 
  * Primitive UI | MIT License
  *
@@ -21,6 +23,7 @@
  * 2. Prevent adjustments of font size after orientation changes in iOS.
  */
  html {
+    font-family: 'Inter', sans-serif;
     line-height: 1.15;
     /* 1 */
     -webkit-text-size-adjust: 100%;
@@ -1036,7 +1039,7 @@
 body {
     background-color: #121212;
     color: #ffffff;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
@@ -1128,3 +1131,75 @@ h1 {
 .back-btn:hover {
   background-color: #666;
 }
+
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #09aa42; /* Spotify-like green */
+  padding: 15px 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.logo a {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-button {
+  background: white;
+  color: #099439;
+  padding: 8px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.nav-button:hover {
+  background: #12752b;
+  color: white;
+}
+
+h1 {
+  font-weight: 700;
+}
+
+.navbar {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+button:focus, button:active {
+  color: inherit !important;  /* Keeps the inherited color */
+  outline: none !important;  /* Removes any default outline */
+  text-decoration: none !important; 
+}
+
+a:active {
+  color: red !important; /* Change text color when clicked */
+  background-color: yellow !important; /* Example: Change background when clicked */
+}
+
+a:focus {
+  color: inherit !important; /* Reset text color after clicking */
+  background-color: inherit !important; /* Reset background after clicking */
+  outline: none !important;
+}
+
+
+
+
+

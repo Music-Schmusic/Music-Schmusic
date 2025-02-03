@@ -1,6 +1,20 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
 import "./main.css";
+
+const Navbar = () => {
+  return (
+    <nav className="navbar">
+      <div className="logo">
+        <Link to="/">Music Shmusic</Link>
+      </div>
+      <div className="nav-links">
+        <Link to="/login" className="nav-button">Login</Link>
+        <Link to="/signup" className="nav-button">Sign Up</Link>
+      </div>
+    </nav>
+  );
+};
 
 const Home = () => {
   const navigate = useNavigate();
@@ -8,7 +22,8 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1>Welcome to Music Shmusic</h1>
-      {/*Free Animated Logo from lordicon.com*/}
+      
+      {/* Free Animated Logo from lordicon.com */}
       <lord-icon
         src="https://cdn.lordicon.com/jpzhmobh.json"
         trigger="loop"
@@ -69,6 +84,7 @@ function App() {
     const script = document.createElement("script");
     script.src = "https://cdn.lordicon.com/lordicon.js";
     script.async = true;
+    script.onload = () => console.log("Lordicon script loaded");
     document.body.appendChild(script);
 
     return () => {
@@ -78,6 +94,7 @@ function App() {
 
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -86,5 +103,13 @@ function App() {
     </Router>
   );
 }
+
+//fix for visual glitch with state of clicking button causing style issues
+document.querySelectorAll("a").forEach(link => {
+  link.addEventListener("mouseup", function() {
+      setTimeout(() => this.blur(), 100); // Remove focus a moment after clicking
+  });
+});
+
 
 export default App;
