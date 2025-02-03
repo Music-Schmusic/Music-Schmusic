@@ -16,6 +16,22 @@ const Navbar = () => {
   );
 };
 
+const Footer = () => {
+  return (
+    <nav className="footer">
+      <div className="footer-links">
+        {/* Corrected FontAwesome icon usage */}
+        <a href="https://github.com/Music-Schmusic/Music-Schmusic" 
+           className="footer-button" 
+           target="_blank" 
+           rel="noopener noreferrer">
+          <i id="github__logo" className="fa-brands fa-github"></i>
+        </a>
+      </div>
+    </nav>
+  );
+};
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -86,11 +102,21 @@ function App() {
     script.async = true;
     script.onload = () => console.log("Lordicon script loaded");
     document.body.appendChild(script);
-
+  
+    // Fix FontAwesome script
+    const script2 = document.createElement("script"); // Corrected: script2 should be <script>
+    script2.src = "https://kit.fontawesome.com/ab74e91db0.js";
+    script2.crossOrigin = "anonymous"; // Ensures proper loading
+    script2.async = true;
+    script2.onload = () => console.log("FontAwesome loaded");
+    document.body.appendChild(script2);
+  
     return () => {
       document.body.removeChild(script);
+      document.body.removeChild(script2);
     };
   }, []);
+  
 
   return (
     <Router>
@@ -100,6 +126,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
+      <Footer />
     </Router>
   );
 }

@@ -1199,6 +1199,57 @@ a:focus {
   outline: none !important;
 }
 
+/* Center the footer and its content */
+.footer {
+  display: flex;
+  justify-content: center;  /* Horizontally center */
+  align-items: center;  /* Vertically center */
+  position: fixed;
+  bottom: 20px;  /* Adjust this to move it higher */
+  left: 0;
+  width: 100%;
+  background: none;
+  padding: 10px 0;
+}
+
+/* Ensure the footer button aligns well */
+.footer-links {
+  display: flex;
+  justify-content: center; /* Center within the footer */
+  align-items: center;
+}
+
+/* Style the GitHub icon button */
+.footer-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+  background: none;
+  border: none;
+  padding: 10px;
+  font-size: 24px; /* Make it larger */
+  color: #fff; /* Ensure it's visible */
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Style the GitHub icon */
+.footer-button i {
+  text-decoration: none;
+  font-size: 32px; /* Adjust icon size */
+}
+
+/* Hover effect */
+.footer-button:hover {
+  color: #bbb; /* Light grey on hover */
+  transform: scale(1.1); /* Slight zoom effect */
+}
+
+/* If background is changing on click, prevent focus styles */
+.footer-button:focus {
+  outline: none;
+}
+
 
 
 
