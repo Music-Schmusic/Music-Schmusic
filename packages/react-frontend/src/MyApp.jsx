@@ -1,16 +1,30 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
 import "./main.css";
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("isLoggedIn"); // Persist logout state
+  };
+
   return (
     <nav className="navbar">
       <div className="logo">
         <Link to="/">Music Shmusic</Link>
       </div>
       <div className="nav-links">
-        <Link to="/login" className="nav-button">Login</Link>
-        <Link to="/signup" className="nav-button">Sign Up</Link>
+        {isLoggedIn ? (
+          <>
+            <Link to="/dashboard" className="nav-button">Dashboard</Link>
+            <button onClick={handleLogout} className="nav-button">Logout</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="nav-button">Login</Link>
+            <Link to="/signup" className="nav-button">Sign Up</Link>
+          </>
+        )}
       </div>
     </nav>
   );
@@ -20,7 +34,6 @@ const Footer = () => {
   return (
     <nav className="footer">
       <div className="footer-links">
-        {/* Corrected FontAwesome icon usage */}
         <a href="https://github.com/Music-Schmusic/Music-Schmusic" 
            className="footer-button" 
            target="_blank" 
@@ -38,8 +51,6 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1>Welcome to Music Shmusic</h1>
-      
-      {/* Free Animated Logo from lordicon.com */}
       <lord-icon
         src="https://cdn.lordicon.com/jpzhmobh.json"
         trigger="loop"
@@ -48,7 +59,6 @@ const Home = () => {
         colors="primary:#30e849,secondary:#16c72e"
         style={{ width: "150px", height: "150px" }}
       ></lord-icon>
-      
       <button className="get-started-btn" onClick={() => navigate("/login")}>
         Get Started
       </button>
@@ -56,16 +66,37 @@ const Home = () => {
   );
 };
 
-const Login = () => {
+
+//Dashboard page to show on successful login, can help test successful logins
+//this will need to be updated later, maybe moving logic to a seperate file
+const Dashboard = () => {
+  return (
+    <div className="dashboard-container">
+      <h1>Welcome to Your Dashboard</h1>
+      <p>You are now logged in!</p>
+    </div>
+  );
+};
+
+const Login = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
+
+
+  //currently any input creates a successful login, this will need to be updated with checks to the backend
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setIsLoggedIn(true);
+    localStorage.setItem("isLoggedIn", "true"); // Store login state
+    navigate("/dashboard"); // Redirect after login
+  };
 
   return (
     <div className="login-container">
       <h1>Login</h1>
       <p>Sign in to continue</p>
-      <form>
-        <input type="text" placeholder="Username" />
-        <input type="password" placeholder="Password" />
+      <form onSubmit={handleLogin}>
+        <input type="text" placeholder="Username" required />
+        <input type="password" placeholder="Password" required />
         <button type="submit">Login</button>
       </form>
       <p>Don't have an account?</p>
@@ -83,9 +114,9 @@ const SignUp = () => {
       <h1>Sign Up</h1>
       <p>Create an account to get started</p>
       <form>
-        <input type="text" placeholder="Username" />
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
+        <input type="text" placeholder="Username" required />
+        <input type="email" placeholder="Email" required />
+        <input type="password" placeholder="Password" required />
         <button type="submit">Sign Up</button>
       </form>
       <p>Already have an account?</p>
@@ -96,47 +127,49 @@ const SignUp = () => {
 };
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true"
+  );
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://cdn.lordicon.com/lordicon.js";
     script.async = true;
     script.onload = () => console.log("Lordicon script loaded");
     document.body.appendChild(script);
-  
-    // Fix FontAwesome script
-    const script2 = document.createElement("script"); // Corrected: script2 should be <script>
+
+    const script2 = document.createElement("script");
     script2.src = "https://kit.fontawesome.com/ab74e91db0.js";
-    script2.crossOrigin = "anonymous"; // Ensures proper loading
+    script2.crossOrigin = "anonymous";
     script2.async = true;
     script2.onload = () => console.log("FontAwesome loaded");
     document.body.appendChild(script2);
-  
+
     return () => {
       document.body.removeChild(script);
       document.body.removeChild(script2);
     };
   }, []);
-  
 
   return (
     <Router>
-      <Navbar />
+      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Home />} />
       </Routes>
       <Footer />
     </Router>
   );
 }
 
-//fix for visual glitch with state of clicking button causing style issues
-document.querySelectorAll("a").forEach(link => {
+// Fix for clicking buttons causing style issues
+document.querySelectorAll("a", 'button').forEach(link => {
   link.addEventListener("mouseup", function() {
-      setTimeout(() => this.blur(), 100); // Remove focus a moment after clicking
+      setTimeout(() => this.blur(), 100);
   });
 });
-
 
 export default App;
