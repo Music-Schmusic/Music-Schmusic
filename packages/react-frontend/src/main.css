@@ -1137,7 +1137,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #09aa42; /* Spotify-like green */
+  background: linear-gradient(#28a808, #099439); /* Spotify-like green */
   padding: 15px 20px;
   position: fixed;
   width: 100%;

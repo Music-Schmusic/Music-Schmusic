@@ -43,7 +43,7 @@ const Home = () => {
       <lord-icon
         src="https://cdn.lordicon.com/jpzhmobh.json"
         trigger="loop"
-        delay="2000"
+        delay="1500"
         stroke="bold"
         colors="primary:#30e849,secondary:#16c72e"
         style={{ width: "150px", height: "150px" }}
