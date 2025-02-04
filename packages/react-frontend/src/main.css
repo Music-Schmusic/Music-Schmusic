@@ -778,7 +778,15 @@
     width: 1px;
     overflow: hidden;
   }
-  
+  .spline-background {
+    position: fixed; /* Ensures it stays behind everything */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full width */
+    height: 100vh; /* Full height */
+    z-index: -1; /* Places it behind other content */
+    overflow: hidden; /* Prevents any unwanted scrollbars */
+  }
   /**
    * Buttons
    */
@@ -1101,7 +1109,7 @@ h1 {
 }
 
 .get-started-btn {
-  margin-top: 20px;
+  margin-top: 450px;
   padding: 10px 20px;
   font-size: 18px;
   background-color: #1DB954; /* Spotify Green */

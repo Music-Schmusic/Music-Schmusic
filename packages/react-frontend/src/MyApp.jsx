@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
 import "./main.css";
+import SplineBackground from "./SplineBackground";
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -50,7 +51,6 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1>Welcome to Music Shmusic</h1>
       <lord-icon
         src="https://cdn.lordicon.com/jpzhmobh.json"
         trigger="loop"
@@ -153,6 +153,7 @@ function App() {
 
   return (
     <Router>
+      <SplineBackground />
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<Home />} />
