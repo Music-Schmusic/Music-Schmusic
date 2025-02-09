@@ -3,7 +3,6 @@ import querystring from 'querystring';
 
 const app = express();
 const router = express.Router();
-
 const port = 3000;
 
 let client_id = '';
@@ -15,6 +14,7 @@ router.get("/login/:id/:secret", function(req, res) {
     client_id = req.params.id;
     client_secret = req.params.secret;
 
+    //authorization code request parameters
     const state = generateState(16); 
     const scope = 'user-read-private user-read-email';
     const auth_query = querystring.stringify({
@@ -77,15 +77,16 @@ router.get('/callback', function(req, res) {
         })
         .then(json => {
             access_token = json.access_token;
-            res.send(`Your access token: ${access_token}`);
+            res.send(json);
         })
         .catch(error => {
             console.error('Error:', error); 
-            res.status(400).send("Error retrieving access token");
+            res.status(500).send("Error retrieving access token");
         });
       }
     });
 
+//generate random string 
 function generateState(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let state = '';
