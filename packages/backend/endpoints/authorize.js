@@ -15,7 +15,7 @@ router.get("/login/:id/:secret", function(req, res) {
     client_id = req.params.id;
     client_secret = req.params.secret;
 
-    const state = 'sd5fh7nq9of4j4y6' //should be generated instead
+    const state = generateState(16); 
     const scope = 'user-read-private user-read-email';
     const auth_query = querystring.stringify({
         response_type: 'code',
@@ -85,5 +85,16 @@ router.get('/callback', function(req, res) {
         });
       }
     });
+
+function generateState(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let state = '';
+    let count = 0;
+    while (count < length){
+        state += characters.charAt(Math.floor(Math.random() * characters.length))
+        count++; 
+    }
+    return state;
+}
 
 export default router;
