@@ -6,7 +6,7 @@ import SplineBackground from "./SplineBackground";
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem("isLoggedIn"); // Persist logout state
+    localStorage.removeItem('isLoggedIn'); // Persist logout state
   };
 
   return (
@@ -17,13 +17,21 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
       <div className="nav-links">
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" className="nav-button">Dashboard</Link>
-            <button onClick={handleLogout} className="nav-button">Logout</button>
+            <Link to="/dashboard" className="nav-button">
+              Dashboard
+            </Link>
+            <button onClick={handleLogout} className="nav-button">
+              Logout
+            </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="nav-button">Login</Link>
-            <Link to="/signup" className="nav-button">Sign Up</Link>
+            <Link to="/login" className="nav-button">
+              Login
+            </Link>
+            <Link to="/signup" className="nav-button">
+              Sign Up
+            </Link>
           </>
         )}
       </div>
@@ -35,10 +43,12 @@ const Footer = () => {
   return (
     <nav className="footer">
       <div className="footer-links">
-        <a href="https://github.com/Music-Schmusic/Music-Schmusic" 
-           className="footer-button" 
-           target="_blank" 
-           rel="noopener noreferrer">
+        <a
+          href="https://github.com/Music-Schmusic/Music-Schmusic"
+          className="footer-button"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <i id="github__logo" className="fa-brands fa-github"></i>
         </a>
       </div>
@@ -57,15 +67,14 @@ const Home = () => {
         delay="1500"
         stroke="bold"
         colors="primary:#30e849,secondary:#16c72e"
-        style={{ width: "150px", height: "150px" }}
+        style={{ width: '150px', height: '150px' }}
       ></lord-icon>
-      <button className="get-started-btn" onClick={() => navigate("/login")}>
+      <button className="get-started-btn" onClick={() => navigate('/login')}>
         Get Started
       </button>
     </div>
   );
 };
-
 
 //Dashboard page to show on successful login, can help test successful logins
 //this will need to be updated later, maybe moving logic to a seperate file
@@ -81,13 +90,12 @@ const Dashboard = () => {
 const Login = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
 
-
   //currently any input creates a successful login, this will need to be updated with checks to the backend
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", "true"); // Store login state
-    navigate("/dashboard"); // Redirect after login
+    localStorage.setItem('isLoggedIn', 'true'); // Store login state
+    navigate('/dashboard'); // Redirect after login
   };
 
   return (
@@ -100,8 +108,12 @@ const Login = ({ setIsLoggedIn }) => {
         <button type="submit">Login</button>
       </form>
       <p>Don't have an account?</p>
-      <button className="signup-btn" onClick={() => navigate("/signup")}>Sign Up</button>
-      <button className="back-btn" onClick={() => navigate("/")}>Back to Home</button>
+      <button className="signup-btn" onClick={() => navigate('/signup')}>
+        Sign Up
+      </button>
+      <button className="back-btn" onClick={() => navigate('/')}>
+        Back to Home
+      </button>
     </div>
   );
 };
@@ -120,8 +132,12 @@ const SignUp = () => {
         <button type="submit">Sign Up</button>
       </form>
       <p>Already have an account?</p>
-      <button className="login-btn" onClick={() => navigate("/login")}>Login</button>
-      <button className="back-btn" onClick={() => navigate("/")}>Back to Home</button>
+      <button className="login-btn" onClick={() => navigate('/login')}>
+        Login
+      </button>
+      <button className="back-btn" onClick={() => navigate('/')}>
+        Back to Home
+      </button>
     </div>
   );
 };
@@ -129,21 +145,21 @@ const SignUp = () => {
 function App() {
   
   const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") === "true"
+    localStorage.getItem('isLoggedIn') === 'true'
   );
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.lordicon.com/lordicon.js";
+    const script = document.createElement('script');
+    script.src = 'https://cdn.lordicon.com/lordicon.js';
     script.async = true;
-    script.onload = () => console.log("Lordicon script loaded");
+    script.onload = () => console.log('Lordicon script loaded');
     document.body.appendChild(script);
 
-    const script2 = document.createElement("script");
-    script2.src = "https://kit.fontawesome.com/ab74e91db0.js";
-    script2.crossOrigin = "anonymous";
+    const script2 = document.createElement('script');
+    script2.src = 'https://kit.fontawesome.com/ab74e91db0.js';
+    script2.crossOrigin = 'anonymous';
     script2.async = true;
-    script2.onload = () => console.log("FontAwesome loaded");
+    script2.onload = () => console.log('FontAwesome loaded');
     document.body.appendChild(script2);
 
     return () => {
@@ -158,9 +174,15 @@ function App() {
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+        <Route
+          path="/login"
+          element={<Login setIsLoggedIn={setIsLoggedIn} />}
+        />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Home />} />
+        <Route
+          path="/dashboard"
+          element={isLoggedIn ? <Dashboard /> : <Home />}
+        />
       </Routes>
       <Footer />
     </Router>
@@ -168,9 +190,9 @@ function App() {
 }
 
 // Fix for clicking buttons causing style issues
-document.querySelectorAll("a", 'button').forEach(link => {
-  link.addEventListener("mouseup", function() {
-      setTimeout(() => this.blur(), 100);
+document.querySelectorAll('a', 'button').forEach((link) => {
+  link.addEventListener('mouseup', function () {
+    setTimeout(() => this.blur(), 100);
   });
 });
 
