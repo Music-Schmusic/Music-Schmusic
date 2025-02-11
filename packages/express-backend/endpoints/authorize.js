@@ -7,7 +7,7 @@ const port = 3000;
 
 let client_id = '';
 let client_secret = '';
-const redirect_uri = 'http://localhost:3000/callback';
+const redirect_uri = 'http://localhost:8000/callback';
 
 //request authorization code with client secret/id
 router.get("/login/:id/:secret", function(req, res) {
