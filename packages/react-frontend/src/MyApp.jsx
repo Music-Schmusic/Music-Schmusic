@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
 import "./main.css";
 import SplineBackground from "./SplineBackground";
@@ -6,7 +6,7 @@ import SplineBackground from "./SplineBackground";
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem('isLoggedIn'); // Persist logout state
+    localStorage.removeItem("isLoggedIn");
   };
 
   return (
@@ -17,21 +17,13 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
       <div className="nav-links">
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" className="nav-button">
-              Dashboard
-            </Link>
-            <button onClick={handleLogout} className="nav-button">
-              Logout
-            </button>
+            <Link to="/dashboard" className="nav-button">Dashboard</Link>
+            <button onClick={handleLogout} className="nav-button">Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login" className="nav-button">
-              Login
-            </Link>
-            <Link to="/signup" className="nav-button">
-              Sign Up
-            </Link>
+            <Link to="/login" className="nav-button">Login</Link>
+            <Link to="/signup" className="nav-button">Sign Up</Link>
           </>
         )}
       </div>
@@ -39,25 +31,23 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   );
 };
 
-const Footer = () => {
-  return (
-    <nav className="footer">
-      <div className="footer-links">
-        <a
-          href="https://github.com/Music-Schmusic/Music-Schmusic"
-          className="footer-button"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i id="github__logo" className="fa-brands fa-github"></i>
-        </a>
-      </div>
-    </nav>
-  );
-};
+const Footer = () => (
+  <nav className="footer">
+    <div className="footer-links">
+      <a href="https://github.com/Music-Schmusic/Music-Schmusic" className="footer-button" target="_blank" rel="noopener noreferrer">
+        <i id="github__logo" className="fa-brands fa-github"></i>
+      </a>
+    </div>
+  </nav>
+);
 
-const Home = () => {
+const Home = ({ setCurrentScene }) => {
   const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    setCurrentScene("https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode");
+    navigate("/login");
+  };
 
   return (
     <div className="home-container">
@@ -67,35 +57,30 @@ const Home = () => {
         delay="1500"
         stroke="bold"
         colors="primary:#30e849,secondary:#16c72e"
-        style={{ width: '150px', height: '150px' }}
+        style={{ width: "150px", height: "150px" }}
       ></lord-icon>
-      <button className="get-started-btn" onClick={() => navigate('/login')}>
+      <button className="get-started-btn" onClick={handleGetStarted}>
         Get Started
       </button>
     </div>
   );
 };
 
-//Dashboard page to show on successful login, can help test successful logins
-//this will need to be updated later, maybe moving logic to a seperate file
-const Dashboard = () => {
-  return (
-    <div className="dashboard-container">
-      <h1>Welcome to Your Dashboard</h1>
-      <p>You are now logged in!</p>
-    </div>
-  );
-};
+const Dashboard = () => (
+  <div className="dashboard-container">
+    <h1>Welcome to Your Dashboard</h1>
+    <p>You are now logged in!</p>
+  </div>
+);
 
 const Login = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
 
-  //currently any input creates a successful login, this will need to be updated with checks to the backend
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoggedIn(true);
-    localStorage.setItem('isLoggedIn', 'true'); // Store login state
-    navigate('/dashboard'); // Redirect after login
+    localStorage.setItem("isLoggedIn", "true");
+    navigate("/dashboard");
   };
 
   return (
@@ -108,10 +93,10 @@ const Login = ({ setIsLoggedIn }) => {
         <button type="submit">Login</button>
       </form>
       <p>Don't have an account?</p>
-      <button className="signup-btn" onClick={() => navigate('/signup')}>
+      <button className="signup-btn" onClick={() => navigate("/signup")}>
         Sign Up
       </button>
-      <button className="back-btn" onClick={() => navigate('/')}>
+      <button className="back-btn" onClick={() => navigate("/")}>
         Back to Home
       </button>
     </div>
@@ -132,34 +117,31 @@ const SignUp = () => {
         <button type="submit">Sign Up</button>
       </form>
       <p>Already have an account?</p>
-      <button className="login-btn" onClick={() => navigate('/login')}>
+      <button className="login-btn" onClick={() => navigate("/login")}>
         Login
       </button>
-      <button className="back-btn" onClick={() => navigate('/')}>
+      <button className="back-btn" onClick={() => navigate("/")}>
         Back to Home
       </button>
     </div>
   );
 };
 
-function App() {
-  
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem('isLoggedIn') === 'true'
-  );
+function MyApp() {
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
+
+  const [currentScene, setCurrentScene] = useState("https://prod.spline.design/p0-zCGqo6Vm1HjXy/scene.splinecode");
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.lordicon.com/lordicon.js';
+    const script = document.createElement("script");
+    script.src = "https://cdn.lordicon.com/lordicon.js";
     script.async = true;
-    script.onload = () => console.log('Lordicon script loaded');
     document.body.appendChild(script);
 
-    const script2 = document.createElement('script');
-    script2.src = 'https://kit.fontawesome.com/ab74e91db0.js';
-    script2.crossOrigin = 'anonymous';
+    const script2 = document.createElement("script");
+    script2.src = "https://kit.fontawesome.com/ab74e91db0.js";
+    script2.crossOrigin = "anonymous";
     script2.async = true;
-    script2.onload = () => console.log('FontAwesome loaded');
     document.body.appendChild(script2);
 
     return () => {
@@ -170,30 +152,17 @@ function App() {
 
   return (
     <Router>
-      <SplineBackground />
+      <SplineBackground currentScene={currentScene} />
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path="/login"
-          element={<Login setIsLoggedIn={setIsLoggedIn} />}
-        />
+        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
+        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route
-          path="/dashboard"
-          element={isLoggedIn ? <Dashboard /> : <Home />}
-        />
+        <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Home setCurrentScene={setCurrentScene} />} />
       </Routes>
       <Footer />
     </Router>
   );
 }
 
-// Fix for clicking buttons causing style issues
-document.querySelectorAll('a', 'button').forEach((link) => {
-  link.addEventListener('mouseup', function () {
-    setTimeout(() => this.blur(), 100);
-  });
-});
-
-export default App;
+export default MyApp;
