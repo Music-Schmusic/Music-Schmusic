@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\packages",
+    "\\packages\\express-backend",
+    "\\packages\\react-frontend",
+    "\\packages\\react-frontend\\src"
+  ],
+  "SelectedNode": "\\packages\\express-backend\\db-requests.js",
+  "PreviewInSolutionExplorer": false
+}
