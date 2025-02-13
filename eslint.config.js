@@ -14,6 +14,9 @@ export default [
       prettier: prettierPlugin,
       node,
     },
+    env: {
+      node: true,
+    },
     languageOptions: {
       globals: {
         window: 'readonly',
