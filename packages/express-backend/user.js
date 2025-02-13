@@ -32,9 +32,6 @@ const UserSchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
-    userdata: {
-      required: true,
-    },
   },
   { collection: "Account" }
 );
