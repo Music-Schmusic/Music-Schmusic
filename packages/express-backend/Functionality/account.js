@@ -1,14 +1,22 @@
+import db_req from "./db-requests.js"
 const hash = require('crypto');
-function createAccount(username, email, password, spotify, spotifypassword) {
+function createAccount(username, email, password, spotifyid, spotifysecret) {
   const hashed = hashPassword(password);
-  const spotifykey = 'unimplemented';
+  const isuser = db_req.getUser(username);
 
-  return {
-    username: username,
-    email: email,
-    password: hashed,
-    spotifykey: spotifykey,
-    userdata: [],
+  if (!isuser.length) {
+    throw new Error("Username already exists")
+  } else {
+    return {
+      username: username,
+      email: email,
+      password: hashed,
+      spotifyid: spotifyid,
+      spotifysecret: spotifysecret,
+      userdata: {},
+      following: [],
+      blocked: [],
+    }
   };
 }
 

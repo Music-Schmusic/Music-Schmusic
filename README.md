@@ -9,6 +9,10 @@ Figma Link: https://www.figma.com/team_invite/redeem/LNI3ySfmzrSdn48fP8a2Hb \
 
 UML: https://lucid.app/lucidchart/862496ad-73c0-4e79-958d-8db5cd017bc2/edit?viewport_loc=-10%2C-10%2C1707%2C844%2C0_0&invitationId=inv_6075f452-37a3-4106-9986-106b4ec9017e \
 
+Use Case Diagram: https://lucid.app/lucidchart/6e59db40-5738-41c8-bf19-e89843d0836d/edit?view_items=GJASVEUX6jo5&invitationId=inv_f65cae87-4e53-4e01-9ca8-17606ef9e51a \
+
+Activity UML Diagram: https://lucid.app/lucidchart/2a15c796-0234-4499-9d15-3d2dab03d937/edit?viewport_loc=-11%2C-11%2C665%2C913%2C0_0&invitationId=inv_c944cd61-25db-460e-9d02-2ba6454ae07e \
+
 Spotify Authentication: https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 
 ## 📌 Code Style Guide

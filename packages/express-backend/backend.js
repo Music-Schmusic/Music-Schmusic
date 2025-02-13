@@ -1,13 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './endpoints/authorize.js';
-import connectDB from './db.js'; // Import the database connection function
+import dbrequests from './db-requests.js'
+
 
 const app = express();
 const port = process.env.PORT || 8000;
-
-// Connect to MongoDB
-connectDB();
 
 app.use(cors());
 app.use(express.json());
