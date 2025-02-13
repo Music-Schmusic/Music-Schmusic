@@ -32,7 +32,9 @@ const UserSchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
-    userdata: {},
+    userdata: {
+      required: true,
+    },
   },
   { collection: "Account" }
 );

@@ -10,6 +10,8 @@ connectDB();
 function getUser(username) {
   let promise = userModel.find({ username: username });
   return promise;
-}
+};
 
-exports.export getUser;
+export default {
+  getUser
+}
