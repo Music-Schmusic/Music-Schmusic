@@ -1464,3 +1464,46 @@ a:focus {
   outline: none;
   z-index: 1;
 }
+
+/* dashboard layout */
+.dashboard-page{
+  background: #f8f9fa;
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  min-width: 65vh;
+  padding: 40vh;
+}
+
+.dashboard-content {
+  margin-top: 100px;   /* pushes the text down from the top */
+  color: #333333;      /* darker text color (dark gray) */
+}
+
+.recs-page{
+  background: #f8f9fa;
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  min-width: 65vh;
+  padding: 40vh;
+}
+
+.recs-content {
+  margin-top: 100px;   /* pushes the text down from the top */
+  color: #333333;      /* darker text color (dark gray) */
+}
+
+.friends-page{
+  background: #f8f9fa;
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  min-width: 65vh;
+  padding: 40vh;
+}
+
+.friends-content {
+  margin-top: 100px;   /* pushes the text down from the top */
+  color: #333333;      /* darker text color (dark gray) */
+}

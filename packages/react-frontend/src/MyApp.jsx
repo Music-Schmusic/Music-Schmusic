@@ -8,6 +8,9 @@ import {
 } from 'react-router-dom';
 import './main.css';
 import SplineBackground from './SplineBackground';
+import Dashboard from './pages/dashboard'
+import Friends from './pages/friends';
+import Recommended from './pages/recs';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -23,9 +26,9 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
       <div className="nav-links">
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" className="nav-button">
-              Dashboard
-            </Link>
+            <Link to="/dashboard" > </Link>
+            <Link to="/friends" className="nav-button">Friends</Link>
+            <Link to="/recs" className="nav-button">Recommended</Link>
             <button onClick={handleLogout} className="nav-button">
               Logout
             </button>
@@ -83,17 +86,6 @@ const Home = ({onGetStarted}) => {
       <button className="get-started-btn" onClick={handleGetStarted}>
         Get Started
       </button>
-    </div>
-  );
-};
-
-//Dashboard page to show on successful login, can help test successful logins
-//this will need to be updated later, maybe moving logic to a seperate file
-const Dashboard = () => {
-  return (
-    <div className="dashboard-container">
-      <h1>Welcome to Your Dashboard</h1>
-      <p>You are now logged in!</p>
     </div>
   );
 };
@@ -195,6 +187,8 @@ function App() {
           path="/dashboard"
           element={isLoggedIn ? <Dashboard /> : <Home />}
         />
+        <Route path="/friends" element={isLoggedIn ? <Friends /> : <Home />} />
+        <Route path="/recs" element={isLoggedIn ? <Recommended /> : <Home />} />
       </Routes>
       <Footer />
     </Router>
