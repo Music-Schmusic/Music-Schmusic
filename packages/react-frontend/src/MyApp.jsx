@@ -1,7 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
-import "./main.css";
-import SplineBackground from "./SplineBackground";
+import React, { useEffect, useState, useRef } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useNavigate,
+} from 'react-router-dom';
+import './main.css';
+import SplineBackground from './SplineBackground';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -143,7 +149,6 @@ const SignUp = () => {
 };
 
 function App() {
-  
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem('isLoggedIn') === 'true'
   );
