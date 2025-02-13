@@ -62,9 +62,14 @@ const Footer = () => {
   );
 };
 
-const Home = () => {
+const Home = ({onGetStarted}) => {
   const navigate = useNavigate();
 
+  const handleGetStarted = () => {
+    onGetStarted();
+    navigate('/login');
+  };
+  
   return (
     <div className="home-container">
       <lord-icon
@@ -75,7 +80,7 @@ const Home = () => {
         colors="primary:#30e849,secondary:#16c72e"
         style={{ width: '150px', height: '150px' }}
       ></lord-icon>
-      <button className="get-started-btn" onClick={() => navigate('/login')}>
+      <button className="get-started-btn" onClick={handleGetStarted}>
         Get Started
       </button>
     </div>
@@ -153,6 +158,8 @@ function App() {
     localStorage.getItem('isLoggedIn') === 'true'
   );
 
+  const [sceneSwitched, setSceneSwitched] = useState(false);
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://cdn.lordicon.com/lordicon.js';
@@ -175,10 +182,10 @@ function App() {
 
   return (
     <Router>
-      <SplineBackground />
+      <SplineBackground switchScene={sceneSwitched} />
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home onGetStarted={ () => setSceneSwitched(true)} />} />
         <Route
           path="/login"
           element={<Login setIsLoggedIn={setIsLoggedIn} />}
