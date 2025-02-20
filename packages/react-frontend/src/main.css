@@ -49,6 +49,7 @@ main {
    * `article` contexts in Chrome, Firefox, and Safari.
    */
 h1 {
+  color: black;
   font-size: 2em;
   margin: 0.67em 0;
   color: #121212;
@@ -187,7 +188,7 @@ textarea {
 button,
 input {
   /* 1 */
-  color: #0d0000;
+  color: black;
   overflow: visible;
   
 }
@@ -1468,7 +1469,7 @@ a:focus {
 }
 
 /* dashboard layout */
-.dashboard-page{
+.dashboard-page {
   background: #f8f9fa;
   position: relative;
   z-index: 1;
@@ -1478,11 +1479,11 @@ a:focus {
 }
 
 .dashboard-content {
-  margin-top: 100px;   /* pushes the text down from the top */
-  color: #333333;      /* darker text color (dark gray) */
+  margin-top: 100px; /* pushes the text down from the top */
+  color: #333333; /* darker text color (dark gray) */
 }
 
-.recs-page{
+.recs-page {
   background: #f8f9fa;
   position: relative;
   z-index: 1;
@@ -1492,11 +1493,11 @@ a:focus {
 }
 
 .recs-content {
-  margin-top: 100px;   /* pushes the text down from the top */
-  color: #333333;      /* darker text color (dark gray) */
+  margin-top: 100px; /* pushes the text down from the top */
+  color: #333333; /* darker text color (dark gray) */
 }
 
-.friends-page{
+.friends-page {
   background: #f8f9fa;
   position: relative;
   z-index: 1;
@@ -1506,6 +1507,6 @@ a:focus {
 }
 
 .friends-content {
-  margin-top: 100px;   /* pushes the text down from the top */
-  color: #333333;      /* darker text color (dark gray) */
+  margin-top: 100px; /* pushes the text down from the top */
+  color: #333333; /* darker text color (dark gray) */
 }

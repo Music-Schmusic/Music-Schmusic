@@ -1,4 +1,5 @@
-const src = require('./account.js');
+import src from './account.js'
+
 
 test('Hash password', () => {
   const target = src.hashPassword('examplePassword');
@@ -8,20 +9,23 @@ test('Hash password', () => {
 });
 
 test('Create account', () => {
-  const target = src.createAccount(
-    'testuser',
-    'user@example.com',
-    'examplePassword',
-    'spotify',
-    'spotifypassword'
-  );
+  const body = {
+    spotifyId: 'spotify',
+    spotifySecret: 'spotifypassword',
+    username: 'testuser',
+    email: 'user@example.com',
+    password: 'examplePassword',
+  }
+  const target = src.createAccount(body);
   const result = {
     username: 'testuser',
     email: 'user@example.com',
     password:
       'c668bfca4f595524053592d642cf97373d4fc778372bbd2364fbbe1b4b9eaafd',
-    spotifykey: 'unimplemented',
-    userdata: [],
+    spotifyId: 'spotify',
+    spotifySecret: 'spotifypassword',
+    following: [],
+    blocked: [],
   };
   expect(target).toStrictEqual(result);
 });

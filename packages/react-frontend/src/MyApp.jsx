@@ -11,6 +11,7 @@ import SplineBackground from './SplineBackground';
 import Dashboard from './pages/dashboard'
 import Friends from './pages/friends';
 import Recommended from './pages/recs';
+import Form from './components/Form'
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -124,16 +125,35 @@ const Login = ({ setIsLoggedIn }) => {
 const SignUp = () => {
   const navigate = useNavigate();
 
+  function postAccount(account) {
+  const promise = fetch("Http://localhost:8000/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(account)
+  });
+
+  return promise;
+}
+
+  function handleSubmit(account){
+    postAccount(account)
+    .then((res) => {
+      if (res.status === 201) {
+        console.log('Success')
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+
+  };
   return (
     <div className="signup-container">
       <h1>Sign Up</h1>
       <p>Create an account to get started</p>
-      <form>
-        <input type="text" placeholder="Username" required />
-        <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Sign Up</button>
-      </form>
+      <Form handleSubmit = {handleSubmit}/>
       <p>Already have an account?</p>
       <button className="login-btn" onClick={() => navigate('/login')}>
         Login
