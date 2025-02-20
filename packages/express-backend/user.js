@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema(
+const AccountSchema = new mongoose.Schema(
   {
     username: {
       type: String,
@@ -16,11 +16,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    spotifyclientid: {
+    spotifyId: {
       type: String,
       required: true,
     },
-    spotifysecret: {
+    spotifySecret: {
       type: String,
       required: true,
     },
@@ -36,6 +36,6 @@ const UserSchema = new mongoose.Schema(
   { collection: "Account" }
 );
 
-const User = mongoose.model("User", UserSchema);
+const Account = mongoose.model("Account", AccountSchema);
 
-export default User;
+export default Account;
