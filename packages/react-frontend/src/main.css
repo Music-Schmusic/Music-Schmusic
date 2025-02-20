@@ -51,6 +51,7 @@ main {
 h1 {
   font-size: 2em;
   margin: 0.67em 0;
+  color: #121212;
 }
 
 /* Grouping content
@@ -165,7 +166,7 @@ img {
    * 2. Remove the margin in Firefox and Safari.
    */
 button,
-input,
+input {},
 optgroup,
 select,
 textarea {
@@ -186,8 +187,9 @@ textarea {
 button,
 input {
   /* 1 */
-  color: #ffffff;
+  color: #0d0000;
   overflow: visible;
+  
 }
 
 /**
