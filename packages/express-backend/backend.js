@@ -13,4 +13,18 @@ app.use('/', authRoutes);
 
 app.get('/', (req, res) => res.send('API Running'));
 
+<<<<<<< Updated upstream
+=======
+app.post('/signup', async (req, res) => {
+  const accountToAdd = AccountFuncs.createAccount(req.body);
+  try {
+    const newAccount = await dbrequests.addAccount(accountToAdd);
+    res.status(201).send(newAccount);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send('Failed to add user.');
+  }
+});
+
+>>>>>>> Stashed changes
 app.listen(port, () => console.log(`Server running on port ${port}`));

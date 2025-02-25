@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import db_req from "./db-requests.js"
 const hash = require('crypto');
 function createAccount(username, email, password, spotifyid, spotifysecret) {
@@ -7,6 +8,18 @@ function createAccount(username, email, password, spotifyid, spotifysecret) {
   if (!isuser.length) {
     throw new Error("Username already exists")
   } else {
+=======
+import db_req from "../dbrequests.js"
+import hash from 'crypto'
+import CryptoJS from 'crypto-js'
+const key = "WCSXIu9EzhbquJRdYaK+7eS2S37bCKa0r1s7rfYms4V+uk5sv94xJvm6fIil7ubR"
+function createAccount(body) {
+  const hashed = hashPassword(body.password);
+  const isuser = db_req.getAccount(body.username);
+  const encryptedsecret = CryptoJS.AES.encrypt(body.spotifySecret, key)
+
+  if (!isuser.length) {
+>>>>>>> Stashed changes
     return {
       username: username,
       email: email,
