@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const AccountSchema = new mongoose.Schema(
   {
@@ -6,8 +6,9 @@ const AccountSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
-    email : {
+    email: {
       type: String,
       required: true,
       trim: true,
@@ -33,9 +34,9 @@ const AccountSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { collection: "Account" }
+  { collection: 'Account' }
 );
 
-const Account = mongoose.model("Account", AccountSchema);
+const Account = mongoose.model('Account', AccountSchema);
 
 export default Account;

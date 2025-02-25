@@ -8,10 +8,10 @@ import {
 } from 'react-router-dom';
 import './main.css';
 import SplineBackground from './SplineBackground';
-import Dashboard from './pages/dashboard'
+import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
 import Recommended from './pages/recs';
-import Form from './components/Form'
+import Form from './components/Form';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -27,9 +27,13 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
       <div className="nav-links">
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" > </Link>
-            <Link to="/friends" className="nav-button">Friends</Link>
-            <Link to="/recs" className="nav-button">Recommended</Link>
+            <Link to="/dashboard"> </Link>
+            <Link to="/friends" className="nav-button">
+              Friends
+            </Link>
+            <Link to="/recs" className="nav-button">
+              Recommended
+            </Link>
             <button onClick={handleLogout} className="nav-button">
               Logout
             </button>
@@ -66,14 +70,14 @@ const Footer = () => {
   );
 };
 
-const Home = ({onGetStarted}) => {
+const Home = ({ onGetStarted }) => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
     onGetStarted();
     navigate('/login');
   };
-  
+
   return (
     <div className="home-container">
       <lord-icon
@@ -126,34 +130,41 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   function postAccount(account) {
-  const promise = fetch("Http://localhost:8000/signup", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(account)
-  });
+    const promise = fetch('Http://localhost:8000/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(account),
+    });
 
-  return promise;
-}
+    return promise;
+  }
 
-  function handleSubmit(account){
+  function handleSubmit(account) {
     postAccount(account)
-    .then((res) => {
-      if (res.status === 201) {
-        console.log('Success')
-      }
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-
-  };
+      .then((res) => {
+        if (res.status === 201) {
+          console.log('Success');
+          return undefined;
+        } else if (res.status === 409) {
+          return res.text();
+        }
+      })
+      .then((text) => {
+        if (text) {
+          window.alert(text);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <div className="signup-container">
       <h1>Sign Up</h1>
       <p>Create an account to get started</p>
-      <Form handleSubmit = {handleSubmit}/>
+      <Form handleSubmit={handleSubmit} />
       <p>Already have an account?</p>
       <button className="login-btn" onClick={() => navigate('/login')}>
         Login
@@ -197,7 +208,10 @@ function App() {
       <SplineBackground switchScene={sceneSwitched} />
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
-        <Route path="/" element={<Home onGetStarted={ () => setSceneSwitched(true)} />} />
+        <Route
+          path="/"
+          element={<Home onGetStarted={() => setSceneSwitched(true)} />}
+        />
         <Route
           path="/login"
           element={<Login setIsLoggedIn={setIsLoggedIn} />}
