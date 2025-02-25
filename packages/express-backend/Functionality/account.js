@@ -1,11 +1,9 @@
 import db_req from "../dbrequests.js"
 import hash from 'crypto'
-import CryptoJS from 'crypto-js'
-const key = "ajbeuifiug*&FG&^##@(VGasbifav8&^F@*GH(afytffc7cVUABISIFVusdgas"
 function createAccount(body) {
   const hashed = hashPassword(body.password);
   const isuser = db_req.getAccount(body.username);
-  const encryptedsecret = CryptoJS.AES.encrypt(body.spotifySecret, key)
+  
 
   if (!isuser.length) {
     console.log(body)
@@ -13,8 +11,6 @@ function createAccount(body) {
       username: body.username,
       email: body.email,
       password: hashed,
-      spotifyId: body.spotifyId,
-      spotifySecret: encryptedsecret,
       following: [],
       blocked: [],
     }

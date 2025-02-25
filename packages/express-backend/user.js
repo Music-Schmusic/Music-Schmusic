@@ -16,14 +16,6 @@ const AccountSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    spotifyId: {
-      type: String,
-      required: true,
-    },
-    spotifySecret: {
-      type: String,
-      required: true,
-    },
     following: {
       type: [String],
       required: true,

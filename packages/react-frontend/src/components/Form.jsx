@@ -6,8 +6,6 @@ function Form(props) {
   const navigate = useNavigate()
   
   const [account, setAccount] = useState({
-    spotifyId : '',
-    spotifySecret : '',
     username : '',
     email : '',
     password : '',
@@ -17,30 +15,8 @@ function Form(props) {
 
   function handleChange(event) {
     const { name, value } = event.target;
-    if (name === 'spotifyId') setAccount(
+      if (name === 'username') setAccount(
       { 
-        spotifyId: value,
-        spotifySecret : account['spotifySecret'],
-        username : account['username'],
-        email : account['email'],
-        password : account['password'],
-        following : account['following'],
-        blocked : account['blocked'],
-      });
-    else if (name === 'spotifySecret') setAccount(
-      { 
-        spotifyId: account['spotifyId'],
-        spotifySecret : value,
-        username : account['username'],
-        email : account['email'],
-        password : account['password'],
-        following : account['following'],
-        blocked : account['blocked'],
-      });
-      else if (name === 'username') setAccount(
-      { 
-        spotifyId: account['spotifyId'],
-        spotifySecret : account['spotifySecret'],
         username : value,
         email : account['email'],
         password : account['password'],
@@ -49,8 +25,6 @@ function Form(props) {
       });
       else if (name === 'email') setAccount(
       { 
-        spotifyId: account['spotifyId'],
-        spotifySecret : account['spotifySecret'],
         username : account['username'],
         email : value,
         password : account['password'],
@@ -59,8 +33,6 @@ function Form(props) {
       });
       else setAccount(
       { 
-        spotifyId: account['spotifyId'],
-        spotifySecret : account['spotifySecret'],
         username : account['username'],
         email : account['email'],
         password : value,
@@ -74,8 +46,6 @@ function Form(props) {
     props.handleSubmit(account);
     setAccount(
       {
-        spotifyId : '',
-        spotifySecret : '',
         username : '',
         email : '',
         password : '',
@@ -87,24 +57,6 @@ function Form(props) {
   }
   return (
     <form>
-      <label htmlFor="spotifyId">Spotify Id</label>
-      <input
-        type="text"
-        name="spotifyId"
-        id="spotifyId"
-        value={account.name}
-        onChange={handleChange}
-        required
-      />
-      <label htmlFor="spotifySecret">Spotify Secret</label>
-      <input
-        type="password"
-        name="spotifySecret"
-        id="spotifySecret"
-        value={account.spotifySecret}
-        onChange={handleChange}
-        required
-      />
       <label htmlFor="username">Username</label>
       <input
         type="text"
