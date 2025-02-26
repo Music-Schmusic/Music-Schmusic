@@ -98,11 +98,51 @@ const Login = ({ setIsLoggedIn }) => {
 
 // Signup Component
 const SignUp = () => {
+  const navigate = useNavigate();
+
+  function postAccount(account) {
+    const promise = fetch('Http://localhost:8000/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(account),
+    });
+
+    return promise;
+  }
+
+  function handleSubmit(account) {
+    postAccount(account)
+      .then((res) => {
+        if (res.status === 201) {
+          console.log('Success');
+          return undefined;
+        } else if (res.status === 409) {
+          return res.text();
+        }
+      })
+      .then((text) => {
+        if (text) {
+          window.alert(text);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <div className="signup-container">
       <h1>Sign Up</h1>
       <p>Create an account to get started</p>
-      <Form />
+      <Form handleSubmit={handleSubmit} />
+      <p>Already have an account?</p>
+      <button className="login-btn" onClick={() => navigate('/login')}>
+        Login
+      </button>
+      <button className="back-btn" onClick={() => navigate('/')}>
+        Back to Home
+      </button>
     </div>
   );
 };

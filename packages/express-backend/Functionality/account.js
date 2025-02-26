@@ -33,6 +33,5 @@ function login(username, email, password) {
 export default {
   createAccount,
   hashPassword,
-  login
-}
-
+  login,
+};
