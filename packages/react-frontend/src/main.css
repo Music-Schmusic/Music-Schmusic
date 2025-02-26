@@ -167,7 +167,9 @@ img {
    * 2. Remove the margin in Firefox and Safari.
    */
 button,
-input {},
+input {
+}
+,
 optgroup,
 select,
 textarea {
@@ -190,7 +192,6 @@ input {
   /* 1 */
   color: black;
   overflow: visible;
-  
 }
 
 /**
