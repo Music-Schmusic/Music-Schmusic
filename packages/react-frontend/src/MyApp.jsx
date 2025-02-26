@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link, Navigate } from "react-router-dom";
 import "./main.css";
@@ -10,24 +9,7 @@ import Form from "./components/Form";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
 
-//  Navbar Component
-=======
-import React, { useEffect, useState, useRef } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Link,
-  useNavigate,
-} from 'react-router-dom';
-import './main.css';
-import SplineBackground from './SplineBackground';
-import Dashboard from './pages/dashboard';
-import Friends from './pages/friends';
-import Recommended from './pages/recs';
-import Form from './components/Form';
-
->>>>>>> origin
+// Navbar Component
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -42,23 +24,10 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
       <div className="nav-links">
         {isLoggedIn ? (
           <>
-<<<<<<< HEAD
             <Link to="/dashboard" className="nav-button">Dashboard</Link>
             <Link to="/friends" className="nav-button">Friends</Link>
             <Link to="/recs" className="nav-button">Recommended</Link>
             <button onClick={handleLogout} className="nav-button">Logout</button>
-=======
-            <Link to="/dashboard"> </Link>
-            <Link to="/friends" className="nav-button">
-              Friends
-            </Link>
-            <Link to="/recs" className="nav-button">
-              Recommended
-            </Link>
-            <button onClick={handleLogout} className="nav-button">
-              Logout
-            </button>
->>>>>>> origin
           </>
         ) : (
           <>
@@ -71,8 +40,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   );
 };
 
-<<<<<<< HEAD
-//  Footer Component
+// Footer Component
 const Footer = () => (
   <nav className="footer">
     <div className="footer-links">
@@ -88,35 +56,8 @@ const Footer = () => (
   </nav>
 );
 
-//  Home Component
+// Home Component
 const Home = ({ onGetStarted }) => {
-=======
-const Footer = () => {
-  return (
-    <nav className="footer">
-      <div className="footer-links">
-        <a
-          href="https://github.com/Music-Schmusic/Music-Schmusic"
-          className="footer-button"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i id="github__logo" className="fa-brands fa-github"></i>
-        </a>
-      </div>
-    </nav>
-  );
-};
-
-const Home = ({ onGetStarted }) => {
-  const navigate = useNavigate();
-
-  const handleGetStarted = () => {
-    onGetStarted();
-    navigate('/login');
-  };
-
->>>>>>> origin
   return (
     <div className="home-container">
       <lord-icon
@@ -134,7 +75,7 @@ const Home = ({ onGetStarted }) => {
   );
 };
 
-//  Login Component
+// Login Component
 const Login = ({ setIsLoggedIn }) => {
   const handleLogin = (e) => {
     e.preventDefault();
@@ -155,65 +96,18 @@ const Login = ({ setIsLoggedIn }) => {
   );
 };
 
-//  Signup Component
+// Signup Component
 const SignUp = () => {
-<<<<<<< HEAD
-=======
-  const navigate = useNavigate();
-
-  function postAccount(account) {
-    const promise = fetch('Http://localhost:8000/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(account),
-    });
-
-    return promise;
-  }
-
-  function handleSubmit(account) {
-    postAccount(account)
-      .then((res) => {
-        if (res.status === 201) {
-          console.log('Success');
-          return undefined;
-        } else if (res.status === 409) {
-          return res.text();
-        }
-      })
-      .then((text) => {
-        if (text) {
-          window.alert(text);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
->>>>>>> origin
   return (
     <div className="signup-container">
       <h1>Sign Up</h1>
       <p>Create an account to get started</p>
-<<<<<<< HEAD
       <Form />
-=======
-      <Form handleSubmit={handleSubmit} />
-      <p>Already have an account?</p>
-      <button className="login-btn" onClick={() => navigate('/login')}>
-        Login
-      </button>
-      <button className="back-btn" onClick={() => navigate('/')}>
-        Back to Home
-      </button>
->>>>>>> origin
     </div>
   );
 };
 
-//  App Component
+// App Component
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
 
@@ -222,42 +116,24 @@ function App() {
       <SplineBackground />
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
-<<<<<<< HEAD
         {/*  Public Routes - Only Accessible if NOT Logged In */}
         <Route element={<PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />}>
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/signup" element={<SignUp />} />
         </Route>
 
-        {/* Protected Routes - Only Accessible if Logged In */}
+        {/*  Protected Routes - Only Accessible if Logged In */}
         <Route element={<ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/recs" element={<Recommended />} />
         </Route>
 
-        {/* Home Page (Always Accessible) */}
+        {/*  Home Page (Always Accessible) */}
         <Route path="/" element={<Home onGetStarted={() => setIsLoggedIn(false)} />} />
 
-        {/* Catch-all Route to Redirect Unmatched Paths */}
+        {/*  Catch-all Route to Redirect Unmatched Paths */}
         <Route path="*" element={<Navigate to="/" />} />
-=======
-        <Route
-          path="/"
-          element={<Home onGetStarted={() => setSceneSwitched(true)} />}
-        />
-        <Route
-          path="/login"
-          element={<Login setIsLoggedIn={setIsLoggedIn} />}
-        />
-        <Route path="/signup" element={<SignUp />} />
-        <Route
-          path="/dashboard"
-          element={isLoggedIn ? <Dashboard /> : <Home />}
-        />
-        <Route path="/friends" element={isLoggedIn ? <Friends /> : <Home />} />
-        <Route path="/recs" element={isLoggedIn ? <Recommended /> : <Home />} />
->>>>>>> origin
       </Routes>
       <Footer />
     </Router>
