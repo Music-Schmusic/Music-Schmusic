@@ -5,7 +5,6 @@ import listeningDataModel from './listeningData.js';
 import playlistModel from './playlist.js';
 
 mongoose.set('debug', true);
-mongoose.set('debug', true);
 
 // MongDB Connection
 connectDB();
@@ -13,7 +12,6 @@ connectDB();
 function getAccount(username) {
   let promise = userModel.findOne({ username: username });
   return promise;
-}
 }
 
 function addAccount(account) {

@@ -1,6 +1,6 @@
-import src from './account.js';
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import src from "./account.js";
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
 let mongoServer;
 
@@ -27,20 +27,20 @@ afterEach(async () => {
   }
 });
 
-test('Hash password', () => {
-  const target = src.hashPassword('examplePassword');
+test("Hash password", () => {
+  const target = src.hashPassword("examplePassword");
   const result =
-    'c668bfca4f595524053592d642cf97373d4fc778372bbd2364fbbe1b4b9eaafd';
+    "c668bfca4f595524053592d642cf97373d4fc778372bbd2364fbbe1b4b9eaafd";
   expect(target).toBe(result);
 });
 
-test('Create account', () => {
+test("Create account", () => {
   const body = {
-    spotifyId: 'spotify',
-    spotifySecret: 'spotifypassword',
-    username: 'testuser',
-    email: 'user@example.com',
-    password: 'examplePassword',
+    spotifyId: "spotify",
+    spotifySecret: "spotifypassword",
+    username: "testuser",
+    email: "user@example.com",
+    password: "examplePassword",
   };
 
   const target = src.createAccount(body);
@@ -49,6 +49,6 @@ test('Create account', () => {
   expect(target.username).toBe(body.username);
   expect(target.email).toBe(body.email);
   expect(target.password).toBe(
-    'c668bfca4f595524053592d642cf97373d4fc778372bbd2364fbbe1b4b9eaafd'
+    "c668bfca4f595524053592d642cf97373d4fc778372bbd2364fbbe1b4b9eaafd"
   );
 });

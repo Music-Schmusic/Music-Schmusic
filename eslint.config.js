@@ -14,6 +14,9 @@ export default [
       prettier: prettierPlugin,
       node,
     },
+    env: {
+      node: true,
+    },
     languageOptions: {
       globals: {
         window: 'readonly',
@@ -24,7 +27,6 @@ export default [
         require: 'readonly',
         module: 'readonly',
         exports: 'readonly',
-        process: 'readonly',
       },
       parserOptions: {
         ecmaVersion: 'latest',
