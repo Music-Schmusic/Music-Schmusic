@@ -1,21 +1,22 @@
-import db_req from '../dbrequests.js';
-import hash from 'crypto';
-import CryptoJS from 'crypto-js';
-const key = 'xG0m3tfmDgV624yOhZYW7uHTFBvLrvWUWzD+s4xXopXVNVnzB103zBU2vy57aQcs';
+import db_req from "../dbrequests.js"
+import hash from 'crypto'
 function createAccount(body) {
   const hashed = hashPassword(body.password);
   const isuser = db_req.getAccount(body.username);
-  const encryptedsecret = CryptoJS.AES.encrypt(body.spotifySecret, key);
+  
 
-  return {
-    username: body.username,
-    email: body.email,
-    password: hashed,
-    spotifyId: body.spotifyId,
-    spotifySecret: encryptedsecret,
-    following: [],
-    blocked: [],
-  };
+  if (!isuser.length) {
+    console.log(body)
+    return {
+      username: body.username,
+      email: body.email,
+      password: hashed,
+      following: [],
+      blocked: [],
+    }
+  } else {
+    throw new Error("Username already exists")
+  }
 }
 
 function hashPassword(password) {
