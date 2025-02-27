@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Link, Navigate } from "react-router-dom";
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes, Link, Navigate, useNavigate } from "react-router-dom";
 import "./main.css";
 import SplineBackground from "./SplineBackground";
 import Dashboard from "./pages/dashboard";
@@ -57,7 +57,9 @@ const Footer = () => (
 );
 
 // Home Component
-const Home = ({ onGetStarted }) => {
+const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="home-container">
       <lord-icon
@@ -68,7 +70,7 @@ const Home = ({ onGetStarted }) => {
         colors="primary:#30e849,secondary:#16c72e"
         style={{ width: "150px", height: "150px" }}
       ></lord-icon>
-      <button className="get-started-btn" onClick={onGetStarted}>
+      <button className="get-started-btn" onClick={() => navigate("/signup")}>
         Get Started
       </button>
     </div>
@@ -101,46 +103,39 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   function postAccount(account) {
-    const promise = fetch('Http://localhost:8000/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    return fetch("http://localhost:8000/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(account),
     });
-
-    return promise;
   }
 
   function handleSubmit(account) {
     postAccount(account)
       .then((res) => {
         if (res.status === 201) {
-          console.log('Success');
+          console.log("Success");
           return undefined;
         } else if (res.status === 409) {
           return res.text();
         }
       })
       .then((text) => {
-        if (text) {
-          window.alert(text);
-        }
+        if (text) window.alert(text);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch(console.error);
   }
+
   return (
     <div className="signup-container">
       <h1>Sign Up</h1>
       <p>Create an account to get started</p>
       <Form handleSubmit={handleSubmit} />
       <p>Already have an account?</p>
-      <button className="login-btn" onClick={() => navigate('/login')}>
+      <button className="login-btn" onClick={() => navigate("/login")}>
         Login
       </button>
-      <button className="back-btn" onClick={() => navigate('/')}>
+      <button className="back-btn" onClick={() => navigate("/")}>
         Back to Home
       </button>
     </div>
@@ -156,23 +151,23 @@ function App() {
       <SplineBackground />
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
-        {/*  Public Routes - Only Accessible if NOT Logged In */}
+        {/* Public Routes - Only Accessible if NOT Logged In */}
         <Route element={<PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />}>
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/signup" element={<SignUp />} />
         </Route>
 
-        {/*  Protected Routes - Only Accessible if Logged In */}
+        {/* Protected Routes - Only Accessible if Logged In */}
         <Route element={<ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/recs" element={<Recommended />} />
         </Route>
 
-        {/*  Home Page (Always Accessible) */}
-        <Route path="/" element={<Home onGetStarted={() => setIsLoggedIn(false)} />} />
+        {/* Home Page (Always Accessible) */}
+        <Route path="/" element={<Home />} />
 
-        {/*  Catch-all Route to Redirect Unmatched Paths */}
+        {/* Catch-all Route to Redirect Unmatched Paths */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Footer />
