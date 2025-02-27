@@ -103,6 +103,7 @@ const Login = ({ setIsLoggedIn }) => {
     e.preventDefault();
     setIsLoggedIn(true);
     localStorage.setItem('isLoggedIn', 'true'); // Store login state
+    
     navigate('/dashboard'); // Redirect after login
   };
 
