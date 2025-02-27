@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -12,6 +12,7 @@ import SplineBackground from './SplineBackground';
 import Spline from '@splinetool/react-spline';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
+import Settings from './pages/settings.jsx';
 import Recommended from './pages/recs';
 import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -40,6 +41,9 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             </Link>
             <Link to="/recs" className="nav-button">
               Recommended
+            </Link>
+            <Link to="/settings" className="nav-button">
+              <img src="/settings.png" alt="Settings" style={{ width: '24px', height: '24px' }} />
             </Link>
             <button onClick={handleLogout} className="nav-button">
               Logout
@@ -80,8 +84,13 @@ const Footer = () => (
 const Home = ({ setCurrentScene }) => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setCurrentScene('scene1.splinecode');
+  }, [setCurrentScene]);
+
+
   const handleGetStarted = () => {
-    setCurrentScene('/public/scene2.splinecode');
+    setCurrentScene('/scene2.splinecode');
     navigate('/login');
   };
 
@@ -103,7 +112,12 @@ const Home = ({ setCurrentScene }) => {
 };
 
 // Login Component
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ setIsLoggedIn, setCurrentScene }) => {
+  useEffect(() => {
+    // Set spline scene 2 when the login page loads
+    setCurrentScene('scene2.splinecode');
+  }, [setCurrentScene]);
+
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoggedIn(true);
@@ -153,10 +167,11 @@ const SignUp = () => {
 
   return (
     <div className="signup-container">
+      <h3>Create an account to get started</h3>
       <h1>Sign Up</h1>
-      <p>Create an account to get started</p>
       <Form handleSubmit={handleSubmit} />
-      <p>Already have an account?</p>
+      <h6>  </h6>
+      <h5>Already have an account?</h5>
       <button className="login-btn" onClick={() => navigate('/login')}>
         Login
       </button>
@@ -176,7 +191,7 @@ function App() {
   );
 
   const [currentScene, setCurrentScene] = useState(
-    '/public/scene1.splinecode' // Default scene URL
+    'scene1.splinecode' // Default scene URL
   );
 
   return (
@@ -193,7 +208,7 @@ function App() {
         >
           <Route
             path="/login"
-            element={<Login setIsLoggedIn={setIsLoggedIn} />}
+            element={<Login setIsLoggedIn={setIsLoggedIn} setCurrentScene={setCurrentScene} />}
           />
           <Route path="/signup" element={<SignUp />} />
         </Route>
@@ -207,6 +222,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/recs" element={<Recommended />} />
+          <Route path="/settings" element={<Settings/>} />
         </Route>
 
         {/* Home Page (Always Accessible) */}
@@ -214,6 +230,7 @@ function App() {
         {/* Catch-all Route to Redirect Unmatched Paths */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      
       <Footer />
     </Router>
     </>
