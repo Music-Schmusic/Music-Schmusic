@@ -2,11 +2,13 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
+    "mongodb-memory-server": "^10.1.4",
     "nanoid": "^5.0.9",
     "npm-run-all": "^4.1.5",
     "prettier": "3.4.2",
@@ -16,7 +18,7 @@
     "start:frontend": "cd ./packages/react-frontend && npm run dev",
     "start:backend": "cd ./packages/express-backend && npm run dev",
     "start": "npm-run-all --parallel start:frontend start:backend",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test dotenv -e packages/express-backend/.env.test -- jest",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "lint": "eslint .",
@@ -32,7 +34,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.34.6",
     "@splinetool/react-spline": "^4.0.0",
     "cross-env": "^7.0.3",
     "crypto-js": "^4.2.0",
