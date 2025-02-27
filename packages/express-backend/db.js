@@ -4,6 +4,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const connectDB = async () => {
+  if (process.env.NODE_ENV === "test") {
+    console.log("Skipping MongoDB connection in test mode.");
+    return;
+  }
+
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
@@ -12,9 +17,8 @@ const connectDB = async () => {
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
     console.error(`MongoDB Connection Error: ${err.message}`);
-    process.exit(1); // Exit process with failure
+    process.exit(1);
   }
 };
 
 export default connectDB;
-

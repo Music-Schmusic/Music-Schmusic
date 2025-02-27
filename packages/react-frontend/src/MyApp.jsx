@@ -1,12 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from "react-router-dom";
-import "./main.css";
-import SplineBackground from "./SplineBackground";
+import React, { useState } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+  useNavigate,
+} from 'react-router-dom';
+import './main.css';
+import SplineBackground from './SplineBackground';
+import Dashboard from './pages/dashboard';
+import Friends from './pages/friends';
+import Recommended from './pages/recs';
+import Form from './components/Form';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+import PublicRoute from './components/PublicRoute.jsx';
 
+// Navbar Component
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem('isLoggedIn'); // Persist logout state
   };
 
   return (
@@ -17,13 +31,27 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
       <div className="nav-links">
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" className="nav-button">Dashboard</Link>
-            <button onClick={handleLogout} className="nav-button">Logout</button>
+            <Link to="/dashboard" className="nav-button">
+              Dashboard
+            </Link>
+            <Link to="/friends" className="nav-button">
+              Friends
+            </Link>
+            <Link to="/recs" className="nav-button">
+              Recommended
+            </Link>
+            <button onClick={handleLogout} className="nav-button">
+              Logout
+            </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="nav-button">Login</Link>
-            <Link to="/signup" className="nav-button">Sign Up</Link>
+            <Link to="/login" className="nav-button">
+              Login
+            </Link>
+            <Link to="/signup" className="nav-button">
+              Sign Up
+            </Link>
           </>
         )}
       </div>
@@ -31,22 +59,31 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   );
 };
 
+// Footer Component
 const Footer = () => (
   <nav className="footer">
     <div className="footer-links">
-      <a href="https://github.com/Music-Schmusic/Music-Schmusic" className="footer-button" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://github.com/Music-Schmusic/Music-Schmusic"
+        className="footer-button"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <i id="github__logo" className="fa-brands fa-github"></i>
       </a>
     </div>
   </nav>
 );
 
-const Home = ({ setCurrentScene }) => {
+// Home Component
+const Home = () => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    setCurrentScene("https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode");
-    navigate("/login");
+    setCurrentScene(
+      'https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode'
+    );
+    navigate('/login');
   };
 
   return (
@@ -57,30 +94,21 @@ const Home = ({ setCurrentScene }) => {
         delay="1500"
         stroke="bold"
         colors="primary:#30e849,secondary:#16c72e"
-        style={{ width: "150px", height: "150px" }}
+        style={{ width: '150px', height: '150px' }}
       ></lord-icon>
-      <button className="get-started-btn" onClick={handleGetStarted}>
+      <button className="get-started-btn" onClick={() => navigate('/signup')}>
         Get Started
       </button>
     </div>
   );
 };
 
-const Dashboard = () => (
-  <div className="dashboard-container">
-    <h1>Welcome to Your Dashboard</h1>
-    <p>You are now logged in!</p>
-  </div>
-);
-
+// Login Component
 const Login = ({ setIsLoggedIn }) => {
-  const navigate = useNavigate();
-
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", "true");
-    navigate("/dashboard");
+    localStorage.setItem('isLoggedIn', 'true'); // Store login state
   };
 
   return (
@@ -92,77 +120,98 @@ const Login = ({ setIsLoggedIn }) => {
         <input type="password" placeholder="Password" required />
         <button type="submit">Login</button>
       </form>
-      <p>Don't have an account?</p>
-      <button className="signup-btn" onClick={() => navigate("/signup")}>
-        Sign Up
-      </button>
-      <button className="back-btn" onClick={() => navigate("/")}>
-        Back to Home
-      </button>
     </div>
   );
 };
 
+// Signup Component
 const SignUp = () => {
   const navigate = useNavigate();
+
+  function postAccount(account) {
+    return fetch('http://localhost:8000/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(account),
+    });
+  }
+
+  function handleSubmit(account) {
+    postAccount(account)
+      .then((res) => {
+        if (res.status === 201) {
+          console.log('Success');
+          return undefined;
+        } else if (res.status === 409) {
+          return res.text();
+        }
+      })
+      .then((text) => {
+        if (text) window.alert(text);
+      })
+      .catch(console.error);
+  }
 
   return (
     <div className="signup-container">
       <h1>Sign Up</h1>
       <p>Create an account to get started</p>
-      <form>
-        <input type="text" placeholder="Username" required />
-        <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Sign Up</button>
-      </form>
+      <Form handleSubmit={handleSubmit} />
       <p>Already have an account?</p>
-      <button className="login-btn" onClick={() => navigate("/login")}>
+      <button className="login-btn" onClick={() => navigate('/login')}>
         Login
       </button>
-      <button className="back-btn" onClick={() => navigate("/")}>
+      <button className="back-btn" onClick={() => navigate('/')}>
         Back to Home
       </button>
     </div>
   );
 };
 
-function MyApp() {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
-
-  const [currentScene, setCurrentScene] = useState("https://prod.spline.design/p0-zCGqo6Vm1HjXy/scene.splinecode");
-
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.lordicon.com/lordicon.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    const script2 = document.createElement("script");
-    script2.src = "https://kit.fontawesome.com/ab74e91db0.js";
-    script2.crossOrigin = "anonymous";
-    script2.async = true;
-    document.body.appendChild(script2);
-
-    return () => {
-      document.body.removeChild(script);
-      document.body.removeChild(script2);
-    };
-  }, []);
+// App Component
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem('isLoggedIn') === 'true'
+  );
 
   return (
     <Router>
       <SplineBackground currentScene={currentScene} />
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
-        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
-        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Home setCurrentScene={setCurrentScene} />} />
+        {/* Public Routes - Only Accessible if NOT Logged In */}
+        <Route
+          element={
+            <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
+          }
+        >
+          <Route
+            path="/login"
+            element={<Login setIsLoggedIn={setIsLoggedIn} />}
+          />
+          <Route path="/signup" element={<SignUp />} />
+        </Route>
+
+        {/* Protected Routes - Only Accessible if Logged In */}
+        <Route
+          element={
+            <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/friends" element={<Friends />} />
+          <Route path="/recs" element={<Recommended />} />
+        </Route>
+
+        {/* Home Page (Always Accessible) */}
+        <Route path="/" element={<Home />} />
+
+        {/* Catch-all Route to Redirect Unmatched Paths */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Footer />
     </Router>
   );
 }
 
-export default MyApp;
+export default App;

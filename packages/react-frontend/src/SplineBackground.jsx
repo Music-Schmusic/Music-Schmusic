@@ -1,24 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import Spline from "@splinetool/react-spline";
+import React, { useEffect, useState } from 'react';
+import Spline from '@splinetool/react-spline';
 
-export default function SplineBackground() {
+export default function SplineBackground({ switchScene }) {
   const [currentScene, setCurrentScene] = useState(
-    "https://prod.spline.design/p0-zCGqo6Vm1HjXy/scene.splinecode"
+    'https://prod.spline.design/p0-zCGqo6Vm1HjXy/scene.splinecode'
   );
-  const secondScene = "https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode";
+  const secondScene =
+    'https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode';
 
   useEffect(() => {
-    function handleGlobalMouseUp() {
-      // Example: switch from scene1 to scene2
+    if (switchScene) {
       setCurrentScene(secondScene);
-      console.log("Global mouseUp triggered → switched scene!");
+      console.log('Scene switched!');
     }
-
-    window.addEventListener("mouseup", handleGlobalMouseUp);
-    return () => {
-      window.removeEventListener("mouseup", handleGlobalMouseUp);
-    };
-  }, []);
+  }, [switchScene]);
 
   return (
     <div className="spline-background">
