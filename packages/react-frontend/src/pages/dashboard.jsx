@@ -11,6 +11,9 @@ export default function Dashboard() {
 
   // Format data for Recharts
   const chartData = [
+    { name: '5 Weeks Ago', timeSpent: userStats.twoWeeksAgo.timeSpent },
+    { name: '4 Weeks Ago', timeSpent: userStats.lastWeek.timeSpent },
+    { name: '3 Weeks Ago', timeSpent: userStats.thisWeek.timeSpent },
     { name: '2 Weeks Ago', timeSpent: userStats.twoWeeksAgo.timeSpent },
     { name: 'Last Week', timeSpent: userStats.lastWeek.timeSpent },
     { name: 'This Week', timeSpent: userStats.thisWeek.timeSpent },
