@@ -1344,10 +1344,11 @@ h1 {
   background: linear-gradient(#28a808, #099439); /* Spotify-like green */
   padding: 15px 20px;
   position: fixed;
+  height: 65px;
   width: 100%;
   top: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 2;
 }
 
 .logo a {
@@ -1512,7 +1513,7 @@ a:focus {
 
 .dashboard-content {
   margin-top: 300px;
-  margin-bottom: 50px;
+  margin-bottom: 100px;
   text-align: center;
   max-width: auto;
   width: 50%;
