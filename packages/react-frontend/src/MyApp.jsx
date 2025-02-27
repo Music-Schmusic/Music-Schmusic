@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 import './main.css';
 import SplineBackground from './SplineBackground';
+import Spline from '@splinetool/react-spline';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
 import Recommended from './pages/recs';
@@ -80,9 +81,7 @@ const Home = ({ setCurrentScene }) => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    setCurrentScene(
-      'https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode'
-    );
+    setCurrentScene('/public/scene2.splinecode');
     navigate('/login');
   };
 
@@ -170,16 +169,19 @@ const SignUp = () => {
 
 // App Component
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
+  
+  
+    const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem('isLoggedIn') === 'true'
   );
 
   const [currentScene, setCurrentScene] = useState(
-    'https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode' // Default scene URL
+    '/public/scene1.splinecode' // Default scene URL
   );
 
   return (
-    <Router>
+  <>
+  <Router>
       <SplineBackground currentScene={currentScene} />
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
@@ -209,12 +211,12 @@ function App() {
 
         {/* Home Page (Always Accessible) */}
         <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
-
         {/* Catch-all Route to Redirect Unmatched Paths */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Footer />
     </Router>
+    </>
   );
 }
 
