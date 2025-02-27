@@ -76,7 +76,7 @@ const Footer = () => (
 );
 
 // Home Component
-const Home = () => {
+const Home = ({ setCurrentScene }) => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
@@ -96,7 +96,7 @@ const Home = () => {
         colors="primary:#30e849,secondary:#16c72e"
         style={{ width: '150px', height: '150px' }}
       ></lord-icon>
-      <button className="get-started-btn" onClick={() => navigate('/signup')}>
+      <button className="get-started-btn" onClick={handleGetStarted}>
         Get Started
       </button>
     </div>
@@ -174,6 +174,10 @@ function App() {
     localStorage.getItem('isLoggedIn') === 'true'
   );
 
+  const [currentScene, setCurrentScene] = useState(
+    'https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode' // Default scene URL
+  );
+
   return (
     <Router>
       <SplineBackground currentScene={currentScene} />
@@ -204,7 +208,7 @@ function App() {
         </Route>
 
         {/* Home Page (Always Accessible) */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
 
         {/* Catch-all Route to Redirect Unmatched Paths */}
         <Route path="*" element={<Navigate to="/" />} />
