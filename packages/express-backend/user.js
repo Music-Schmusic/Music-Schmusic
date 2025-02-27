@@ -25,6 +25,10 @@ const AccountSchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
+    privacyStatus: {
+      type: String,
+      required: true,
+    },
   },
   { collection: 'Account' }
 );
