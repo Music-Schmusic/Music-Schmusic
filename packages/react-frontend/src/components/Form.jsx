@@ -4,53 +4,51 @@ function Form(props) {
   const navigate = useNavigate();
 
   const [account, setAccount] = useState({
-    username : '',
-    email : '',
-    password : '',
-    following : [],
-    blocked : [],
-  })
+    username: '',
+    email: '',
+    password: '',
+    following: [],
+    blocked: [],
+    privacyStatus: 'Private',
+  });
 
   function handleChange(event) {
     const { name, value } = event.target;
-      if (name === 'username') setAccount(
-      { 
-        username : value,
-        email : account['email'],
-        password : account['password'],
-        following : account['following'],
-        blocked : account['blocked'],
+    if (name === 'username')
+      setAccount({
+        username: value,
+        email: account['email'],
+        password: account['password'],
+        following: account['following'],
+        blocked: account['blocked'],
       });
-      else if (name === 'email') setAccount(
-      { 
-        username : account['username'],
-        email : value,
-        password : account['password'],
-        following : account['following'],
-        blocked : account['blocked'],
+    else if (name === 'email')
+      setAccount({
+        username: account['username'],
+        email: value,
+        password: account['password'],
+        following: account['following'],
+        blocked: account['blocked'],
       });
-      else setAccount(
-      { 
-        username : account['username'],
-        email : account['email'],
-        password : value,
-        following : account['following'],
-        blocked : account['blocked'],
+    else
+      setAccount({
+        username: account['username'],
+        email: account['email'],
+        password: value,
+        following: account['following'],
+        blocked: account['blocked'],
       });
   }
 
   function submitForm() {
     props.handleSubmit(account);
-    setAccount(
-      {
-        username : '',
-        email : '',
-        password : '',
-        following : [],
-        blocked : []
-      }
-    );
-    navigate('/login');
+    setAccount({
+      username: '',
+      email: '',
+      password: '',
+      following: [],
+      blocked: [],
+    });
   }
   return (
     <form>

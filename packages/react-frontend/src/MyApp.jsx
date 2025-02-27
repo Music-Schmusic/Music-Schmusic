@@ -43,7 +43,11 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               Recommended
             </Link>
             <Link to="/settings" className="nav-button">
-              <img src="/settings.png" alt="Settings" style={{ width: '24px', height: '24px' }} />
+              <img
+                src="/settings.png"
+                alt="Settings"
+                style={{ width: '24px', height: '24px' }}
+              />
             </Link>
             <button onClick={handleLogout} className="nav-button">
               Logout
@@ -87,7 +91,6 @@ const Home = ({ setCurrentScene }) => {
   useEffect(() => {
     setCurrentScene('scene1.splinecode');
   }, [setCurrentScene]);
-
 
   const handleGetStarted = () => {
     setCurrentScene('/scene2.splinecode');
@@ -138,7 +141,7 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
 };
 
 // Signup Component
-const SignUp = () => {
+const SignUp = (props) => {
   const navigate = useNavigate();
 
   function postAccount(account) {
@@ -153,6 +156,8 @@ const SignUp = () => {
     postAccount(account)
       .then((res) => {
         if (res.status === 201) {
+          props.login(true);
+          navigate('/dashboard');
           console.log('Success');
           return undefined;
         } else if (res.status === 409) {
@@ -170,7 +175,7 @@ const SignUp = () => {
       <h3>Create an account to get started</h3>
       <h1>Sign Up</h1>
       <Form handleSubmit={handleSubmit} />
-      <h6>  </h6>
+      <h6> </h6>
       <h5>Already have an account?</h5>
       <button className="login-btn" onClick={() => navigate('/login')}>
         Login
@@ -184,9 +189,7 @@ const SignUp = () => {
 
 // App Component
 function App() {
-  
-  
-    const [isLoggedIn, setIsLoggedIn] = useState(
+  const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem('isLoggedIn') === 'true'
   );
 
@@ -195,44 +198,52 @@ function App() {
   );
 
   return (
-  <>
-  <Router>
-      <SplineBackground currentScene={currentScene} />
-      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <Routes>
-        {/* Public Routes - Only Accessible if NOT Logged In */}
-        <Route
-          element={
-            <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
-          }
-        >
+    <>
+      <Router>
+        <SplineBackground currentScene={currentScene} />
+        <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+        <Routes>
+          {/* Public Routes - Only Accessible if NOT Logged In */}
           <Route
-            path="/login"
-            element={<Login setIsLoggedIn={setIsLoggedIn} setCurrentScene={setCurrentScene} />}
+            element={
+              <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
+            }
+          >
+            <Route
+              path="/login"
+              element={
+                <Login
+                  setIsLoggedIn={setIsLoggedIn}
+                  setCurrentScene={setCurrentScene}
+                />
+              }
+            />
+            <Route path="/signup" element={<SignUp login={setIsLoggedIn} />} />
+          </Route>
+
+          {/* Protected Routes - Only Accessible if Logged In */}
+          <Route
+            element={
+              <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/recs" element={<Recommended />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+
+          {/* Home Page (Always Accessible) */}
+          <Route
+            path="/"
+            element={<Home setCurrentScene={setCurrentScene} />}
           />
-          <Route path="/signup" element={<SignUp />} />
-        </Route>
+          {/* Catch-all Route to Redirect Unmatched Paths */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
 
-        {/* Protected Routes - Only Accessible if Logged In */}
-        <Route
-          element={
-            <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
-          }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/friends" element={<Friends />} />
-          <Route path="/recs" element={<Recommended />} />
-          <Route path="/settings" element={<Settings/>} />
-        </Route>
-
-        {/* Home Page (Always Accessible) */}
-        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
-        {/* Catch-all Route to Redirect Unmatched Paths */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-      
-      <Footer />
-    </Router>
+        <Footer />
+      </Router>
     </>
   );
 }
