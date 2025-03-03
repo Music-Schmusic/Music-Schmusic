@@ -150,6 +150,10 @@ const SignUp = (props) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(account),
     });
+  };
+
+  function authorizeAccount() {
+    return fetch('http://localhost:8000/authorize');
   }
 
   function handleSubmit(account) {
@@ -157,6 +161,16 @@ const SignUp = (props) => {
       .then((res) => {
         if (res.status === 201) {
           props.login(true);
+
+          //request auth code upon sign up
+          authorizeAccount()
+            .then(response => response.json())
+            .then(response => {
+              //open new tab to request signin/authorization
+              window.open(response.authUrl, "");
+            })
+            .catch(console.error);
+          
           navigate('/dashboard');
           console.log('Success');
           return undefined;

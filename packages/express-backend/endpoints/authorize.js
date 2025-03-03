@@ -1,22 +1,23 @@
 import express from 'express';
 import querystring from 'querystring';
+import cors from 'cors';
 
 const app = express();
 const router = express.Router();
-const port = 3000;
+app.use(cors());
 
-let client_id = '';
-let client_secret = '';
+//throwaway account its fine
+let client_id = '1d896050be0f4f0c8aef60ca671d3789';
+let client_secret = '26391446c4ba4249952b65b90d84238e';
 const redirect_uri = 'http://localhost:8000/callback';
 
-//request authorization code with client secret/id
-router.get('/login/:id/:secret', function (req, res) {
-  client_id = req.params.id;
-  client_secret = req.params.secret;
-
-  //authorization code request parameters
+//request authorization code
+router.get('/authorize', function (req, res) {
+  //csrf token
   const state = generateState(16);
+  //user scopes
   const scope = 'user-read-private user-read-email';
+  //query string
   const auth_query = querystring.stringify({
     response_type: 'code',
     client_id: client_id,
@@ -26,8 +27,8 @@ router.get('/login/:id/:secret', function (req, res) {
   });
   console.log('\nauthorization query being sent:\n', auth_query);
 
-  //prompts user to allow the app to access data
-  res.redirect('https://accounts.spotify.com/authorize?' + auth_query);
+  //return to user to allow spotify app to request data
+  res.json({authUrl : ('https://accounts.spotify.com/authorize?' + auth_query)});
 });
 
 //recieve authorization code and request access tokens
@@ -43,8 +44,9 @@ router.get('/callback', function (req, res) {
         querystring.stringify({
           error: 'state_mismatch',
         })
-    );
-  } else {
+  );
+  } 
+  else {
     const authOptions = {
       url: 'https://accounts.spotify.com/api/token',
       method: 'POST',
@@ -78,6 +80,7 @@ router.get('/callback', function (req, res) {
       })
       .then((json) => {
         access_token = json.access_token;
+
         res.send(json);
       })
       .catch((error) => {
@@ -86,6 +89,8 @@ router.get('/callback', function (req, res) {
       });
   }
 });
+
+//session table for access token
 
 //generate random string
 function generateState(length) {
