@@ -116,24 +116,62 @@ const Home = ({ setCurrentScene }) => {
 
 // Login Component
 const Login = ({ setIsLoggedIn, setCurrentScene }) => {
+  const navigate = useNavigate();
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null); // ✅ State for error message
+
+  // ✅ Set the Spline scene when the login page loads
   useEffect(() => {
-    // Set spline scene 2 when the login page loads
-    setCurrentScene('scene2.splinecode');
+    setCurrentScene("scene2.splinecode");
   }, [setCurrentScene]);
 
-  const handleLogin = (e) => {
+  async function handleLogin(e) {
     e.preventDefault();
-    setIsLoggedIn(true);
-    localStorage.setItem('isLoggedIn', 'true'); // Store login state
-  };
+    setError(null); // ✅ Clear previous errors
+
+    try {
+      const res = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usernameOrEmail, password }),
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+
+      const userData = await res.json();
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("username", userData.username);
+      setIsLoggedIn(true);
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Invalid Login Information"); // ✅ Show error message
+    }
+  }
 
   return (
     <div className="login-container">
       <h1>Login</h1>
       <p>Sign in to continue</p>
       <form onSubmit={handleLogin}>
-        <input type="text" placeholder="Username" required />
-        <input type="password" placeholder="Password" required />
+        <input
+          type="text"
+          placeholder="Username or Email"
+          value={usernameOrEmail}
+          onChange={(e) => setUsernameOrEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p className="error-message">{error}</p>} {/* ✅ Display error message */}
         <button type="submit">Login</button>
       </form>
     </div>

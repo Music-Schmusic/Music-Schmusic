@@ -24,11 +24,17 @@ function hashPassword(password) {
   return hash.createHash('sha256').update(password).digest('hex');
 }
 
-function login(username, email, password) {
-  const hashed = hashPassword(password);
-  //if username and email in database and hashed == database.password
-  //need database implemented
-  //search database for user and check if password is correct
+async function login(usernameOrEmail, password) {
+  const user = await db_req.getAccount(usernameOrEmail);
+  if (!user) {
+    throw new Error("Invalid username or email.");
+  }
+  const hashedInputPassword = hash.createHash("sha256").update(password).digest("hex");
+  if (hashedInputPassword !== user.password) {
+    throw new Error("Invalid password.");
+  }
+  console.log("Login successful:", user.username);
+  return { username: user.username, email: user.email };
 }
 
 export default {
