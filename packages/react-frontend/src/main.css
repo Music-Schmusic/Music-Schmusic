@@ -55,6 +55,10 @@ h1 {
   color: #121212;
 }
 
+p {
+  z-index: 1;
+}
+
 /* Grouping content
      ========================================================================== */
 /**
@@ -1535,5 +1539,27 @@ a:focus {
 }
 
 .stats-section p {
+  z-index: 1;
+  position: relative;
+  font-size: 1em;
+}
+
+.error-message {
+  position: relative;
+  z-index: 1;
+  color: red !important; /* Force red text */
+  font-size: 14px;
+  font-weight: bold; /* Make it more noticeable */
+  margin-top: 5px;
+  text-align: center;
+  display: block; /* Ensure it's visible */
+  background-color: rgba(255, 0, 0, 0.1); /* Light red background */
+  padding: 5px;
+  border-radius: 5px;
+}
+
+p {
+  color: black;
+  position: relative;
   font-size: 1em;
 }
