@@ -13,6 +13,7 @@ function createAccount(body) {
       password: hashed,
       following: [],
       blocked: [],
+      privacyStatus: 'Private'
     }
   } else {
     throw new Error("Username already exists")

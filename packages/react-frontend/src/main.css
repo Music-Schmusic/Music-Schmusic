@@ -1247,14 +1247,15 @@ body {
 }
 
 button {
-  background-color: #1db954;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 50px;
-  transition: background 0.3s ease;
+  padding: 18px 25px;           /* Consistent padding for all */
+  text-decoration: none;       /* Remove underline from anchors */
+  background: white;
+  color: #099439;
+  border: none;                /* Remove default button border */
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;             /* Pointer on hover, matching anchors */
+  transition: background 0.3s;
   position: relative;
   z-index: 1;
 }
@@ -1368,12 +1369,15 @@ h1 {
 }
 
 .nav-button {
+  
+  padding: 5px 10px;           /* Consistent padding for all */
+  text-decoration: none;       /* Remove underline from anchors */
   background: white;
   color: #099439;
-  padding: 8px 15px;
+  border: none;                /* Remove default button border */
   border-radius: 5px;
-  text-decoration: none;
   font-weight: bold;
+  cursor: pointer;             /* Pointer on hover, matching anchors */
   transition: background 0.3s;
   position: relative;
   z-index: 1;
@@ -1488,35 +1492,43 @@ a:focus {
 
 
 .recs-page {
-  background: #f8f9fa;
   position: relative;
   z-index: 1;
-  min-height: 100%;
-  min-width: 65vh;
-  padding: 40vh;
+  width: 100vw;
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1e1e1e;
+  padding: 0;
 }
 
 .recs-content {
-  margin-top: 100px; /* pushes the text down from the top */
-  color: #333333; /* darker text color (dark gray) */
+  margin-top: 30%; /* pushes the text down from the top */
+  margin-bottom: 30%;
+  color: #ffffff; /* darker text color (dark gray) */
 }
 
 .friends-page {
-  background: #f8f9fa;
   position: relative;
   z-index: 1;
-  min-height: 100%;
-  min-width: 65vh;
-  padding: 40vh;
+  width: 100vw;
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1e1e1e;
+  padding: 0;
 }
 
 .friends-content {
-  margin-top: 100px; /* pushes the text down from the top */
-  color: #333333; /* darker text color (dark gray) */
+  margin-top: 30%; /* pushes the text down from the top */
+  margin-bottom: 30%;
+  color: #ffffff; /* darker text color (dark gray) */
 }
 
 .dashboard-content {
-  margin-top: 40%;
+  margin-top: 1190px;
   margin-bottom: 100px;
   text-align: center;
   max-width: auto;
@@ -1527,7 +1539,7 @@ a:focus {
 }
 
 .stats-section {
-  margin: 20px 0;
+  margin: 20px ;
   padding: 15px;
   border-radius: 8px;
   background: #333;
@@ -1563,3 +1575,105 @@ p {
   position: relative;
   font-size: 1em;
 }
+
+.container.content-section{
+  z-index: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: #2f2f2f ;
+  padding: 10;
+  margin-top: 30%; /* pushes the text down from the top */
+  margin-bottom: 30%;
+}
+.form-actions{
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+.tabs{
+  justify-content: center;
+  margin-top: 10px;
+  display: flex;
+  gap: 90px;
+}
+
+.signup-container{
+  color: #121212;
+  position: relative;
+  margin-top: 5%;
+  height: fit-content;
+  text-align: center;
+  padding: 0;
+  width: 75vw;
+  background-color: #ffffff !important;
+  z-index: 10;
+}
+
+.friends-page {
+  background-color: #1e1e1e;
+  margin-top: 500px;
+  min-height: 100vh;
+  padding: 20px;
+  color: white;
+  font-family: Arial, sans-serif;
+
+  /* Remove or override any row-based layout:
+     e.g., flex-direction: column or simply no display property if you want block flow. */
+  display: flex;
+  flex-direction: column; 
+}
+
+/* Make sure heading is displayed on its own line */
+.friends-page h1 {
+  margin-bottom: 20px;
+}
+
+/* Search and Filter Controls - stacked above the list */
+.controls {
+  display: flex; 
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Friend Cards stacked vertically */
+.friends-grid {
+  display: flex;
+  flex-direction: column; /* Stacks each card vertically */
+  gap: 10px;             /* Spacing between cards */
+}
+
+.friend-card {
+  background: rgba(24, 24, 24, 0.9);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: transform 0.2s ease;
+}
+
+.friend-card:hover {
+  transform: translateY(-3px);
+}
+
+.friend-card img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.friend-card button {
+  background: #099439;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.friend-card button:hover {
+  background: #077c33;
+}
+

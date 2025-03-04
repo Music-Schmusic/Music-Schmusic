@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -9,8 +9,10 @@ import {
 } from 'react-router-dom';
 import './main.css';
 import SplineBackground from './SplineBackground';
+import Spline from '@splinetool/react-spline';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
+import Settings from './pages/settings.jsx';
 import Recommended from './pages/recs';
 import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -39,6 +41,13 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             </Link>
             <Link to="/recs" className="nav-button">
               Recommended
+            </Link>
+            <Link to="/settings" className="nav-button">
+              <img
+                src="/settings.png"
+                alt="Settings"
+                style={{ width: '24px', height: '24px' }}
+              />
             </Link>
             <button onClick={handleLogout} className="nav-button">
               Logout
@@ -79,10 +88,12 @@ const Footer = () => (
 const Home = ({ setCurrentScene }) => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setCurrentScene('scene1.splinecode');
+  }, [setCurrentScene]);
+
   const handleGetStarted = () => {
-    setCurrentScene(
-      'https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode'
-    );
+    setCurrentScene('/scene2.splinecode');
     navigate('/login');
   };
 
@@ -104,11 +115,16 @@ const Home = ({ setCurrentScene }) => {
 };
 
 // Login Component
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   const navigate = useNavigate();
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null); // ✅ State for error message
+
+  // ✅ Set the Spline scene when the login page loads
+  useEffect(() => {
+    setCurrentScene("scene2.splinecode");
+  }, [setCurrentScene]);
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -132,7 +148,7 @@ const Login = ({ setIsLoggedIn }) => {
       setIsLoggedIn(true);
       navigate("/dashboard");
     } catch (err) {
-      setError("Invalid Login Information");
+      setError("Invalid Login Information"); // ✅ Show error message
     }
   }
 
@@ -163,7 +179,7 @@ const Login = ({ setIsLoggedIn }) => {
 };
 
 // Signup Component
-const SignUp = () => {
+const SignUp = (props) => {
   const navigate = useNavigate();
 
   function postAccount(account) {
@@ -178,6 +194,8 @@ const SignUp = () => {
     postAccount(account)
       .then((res) => {
         if (res.status === 201) {
+          props.login(true);
+          navigate('/dashboard');
           console.log('Success');
           return undefined;
         } else if (res.status === 409) {
@@ -192,10 +210,11 @@ const SignUp = () => {
 
   return (
     <div className="signup-container">
+      <h3>Create an account to get started</h3>
       <h1>Sign Up</h1>
-      <p>Create an account to get started</p>
       <Form handleSubmit={handleSubmit} />
-      <p>Already have an account?</p>
+      <h6> </h6>
+      <h5>Already have an account?</h5>
       <button className="login-btn" onClick={() => navigate('/login')}>
         Login
       </button>
@@ -213,46 +232,57 @@ function App() {
   );
 
   const [currentScene, setCurrentScene] = useState(
-    'https://prod.spline.design/P5e3rxXx8Iuj6Eeu/scene.splinecode' // Default scene URL
+    'scene1.splinecode' // Default scene URL
   );
 
   return (
-    <Router>
-      <SplineBackground currentScene={currentScene} />
-      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <Routes>
-        {/* Public Routes - Only Accessible if NOT Logged In */}
-        <Route
-          element={
-            <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
-          }
-        >
+    <>
+      <Router>
+        <SplineBackground currentScene={currentScene} />
+        <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+        <Routes>
+          {/* Public Routes - Only Accessible if NOT Logged In */}
           <Route
-            path="/login"
-            element={<Login setIsLoggedIn={setIsLoggedIn} />}
+            element={
+              <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
+            }
+          >
+            <Route
+              path="/login"
+              element={
+                <Login
+                  setIsLoggedIn={setIsLoggedIn}
+                  setCurrentScene={setCurrentScene}
+                />
+              }
+            />
+            <Route path="/signup" element={<SignUp login={setIsLoggedIn} />} />
+          </Route>
+
+          {/* Protected Routes - Only Accessible if Logged In */}
+          <Route
+            element={
+              <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/recs" element={<Recommended />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+
+          {/* Home Page (Always Accessible) */}
+          <Route
+            path="/"
+            element={<Home setCurrentScene={setCurrentScene} />}
           />
-          <Route path="/signup" element={<SignUp />} />
-        </Route>
+          {/* Catch-all Route to Redirect Unmatched Paths */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
 
-        {/* Protected Routes - Only Accessible if Logged In */}
-        <Route
-          element={
-            <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
-          }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/friends" element={<Friends />} />
-          <Route path="/recs" element={<Recommended />} />
-        </Route>
-
-        {/* Home Page (Always Accessible) */}
-        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
-
-        {/* Catch-all Route to Redirect Unmatched Paths */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-      <Footer />
-    </Router>
+        <Footer />
+      </Router>
+    </>
   );
 }
 
