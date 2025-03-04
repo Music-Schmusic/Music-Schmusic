@@ -24,4 +24,15 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { usernameOrEmail, password } = req.body;
+    const user = await AccountFuncs.login(usernameOrEmail, password);
+    res.status(200).json({ username: user.username, email: user.email });
+  } catch (error) {
+    console.log("Login Error:", error.message);
+    res.status(401).send(error.message);
+  }
+});
+
 app.listen(port, () => console.log(`Server running on port ${port}`));
