@@ -21,6 +21,7 @@ function Form(props) {
         password: account['password'],
         following: account['following'],
         blocked: account['blocked'],
+        privacyStatus: 'Private',
       });
     else if (name === 'email')
       setAccount({
@@ -29,6 +30,7 @@ function Form(props) {
         password: account['password'],
         following: account['following'],
         blocked: account['blocked'],
+        privacyStatus: 'Private',
       });
     else
       setAccount({
@@ -37,6 +39,7 @@ function Form(props) {
         password: value,
         following: account['following'],
         blocked: account['blocked'],
+        privacyStatus: 'Private',
       });
   }
 
@@ -48,6 +51,7 @@ function Form(props) {
       password: '',
       following: [],
       blocked: [],
+      privacyStatus: 'Private',
     });
   }
   return (

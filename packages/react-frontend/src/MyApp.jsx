@@ -117,13 +117,13 @@ const Home = ({ setCurrentScene }) => {
 // Login Component
 const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   const navigate = useNavigate();
-  const [usernameOrEmail, setUsernameOrEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState(null); // ✅ State for error message
 
   // ✅ Set the Spline scene when the login page loads
   useEffect(() => {
-    setCurrentScene("scene2.splinecode");
+    setCurrentScene('scene2.splinecode');
   }, [setCurrentScene]);
 
   async function handleLogin(e) {
@@ -131,9 +131,9 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
     setError(null); // ✅ Clear previous errors
 
     try {
-      const res = await fetch("http://localhost:8000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usernameOrEmail, password }),
       });
 
@@ -143,12 +143,12 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       }
 
       const userData = await res.json();
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("username", userData.username);
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('username', userData.username);
       setIsLoggedIn(true);
-      navigate("/dashboard");
+      navigate('/dashboard');
     } catch (err) {
-      setError("Invalid Login Information"); // ✅ Show error message
+      setError('Invalid Login Information'); // ✅ Show error message
     }
   }
 
@@ -171,7 +171,8 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <p className="error-message">{error}</p>} {/* ✅ Display error message */}
+        {error && <p className="error-message">{error}</p>}{' '}
+        {/* ✅ Display error message */}
         <button type="submit">Login</button>
       </form>
     </div>
@@ -188,7 +189,7 @@ const SignUp = (props) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(account),
     });
-  };
+  }
 
   function authorizeAccount() {
     return fetch('http://localhost:8000/authorize');
@@ -198,18 +199,15 @@ const SignUp = (props) => {
     postAccount(account)
       .then((res) => {
         if (res.status === 201) {
-          props.login(true);
-
           //request auth code upon sign up
           authorizeAccount()
-            .then(response => response.json())
-            .then(response => {
+            .then((response) => response.json())
+            .then((response) => {
               //open new tab to request signin/authorization
-              window.open(response.authUrl, "");
+              window.open(response.authUrl, '');
             })
             .catch(console.error);
-          
-          navigate('/dashboard');
+          navigate('/login');
           console.log('Success');
           return undefined;
         } else if (res.status === 409) {
