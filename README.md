@@ -15,6 +15,8 @@ Activity UML Diagram: https://lucid.app/lucidchart/2a15c796-0234-4499-9d15-3d2da
 
 Spotify Authentication: https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 
+Tech Spec: https://docs.google.com/document/d/1rmt0jja06XbG2fdikjKd7vPXWtoIRsLaYJIko4LYlxQ/edit?usp=sharing
+
 ## 📌 Code Style Guide
 
 To ensure consistency across the codebase, all contributors must follow these guidelines:
