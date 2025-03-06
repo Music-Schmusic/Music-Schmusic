@@ -810,6 +810,7 @@ dd {
   height: 100vh; /* Full height */
   z-index: 0; /* Places it behind other content */
   overflow: hidden; /* Prevents any unwanted scrollbars */
+  background-color: #ffffff;
 }
 
 /**

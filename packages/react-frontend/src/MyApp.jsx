@@ -17,6 +17,9 @@ import Recommended from './pages/recs';
 import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
+import DelayedRender from './DelayedRender.jsx';
+
+
 
 // Navbar Component
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
@@ -119,16 +122,25 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   const navigate = useNavigate();
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null); // ✅ State for error message
+  const [error, setError] = useState(null);
+  const [showContainer, setShowContainer] = useState(false);
 
-  // ✅ Set the Spline scene when the login page loads
+  // Delay rendering the login container by 1 second
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowContainer(true);
+    }, 1800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Set the Spline scene when the login page loads
   useEffect(() => {
     setCurrentScene('scene2.splinecode');
   }, [setCurrentScene]);
 
   async function handleLogin(e) {
     e.preventDefault();
-    setError(null); // ✅ Clear previous errors
+    setError(null);
 
     try {
       const res = await fetch('http://localhost:8000/login', {
@@ -148,9 +160,12 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       setIsLoggedIn(true);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid Login Information'); // ✅ Show error message
+      setError('Invalid Login Information');
     }
   }
+
+  // If not ready to show, return nothing (or you could return a spinner, etc.)
+  if (!showContainer) return null;
 
   return (
     <div className="login-container">
@@ -171,8 +186,7 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <p className="error-message">{error}</p>}{' '}
-        {/* ✅ Display error message */}
+        {error && <p className="error-message">{error}</p>}
         <button type="submit">Login</button>
       </form>
     </div>
