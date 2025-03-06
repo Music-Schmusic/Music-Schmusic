@@ -1,22 +1,21 @@
-import db_req from "../dbrequests.js"
-import hash from 'crypto'
+import db_req from '../dbrequests.js';
+import hash from 'crypto';
 function createAccount(body) {
   const hashed = hashPassword(body.password);
   const isuser = db_req.getAccount(body.username);
-  
 
   if (!isuser.length) {
-    console.log(body)
+    console.log(body);
     return {
       username: body.username,
       email: body.email,
       password: hashed,
       following: [],
       blocked: [],
-      privacyStatus: 'Private'
-    }
+      privacyStatus: 'Private',
+    };
   } else {
-    throw new Error("Username already exists")
+    throw new Error('Username already exists');
   }
 }
 
@@ -27,13 +26,16 @@ function hashPassword(password) {
 async function login(usernameOrEmail, password) {
   const user = await db_req.getAccount(usernameOrEmail);
   if (!user) {
-    throw new Error("Invalid username or email.");
+    throw new Error('Invalid username or email.');
   }
-  const hashedInputPassword = hash.createHash("sha256").update(password).digest("hex");
+  const hashedInputPassword = hash
+    .createHash('sha256')
+    .update(password)
+    .digest('hex');
   if (hashedInputPassword !== user.password) {
-    throw new Error("Invalid password.");
+    throw new Error('Invalid password.');
   }
-  console.log("Login successful:", user.username);
+  console.log('Login successful:', user.username);
   return { username: user.username, email: user.email };
 }
 

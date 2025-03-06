@@ -33,6 +33,4 @@ const AccountSchema = new mongoose.Schema(
   { collection: 'Account' }
 );
 
-const Account = mongoose.model('Account', AccountSchema);
-
-export default Account;
+export default AccountSchema;

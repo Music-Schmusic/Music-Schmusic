@@ -3,9 +3,12 @@ import cors from 'cors';
 import authRoutes from './endpoints/authorize.js';
 import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
+import db from './db.js';
 
 const app = express();
 const port = process.env.PORT || 8000;
+
+dbrequests.setDataBaseConn(db());
 
 app.use(cors());
 app.use(express.json());
@@ -24,13 +27,13 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
+app.post('/login', async (req, res) => {
   try {
     const { usernameOrEmail, password } = req.body;
     const user = await AccountFuncs.login(usernameOrEmail, password);
     res.status(200).json({ username: user.username, email: user.email });
   } catch (error) {
-    console.log("Login Error:", error.message);
+    console.log('Login Error:', error.message);
     res.status(401).send(error.message);
   }
 });
