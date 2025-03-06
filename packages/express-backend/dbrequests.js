@@ -1,30 +1,41 @@
 import mongoose from 'mongoose';
-import userSchema from './user.js';
 import listeningDataModel from './listeningData.js';
 import playlistModel from './playlist.js';
+import connectDB from './db.js';
+import AccountSchema from './user.js';
 
 mongoose.set('debug', true);
-let connection;
+let dbConnection;
 // MongDB Connection
 function setDataBaseConn(c) {
-  connection = c;
+  dbConnection = c;
+}
+
+function getdbcon() {
+  if (!dbConnection) {
+    dbConnection = connectDB();
+  }
+  return dbConnection;
 }
 
 async function getAccount(username) {
-  const usermodel = connection.model('User', userSchema);
+  const db = await getdbcon();
+  const usermodel = db.model('User', AccountSchema);
   let user = await usermodel.findOne({ username: username });
   return user;
 }
 
 async function addAccount(account) {
-  const usermodel = connection.model('User', userSchema);
+  const db = await getdbcon();
+  const usermodel = db.model('User', AccountSchema);
   const accountToAdd = new usermodel(account);
   const user = await accountToAdd.save();
   return user;
 }
 
 async function followUser(userId, friendUsername) {
-  const usermodel = connection.model('User', userSchema);
+  const db = await getdbcon();
+  const usermodel = db.model('User', AccountSchema);
   return await usermodel.findByIdandUpdate(
     userId,
     { $addToSet: { following: friendUsername } },
@@ -33,7 +44,8 @@ async function followUser(userId, friendUsername) {
 }
 
 async function unfollowUser(userId, friendUsername) {
-  const usermodel = connection.model('User', userSchema);
+  const db = await getdbcon();
+  const usermodel = db.model('User', AccountSchema);
   return await usermodel.findByIdAndUpdate(
     userId,
     { $pull: { following: friendUsername } },
@@ -42,7 +54,8 @@ async function unfollowUser(userId, friendUsername) {
 }
 
 async function addSongToBlock(userId, songId) {
-  const usermodel = connection.model('User', userSchema);
+  const db = await getdbcon();
+  const usermodel = db.model('User', AccountSchema);
   return await usermodel.findByIdAndUpdate(
     userId,
     { $addToSet: { blocked: songId } },
@@ -51,7 +64,8 @@ async function addSongToBlock(userId, songId) {
 }
 
 async function removeSongFromBock(userId, songId) {
-  const usermodel = connection.model('User', userSchema);
+  const db = await getdbcon();
+  const usermodel = db.model('User', AccountSchema);
   return await usermodel.findByIdAndUpdate(
     userId,
     { $pull: { blocked: songId } },
