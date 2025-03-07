@@ -36,6 +36,7 @@
   "dependencies": {
     "@bedrock-layout/css": "^2.13.1",
     "@splinetool/react-spline": "^4.0.0",
+    "bootstrap": "^5.3.3",
     "cross-env": "^7.0.3",
     "crypto-js": "^4.2.0",
     "eslint-plugin-node": "^11.1.0",
@@ -44,6 +45,7 @@
     "mongodb": "^6.13.0",
     "nodemon": "^3.1.9",
     "object-keys": "^1.1.1",
+    "react-bootstrap": "^2.10.9",
     "react-router-dom": "^7.1.5",
     "recharts": "^2.15.1",
     "styled-components": "^6.1.15",

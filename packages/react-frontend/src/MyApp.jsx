@@ -17,7 +17,6 @@ import Recommended from './pages/recs';
 import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
-import DelayedRender from './DelayedRender.jsx';
 
 
 

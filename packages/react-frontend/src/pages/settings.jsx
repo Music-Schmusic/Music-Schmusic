@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export default function SettingsPage() {
   // Active tab state: "account" or "preferences"
@@ -9,7 +10,6 @@ export default function SettingsPage() {
     username: "",
     email: "",
     password: "",
-    theme: "light",
     notifications: true,
   });
 
@@ -94,13 +94,19 @@ export default function SettingsPage() {
         )}
         {activeTab === "preferences" && (
           <div className="form-section">
-            <label>
-              Theme:
-              <select name="theme" value={formData.theme} onChange={handleChange}>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-              </select>
-            </label>
+
+        <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                Dropdown Button
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+                <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+              </Dropdown.Menu>
+          </Dropdown>
+
             <label>
               <input 
                 type="checkbox" 
