@@ -4,6 +4,7 @@ import authRoutes from './endpoints/authorize.js';
 import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
 import db from './db.js';
+import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -12,8 +13,8 @@ dbrequests.setDataBaseConn(db());
 
 app.use(cors());
 app.use(express.json());
-app.use('/', authRoutes);
 
+app.use('/', authRoutes);
 app.get('/', (req, res) => res.send('API Running'));
 
 app.post('/signup', async (req, res) => {
@@ -37,5 +38,7 @@ app.post('/login', async (req, res) => {
     res.status(401).send(error.message);
   }
 });
+
+app.use('/api/playlist-cover', playlistCoverRoutes);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
