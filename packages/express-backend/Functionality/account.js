@@ -1,11 +1,11 @@
 import db_req from '../dbrequests.js';
 import hash from 'crypto';
-function createAccount(body) {
+async function createAccount(body) {
   const hashed = hashPassword(body.password);
-  const isuser = db_req.getAccount(body.username);
+  const isuser = await db_req.getAccount(body.username);
 
-  if (!isuser.length) {
-    console.log(body);
+  if (isuser === null) {
+    console.log('IN');
     return {
       username: body.username,
       email: body.email,

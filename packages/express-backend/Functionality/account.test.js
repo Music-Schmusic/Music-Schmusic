@@ -48,14 +48,14 @@ test('Create account', async () => {
   };
 
   await db_req.addAccount(existinguser);
-  
+
   const body = {
     username: 'testuser2',
     email: 'user2@example.com',
     password: 'examplePassword2',
   };
 
-  const target = src.createAccount(body);
+  const target = await src.createAccount(body);
 
   expect(target).toBeDefined();
   expect(target.username).toBe(body.username);
