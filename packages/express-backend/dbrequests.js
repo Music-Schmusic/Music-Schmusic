@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import listeningDataModel from './listeningData.js';
-import playlistModel from './playlist.js';
+import listeningDataModel from './schemas/listeningData.js';
+import playlistModel from './schemas/playlist.js';
 import connectDB from './db.js';
-import AccountSchema from './user.js';
+import AccountSchema from './schemas/user.js';
 
 mongoose.set('debug', true);
 let dbConnection;
