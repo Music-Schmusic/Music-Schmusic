@@ -12,7 +12,7 @@ function setDataBaseConn(c) {
 }
 
 function getdbcon() {
-  if (!dbConnection) {
+  if (dbConnection === undefined) {
     dbConnection = connectDB();
   }
   return dbConnection;
