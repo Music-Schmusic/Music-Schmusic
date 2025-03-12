@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from './endpoints/authorize.js';
+import authRoutes from './routes/authorize.js';
 import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
 import db from './db.js';
