@@ -18,7 +18,7 @@
     "start:frontend": "cd ./packages/react-frontend && npm run dev",
     "start:backend": "cd ./packages/express-backend && npm run dev",
     "start": "npm-run-all --parallel start:frontend start:backend",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test dotenv -e packages/express-backend/.env.test -- jest",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test dotenv -e packages/express-backend/.env.test -- jest --coverage --coverageReporters=text",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "lint": "eslint .",
