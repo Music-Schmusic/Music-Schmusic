@@ -5,7 +5,6 @@ async function createAccount(body) {
   const isuser = await db_req.getAccount(body.username);
 
   if (isuser === null) {
-    console.log('IN');
     return {
       username: body.username,
       email: body.email,
@@ -39,8 +38,27 @@ async function login(usernameOrEmail, password) {
   return { username: user.username, email: user.email };
 }
 
+async function follow(self, username) {
+  const tobefollowed = await db_req.getAccount(username);
+  if (!user) {
+    throw new Error ("User doesn't exist")
+  }
+  if (tobefollowed.privacyStatus === 'Public') {
+    await db_req.followUser(tobefollowed.id, self)
+    return 0
+  } else {
+    throw new Error('User has account set to Private')
+  }
+}
+
+async function setPrivacyStatus(username, status){
+  return await db_req.setPrivacyState(username, status)
+}
+
 export default {
   createAccount,
   hashPassword,
   login,
+  follow,
+  setPrivacyStatus
 };

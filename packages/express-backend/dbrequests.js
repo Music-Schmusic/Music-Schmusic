@@ -53,6 +53,33 @@ async function unfollowUser(userId, friendUsername) {
   );
 }
 
+async function setPrivacyState(username, status) {
+  if (status !== 'Public' && status !== 'Private') {
+    throw new Error('Invalid Privacy state');
+  }
+
+  const db = await getdbcon();
+  const userModel = db.model('User', AccountSchema);
+
+  const result = await userModel.updateOne(
+    { username },
+    { privacyStatus: status }
+  );
+
+  if (result.modifiedCount === 0) {
+    throw new Error(
+      `User '${username}' doesn't exist or privacy status is already set to '${status}'`
+    );
+  }
+  return result;
+}
+
+/*
+
+EVERYTHING BELOW THIS POINT WILL NOT BE HAVE TEST CASES SINCE THEY WILL ALMOST CERTAINLY CHANGE
+AFTER WE START MAKING SPOTIFY REQUESTS
+
+*/
 async function addSongToBlock(userId, songId) {
   const db = await getdbcon();
   const usermodel = db.model('User', AccountSchema);
@@ -165,4 +192,5 @@ export default {
   getRecommendations,
   getUserStatistics,
   setDataBaseConn,
+  setPrivacyState,
 };

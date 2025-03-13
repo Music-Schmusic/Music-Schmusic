@@ -18,7 +18,7 @@ app.use('/', authRoutes);
 app.get('/', (req, res) => res.send('API Running'));
 
 app.post('/signup', async (req, res) => {
-  const accountToAdd = AccountFuncs.createAccount(req.body);
+  const accountToAdd = await AccountFuncs.createAccount(req.body);
   try {
     const newAccount = await dbrequests.addAccount(accountToAdd);
     res.status(201).send(newAccount);
