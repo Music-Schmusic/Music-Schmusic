@@ -37,10 +37,6 @@ async function followUser(username, friendUsername) {
   const db = await getdbcon();
   const userModel = db.model('User', AccountSchema);
 
-  // Ensure both users exist
-  const user = await getAccount(username);
-  const friend = await getAccount(friendUsername);
-
   // Update following list
   const updatedUser = await userModel.findOneAndUpdate(
     { username },
@@ -53,12 +49,15 @@ async function followUser(username, friendUsername) {
 
 async function unfollowUser(username, friendUsername) {
   const db = await getdbcon();
-  const usermodel = db.model('User', AccountSchema);
-  return await usermodel.updateOne(
+  const userModel = db.model('User', AccountSchema);
+
+  // Update following list
+  const updatedUser = await userModel.findOneAndUpdate(
     { username },
     { $pull: { following: friendUsername } },
     { new: true }
   );
+  return updatedUser;
 }
 
 async function setPrivacyState(username, status) {

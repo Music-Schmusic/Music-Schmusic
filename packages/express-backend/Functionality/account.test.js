@@ -227,18 +227,56 @@ test('Other set to private', async () => {
     src.follow(account1.username, account2.username)
   ).rejects.toThrow('User has account set to Private');
 });
-test('Other set to private', async () => {
+test('User does not exist', async () => {
   const body1 = {
     username: 'testuser',
     email: 'user@example.com',
     password: '1234forever',
   };
 
-
   const user1 = await src.createAccount(body1);
   const account1 = await db_req.addAccount(user1);
   await src.setPrivacyStatus(account1.username, 'Public');
-  await expect(
-    src.follow(account1.username, 'notauser')
-  ).rejects.toThrow("User doesn't exist");
+  await expect(src.follow(account1.username, 'notauser')).rejects.toThrow(
+    "User doesn't exist"
+  );
+});
+
+test('Successfull unfollow', async () => {
+  const body1 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234forever',
+  };
+  const body2 = {
+    username: 'bemyfriend',
+    email: 'user2@example.com',
+    password: '1234forever',
+  };
+
+  const user1 = await src.createAccount(body1);
+  const account1 = await db_req.addAccount(user1);
+  const user2 = await src.createAccount(body2);
+  const account2 = await db_req.addAccount(user2);
+  await src.setPrivacyStatus(account1.username, 'Public');
+  await src.setPrivacyStatus(account2.username, 'Public');
+  await src.follow(account1.username, account2.username);
+  const res = await src.unfollow(account1.username, account2.username);
+  const updated = await db_req.getAccount(user1.username);
+  expect(res).toBe(0);
+  expect(updated.following).toStrictEqual([]);
+});
+
+test('failed unfollow', async () => {
+  const body1 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234forever',
+  };
+
+  const user1 = await src.createAccount(body1);
+  const account1 = await db_req.addAccount(user1);
+
+  await src.setPrivacyStatus(account1.username, 'Public');
+  await expect(src.unfollow(account1.username, 'notauser')).rejects.toThrow("User doesn't exist");
 });

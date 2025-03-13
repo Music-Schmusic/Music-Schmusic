@@ -53,6 +53,16 @@ async function follow(self, username) {
   }
 }
 
+async function unfollow(self, username) {
+  //for the same reason as before self doesn't have to be checked
+  const tobeunfollowed = await db_req.getAccount(username);
+  if (!tobeunfollowed) {
+    throw new Error("User doesn't exist");
+  }
+  await db_req.unfollowUser(self, username);
+  return 0;
+}
+
 async function setPrivacyStatus(username, status) {
   await db_req.setPrivacyState(username, status);
 }
@@ -63,4 +73,5 @@ export default {
   login,
   follow,
   setPrivacyStatus,
+  unfollow,
 };
