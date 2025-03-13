@@ -9,7 +9,6 @@ export default function SettingsPage() {
     username: "",
     email: "",
     password: "",
-    theme: "light",
     notifications: true,
   });
 
@@ -68,6 +67,7 @@ export default function SettingsPage() {
                 value={formData.username} 
                 onChange={handleChange} 
                 placeholder="Enter new username" 
+                style={{ color: 'white' }}
               />
             </label>
             <label>
@@ -78,6 +78,7 @@ export default function SettingsPage() {
                 value={formData.email} 
                 onChange={handleChange} 
                 placeholder="Enter new email" 
+                style={{ color: 'white' }}
               />
             </label>
             <label>
@@ -88,19 +89,27 @@ export default function SettingsPage() {
                 value={formData.password} 
                 onChange={handleChange} 
                 placeholder="Enter new password" 
+                style={{ color: 'white' }}
               />
             </label>
           </div>
         )}
         {activeTab === "preferences" && (
           <div className="form-section">
-            <label>
-              Theme:
-              <select name="theme" value={formData.theme} onChange={handleChange}>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-              </select>
-            </label>
+            <div class="dropdown">
+            <button class="dropbtn">Theme</button>
+            <div class="dropdown-content">
+              <a href="#">Light</a>
+              <a href="#">Dark</a>
+            </div>
+          </div>
+          <div class="dropdown2">
+            <button class="dropbtn2">Privacy Settings</button>
+            <div class="dropdown2-content">
+              <a href="#">Private</a>
+              <a href="#">Public</a>
+            </div>
+          </div>
             <label>
               <input 
                 type="checkbox" 

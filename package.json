@@ -2,6 +2,7 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "@testing-library/react": "^16.2.0",
     "dotenv-cli": "^8.0.0",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
@@ -11,8 +12,10 @@
     "mongodb-memory-server": "^10.1.4",
     "nanoid": "^5.0.9",
     "npm-run-all": "^4.1.5",
+    "postcss-cli": "^11.0.0",
+    "postcss-prefix-selector": "^2.1.0",
     "prettier": "3.4.2",
-    "react-refresh": "^0.16.0"
+    "vitest": "^3.0.8"
   },
   "scripts": {
     "start:frontend": "cd ./packages/react-frontend && npm run dev",
@@ -37,6 +40,7 @@
     "@bedrock-layout/css": "^2.13.1",
     "@google-cloud/aiplatform": "^3.35.0",
     "@splinetool/react-spline": "^4.0.0",
+    "bootstrap": "^5.3.3",
     "cross-env": "^7.0.3",
     "crypto-js": "^4.2.0",
     "eslint-plugin-node": "^11.1.0",
@@ -45,6 +49,7 @@
     "mongodb": "^6.13.0",
     "nodemon": "^3.1.9",
     "object-keys": "^1.1.1",
+    "react-bootstrap": "^2.10.9",
     "react-router-dom": "^7.1.5",
     "recharts": "^2.15.1",
     "styled-components": "^6.1.15",

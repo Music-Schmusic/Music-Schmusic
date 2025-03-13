@@ -28,10 +28,29 @@ export default function FriendsPage() {
     }
   };
 
+  const handleAddFriend = () => {
+    console.log("Add New Friends button clicked");
+  };
+
+
   return (
     <div className="friends-page">
       <h1>Connect with Friends</h1>
-      
+      <button 
+        className="add-friend-button" 
+        onClick={handleAddFriend}
+        style={{
+          marginBottom: '20px',
+          padding: '10px 74px',
+          backgroundColor: '#30e849',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer'
+        }}
+      >
+        Add New Friends   + 
+      </button>
       {/* Search and Filter Controls */}
       <div className="controls">
         <input
@@ -39,10 +58,12 @@ export default function FriendsPage() {
           placeholder="Search friends..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ backgroundColor: 'white' }}
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          style={{ backgroundColor: 'white' }}
         >
           <option value="All">All</option>
           <option value="Listening">Listening</option>
@@ -59,7 +80,6 @@ export default function FriendsPage() {
               <h3>{friend.name}</h3>
               <p style={{ color: getStatusColor(friend.status) }}>{friend.status}</p>
             </div>
-            <button>Message</button>
           </div>
         ))}
       </div>
