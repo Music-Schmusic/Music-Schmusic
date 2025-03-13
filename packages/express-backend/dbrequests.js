@@ -71,7 +71,8 @@ async function setPrivacyState(username, status) {
   if (!user) {
     throw new Error("User doesn't exist");
   }
-  await userModel.updateOne({ username }, { privacyStatus: status });
+  const updated = await userModel.updateOne({ username }, { privacyStatus: status });
+  return updated
 }
 
 /*
