@@ -30,8 +30,8 @@ app.post('/signup', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   try {
-    const { usernameOrEmail, password } = req.body;
-    const user = await AccountFuncs.login(usernameOrEmail, password);
+    const { username, password } = req.body;
+    const user = await AccountFuncs.login(username, password);
     res.status(200).json({ username: user.username, email: user.email });
   } catch (error) {
     console.log('Login Error:', error.message);
