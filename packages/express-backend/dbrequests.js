@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import listeningDataModel from './listeningData.js';
-import playlistModel from './playlist.js';
+import listeningDataModel from './schemas/listeningData.js';
+import playlistModel from './schemas/playlist.js';
 import connectDB from './db.js';
-import AccountSchema from './user.js';
+import AccountSchema from './schemas/user.js';
 
 mongoose.set('debug', true);
 let dbConnection;
@@ -12,7 +12,7 @@ function setDataBaseConn(c) {
 }
 
 function getdbcon() {
-  if (!dbConnection) {
+  if (dbConnection === undefined) {
     dbConnection = connectDB();
   }
   return dbConnection;
@@ -33,26 +33,55 @@ async function addAccount(account) {
   return user;
 }
 
-async function followUser(userId, friendUsername) {
+async function followUser(username, friendUsername) {
   const db = await getdbcon();
-  const usermodel = db.model('User', AccountSchema);
-  return await usermodel.findByIdandUpdate(
-    userId,
+  const userModel = db.model('User', AccountSchema);
+
+  // Update following list
+  const updatedUser = await userModel.findOneAndUpdate(
+    { username },
     { $addToSet: { following: friendUsername } },
     { new: true }
   );
+
+  return updatedUser;
 }
 
-async function unfollowUser(userId, friendUsername) {
+async function unfollowUser(username, friendUsername) {
   const db = await getdbcon();
-  const usermodel = db.model('User', AccountSchema);
-  return await usermodel.findByIdAndUpdate(
-    userId,
+  const userModel = db.model('User', AccountSchema);
+
+  // Update following list
+  const updatedUser = await userModel.findOneAndUpdate(
+    { username },
     { $pull: { following: friendUsername } },
     { new: true }
   );
+  return updatedUser;
 }
 
+async function setPrivacyState(username, status) {
+  if (status !== 'Public' && status !== 'Private') {
+    throw new Error('Invalid Privacy state');
+  }
+
+  const db = await getdbcon();
+  const userModel = db.model('User', AccountSchema);
+  const user = await getAccount(username);
+  if (!user) {
+    throw new Error("User doesn't exist");
+  }
+  await userModel.updateOne({ username }, { privacyStatus: status });
+}
+
+/*
+
+EVERYTHING BELOW THIS POINT WILL NOT BE HAVE TEST CASES SINCE THEY WILL ALMOST CERTAINLY CHANGE
+AFTER WE START MAKING SPOTIFY REQUESTS. IT WILL BE COMMENTED OUT FOR COVERAGE TESTING PURPOSES
+
+*/
+
+/*
 async function addSongToBlock(userId, songId) {
   const db = await getdbcon();
   const usermodel = db.model('User', AccountSchema);
@@ -158,11 +187,12 @@ export default {
   addAccount,
   followUser,
   unfollowUser,
-  addSongToBlock,
-  removeSongFromBock,
-  getSpotifyStatistics,
-  createPlaylistFromListening,
-  getRecommendations,
-  getUserStatistics,
+  //addSongToBlock,
+  //removeSongFromBock,
+  //getSpotifyStatistics,
+  //createPlaylistFromListening,
+  //getRecommendations,
+  //getUserStatistics,
   setDataBaseConn,
+  setPrivacyState,
 };
