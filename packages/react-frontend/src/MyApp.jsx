@@ -9,7 +9,6 @@ import {
 } from 'react-router-dom';
 import './main.css';
 import SplineBackground from './SplineBackground';
-import Spline from '@splinetool/react-spline';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
 import Settings from './pages/settings.jsx';
@@ -17,6 +16,7 @@ import Recommended from './pages/recs';
 import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
+
 
 
 
@@ -237,7 +237,9 @@ const SignUp = (props) => {
     <div className="signup-container">
       <h3>Create an account to get started</h3>
       <h1>Sign Up</h1>
+      <div className="boxes">
       <Form handleSubmit={handleSubmit} />
+      </div>
       <h6> </h6>
       <h5>Already have an account?</h5>
       <button className="login-btn" onClick={() => navigate('/login')}>

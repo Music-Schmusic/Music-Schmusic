@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
 
 export default function SettingsPage() {
   // Active tab state: "account" or "preferences"
@@ -68,6 +67,7 @@ export default function SettingsPage() {
                 value={formData.username} 
                 onChange={handleChange} 
                 placeholder="Enter new username" 
+                style={{ color: 'white' }}
               />
             </label>
             <label>
@@ -78,6 +78,7 @@ export default function SettingsPage() {
                 value={formData.email} 
                 onChange={handleChange} 
                 placeholder="Enter new email" 
+                style={{ color: 'white' }}
               />
             </label>
             <label>
@@ -88,25 +89,27 @@ export default function SettingsPage() {
                 value={formData.password} 
                 onChange={handleChange} 
                 placeholder="Enter new password" 
+                style={{ color: 'white' }}
               />
             </label>
           </div>
         )}
         {activeTab === "preferences" && (
           <div className="form-section">
-
-        <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                Dropdown Button
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-              </Dropdown.Menu>
-          </Dropdown>
-
+            <div class="dropdown">
+            <button class="dropbtn">Theme</button>
+            <div class="dropdown-content">
+              <a href="#">Light</a>
+              <a href="#">Dark</a>
+            </div>
+          </div>
+          <div class="dropdown2">
+            <button class="dropbtn2">Privacy Settings</button>
+            <div class="dropdown2-content">
+              <a href="#">Private</a>
+              <a href="#">Public</a>
+            </div>
+          </div>
             <label>
               <input 
                 type="checkbox" 
