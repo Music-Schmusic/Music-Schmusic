@@ -18,12 +18,13 @@ app.use('/', authRoutes);
 app.get('/', (req, res) => res.send('API Running'));
 
 app.post('/signup', async (req, res) => {
-  const accountToAdd = await AccountFuncs.createAccount(req.body);
   try {
+    const accountToAdd = await AccountFuncs.createAccount(req.body);
     const newAccount = await dbrequests.addAccount(accountToAdd);
     res.status(201).send(newAccount);
   } catch (error) {
     console.log(error);
+    console.log("bad")
     res.status(409).send('Username Already Exists');
   }
 });
