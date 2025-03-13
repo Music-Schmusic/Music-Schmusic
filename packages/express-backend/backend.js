@@ -18,7 +18,7 @@ app.use('/', authRoutes);
 app.get('/', (req, res) => res.send('API Running'));
 
 app.post('/signup', async (req, res) => {
-  const accountToAdd = AccountFuncs.createAccount(req.body);
+  const accountToAdd = await AccountFuncs.createAccount(req.body);
   try {
     const newAccount = await dbrequests.addAccount(accountToAdd);
     res.status(201).send(newAccount);
@@ -30,8 +30,8 @@ app.post('/signup', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   try {
-    const { usernameOrEmail, password } = req.body;
-    const user = await AccountFuncs.login(usernameOrEmail, password);
+    const { username, password } = req.body;
+    const user = await AccountFuncs.login(username, password);
     res.status(200).json({ username: user.username, email: user.email });
   } catch (error) {
     console.log('Login Error:', error.message);

@@ -120,7 +120,7 @@ const Home = ({ setCurrentScene }) => {
 // Login Component
 const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   const navigate = useNavigate();
-  const [usernameOrEmail, setUsernameOrEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [showContainer, setShowContainer] = useState(false);
@@ -146,7 +146,7 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       const res = await fetch('http://localhost:8000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usernameOrEmail, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!res.ok) {
@@ -175,8 +175,8 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
         <input
           type="text"
           placeholder="Username or Email"
-          value={usernameOrEmail}
-          onChange={(e) => setUsernameOrEmail(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
         <input

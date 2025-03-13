@@ -23,8 +23,8 @@ function hashPassword(password) {
   return hash.createHash('sha256').update(password).digest('hex');
 }
 
-async function login(usernameOrEmail, password) {
-  const user = await db_req.getAccount(usernameOrEmail);
+async function login(username, password) {
+  const user = await db_req.getAccount(username);
   if (!user) {
     throw new Error('Invalid username or email.');
   }
