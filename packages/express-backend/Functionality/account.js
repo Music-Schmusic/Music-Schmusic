@@ -39,20 +39,22 @@ async function login(usernameOrEmail, password) {
 }
 
 async function follow(self, username) {
+  //Assumes self will be supplied by front end and will never not exist since
+  //user has to be logged in in order to follows others
   const tobefollowed = await db_req.getAccount(username);
-  if (!user) {
-    throw new Error ("User doesn't exist")
+  if (!tobefollowed) {
+    throw new Error("User doesn't exist");
   }
   if (tobefollowed.privacyStatus === 'Public') {
-    await db_req.followUser(tobefollowed.id, self)
-    return 0
+    await db_req.followUser(self, username);
+    return 0;
   } else {
-    throw new Error('User has account set to Private')
+    throw new Error('User has account set to Private');
   }
 }
 
-async function setPrivacyStatus(username, status){
-  return await db_req.setPrivacyState(username, status)
+async function setPrivacyStatus(username, status) {
+  await db_req.setPrivacyState(username, status);
 }
 
 export default {
@@ -60,5 +62,5 @@ export default {
   hashPassword,
   login,
   follow,
-  setPrivacyStatus
+  setPrivacyStatus,
 };

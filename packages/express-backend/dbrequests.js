@@ -33,21 +33,29 @@ async function addAccount(account) {
   return user;
 }
 
-async function followUser(userId, friendUsername) {
+async function followUser(username, friendUsername) {
   const db = await getdbcon();
-  const usermodel = db.model('User', AccountSchema);
-  return await usermodel.findByIdandUpdate(
-    userId,
+  const userModel = db.model('User', AccountSchema);
+
+  // Ensure both users exist
+  const user = await getAccount(username);
+  const friend = await getAccount(friendUsername);
+
+  // Update following list
+  const updatedUser = await userModel.findOneAndUpdate(
+    { username },
     { $addToSet: { following: friendUsername } },
     { new: true }
   );
+
+  return updatedUser;
 }
 
-async function unfollowUser(userId, friendUsername) {
+async function unfollowUser(username, friendUsername) {
   const db = await getdbcon();
   const usermodel = db.model('User', AccountSchema);
-  return await usermodel.findByIdAndUpdate(
-    userId,
+  return await usermodel.updateOne(
+    { username },
     { $pull: { following: friendUsername } },
     { new: true }
   );
@@ -60,18 +68,11 @@ async function setPrivacyState(username, status) {
 
   const db = await getdbcon();
   const userModel = db.model('User', AccountSchema);
-
-  const result = await userModel.updateOne(
-    { username },
-    { privacyStatus: status }
-  );
-
-  if (result.modifiedCount === 0) {
-    throw new Error(
-      `User '${username}' doesn't exist or privacy status is already set to '${status}'`
-    );
+  const user = await getAccount(username);
+  if (!user) {
+    throw new Error("User doesn't exist");
   }
-  return result;
+  await userModel.updateOne({ username }, { privacyStatus: status });
 }
 
 /*

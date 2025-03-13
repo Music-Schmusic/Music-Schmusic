@@ -151,11 +151,38 @@ test('set privacy status', async () => {
   };
   const user = await src.createAccount(body);
   const account = await db_req.addAccount(user);
-  const res = await src.setPrivacyStatus('testuser', 'Public')
-  console.log(res)
-})
+  await src.setPrivacyStatus('testuser', 'Public');
+  const updated = await db_req.getAccount('testuser');
+  expect(updated.privacyStatus).toBe('Public');
+});
 
-test("Successfull follow", async () => {
+test('failed to set privacy status', async () => {
+  const body = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234forever',
+  };
+  const user = await src.createAccount(body);
+  const account = await db_req.addAccount(user);
+  await expect(src.setPrivacyStatus('testuser', 'notastatus')).rejects.toThrow(
+    'Invalid Privacy state'
+  );
+});
+
+test('failed to set privacy status', async () => {
+  const body = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234forever',
+  };
+  const user = await src.createAccount(body);
+  const account = await db_req.addAccount(user);
+  await expect(src.setPrivacyStatus('notauser', 'Public')).rejects.toThrow(
+    "User doesn't exist"
+  );
+});
+
+test('Successfull follow', async () => {
   const body1 = {
     username: 'testuser',
     email: 'user@example.com',
@@ -167,12 +194,51 @@ test("Successfull follow", async () => {
     password: '1234forever',
   };
 
-  const friendee = await src.createAccount(body1);
-  await db_req.addAccount(friendee);
-  const friender = await src.createAccount(body2);
-  await db_req.addAccount(friender);
-  console.log(friender)
-  console.log(friendee)
-  await src.follow(friender, friendee)
-  expect(0).toBe(0);
-})
+  const user1 = await src.createAccount(body1);
+  const account1 = await db_req.addAccount(user1);
+  const user2 = await src.createAccount(body2);
+  const account2 = await db_req.addAccount(user2);
+  await src.setPrivacyStatus(account1.username, 'Public');
+  await src.setPrivacyStatus(account2.username, 'Public');
+  const res = await src.follow(account1.username, account2.username);
+  expect(res).toBe(0);
+  const updated = await db_req.getAccount(user1.username);
+  expect(updated.following).toStrictEqual([user2.username]);
+});
+
+test('Other set to private', async () => {
+  const body1 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234forever',
+  };
+  const body2 = {
+    username: 'bemyfriend',
+    email: 'user2@example.com',
+    password: '1234forever',
+  };
+
+  const user1 = await src.createAccount(body1);
+  const account1 = await db_req.addAccount(user1);
+  const user2 = await src.createAccount(body2);
+  const account2 = await db_req.addAccount(user2);
+  await src.setPrivacyStatus(account1.username, 'Public');
+  await expect(
+    src.follow(account1.username, account2.username)
+  ).rejects.toThrow('User has account set to Private');
+});
+test('Other set to private', async () => {
+  const body1 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234forever',
+  };
+
+
+  const user1 = await src.createAccount(body1);
+  const account1 = await db_req.addAccount(user1);
+  await src.setPrivacyStatus(account1.username, 'Public');
+  await expect(
+    src.follow(account1.username, 'notauser')
+  ).rejects.toThrow("User doesn't exist");
+});
