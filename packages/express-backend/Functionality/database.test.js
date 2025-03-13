@@ -24,6 +24,14 @@ afterAll(async () => {
   await mongoServer.stop();
 });
 
+afterEach(async () => {
+  // Drop collections instead of entire database (fixes "not allowed to drop database" error)
+  const collections = await mongoose.connection.db.collections();
+  for (let collection of collections) {
+    await collection.deleteMany({});
+  }
+});
+
 test('Test Get User', async () => {
   const body1 = {
     username: 'testuser',
