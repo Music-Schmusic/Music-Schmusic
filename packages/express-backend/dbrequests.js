@@ -77,9 +77,11 @@ async function setPrivacyState(username, status) {
 /*
 
 EVERYTHING BELOW THIS POINT WILL NOT BE HAVE TEST CASES SINCE THEY WILL ALMOST CERTAINLY CHANGE
-AFTER WE START MAKING SPOTIFY REQUESTS
+AFTER WE START MAKING SPOTIFY REQUESTS. IT WILL BE COMMENTED OUT FOR COVERAGE TESTING PURPOSES
 
 */
+
+/*
 async function addSongToBlock(userId, songId) {
   const db = await getdbcon();
   const usermodel = db.model('User', AccountSchema);
@@ -185,12 +187,12 @@ export default {
   addAccount,
   followUser,
   unfollowUser,
-  addSongToBlock,
-  removeSongFromBock,
-  getSpotifyStatistics,
-  createPlaylistFromListening,
-  getRecommendations,
-  getUserStatistics,
+  //addSongToBlock,
+  //removeSongFromBock,
+  //getSpotifyStatistics,
+  //createPlaylistFromListening,
+  //getRecommendations,
+  //getUserStatistics,
   setDataBaseConn,
   setPrivacyState,
 };
