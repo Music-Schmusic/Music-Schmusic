@@ -169,7 +169,7 @@ test('failed to set privacy status', async () => {
   );
 });
 
-test('failed to set privacy status', async () => {
+test('user does not exist', async () => {
   const body = {
     username: 'testuser',
     email: 'user@example.com',
