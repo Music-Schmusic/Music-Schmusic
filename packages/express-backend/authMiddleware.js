@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET || 'yoursecretkey';
+const TOKEN_SECRET = process.env.NODE_ENV === 'test'
+  ? process.env.JWT_SECRET
+  : process.env.TOKEN_SECRET || 'yoursecretkey';
 
 function authenticateUser(req, res, next) {
   const authHeader = req.headers['authorization'];

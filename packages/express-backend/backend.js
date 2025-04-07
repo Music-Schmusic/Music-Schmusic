@@ -7,9 +7,15 @@ import db from './db.js';
 import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import path from 'path';
 import authenticateUser from './authMiddleware.js';
 
-dotenv.config();
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
+} else {
+  dotenv.config();
+}
+
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -39,8 +45,12 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await AccountFuncs.login(username, password);
-    // Generate token
-    const token = jwt.sign({ username: user.username }, TOKEN_SECRET, { expiresIn: '15m' });
+    // Choose the correct secret
+    const secret = process.env.NODE_ENV === 'test'
+      ? process.env.JWT_SECRET
+      : process.env.TOKEN_SECRET;
+    console.log("JWT_SECRET in use:", secret);
+    const token = jwt.sign({ username: user.username }, secret, { expiresIn: '5s' });
     res.status(200).json({ token, username: user.username, email: user.email });
   } catch (error) {
     console.log('Login Error:', error.message);
@@ -48,10 +58,15 @@ app.post('/login', async (req, res) => {
   }
 });
 
+
 app.get('/protected', authenticateUser, (req, res) => {
   res.send(`Welcome ${req.user.username}`);
 });
 
 app.use('/api/playlist-cover', playlistCoverRoutes);
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => console.log(`Server running on port ${port}`));
+}
+
+export default app;
