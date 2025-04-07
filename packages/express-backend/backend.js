@@ -5,9 +5,15 @@ import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
 import db from './db.js';
 import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import authenticateUser from './authMiddleware.js';
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8000;
+const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 dbrequests.setDataBaseConn(db());
 
@@ -33,11 +39,17 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await AccountFuncs.login(username, password);
-    res.status(200).json({ username: user.username, email: user.email });
+    // Generate token
+    const token = jwt.sign({ username: user.username }, TOKEN_SECRET, { expiresIn: '15m' });
+    res.status(200).json({ token, username: user.username, email: user.email });
   } catch (error) {
     console.log('Login Error:', error.message);
     res.status(401).send(error.message);
   }
+});
+
+app.get('/protected', authenticateUser, (req, res) => {
+  res.send(`Welcome ${req.user.username}`);
 });
 
 app.use('/api/playlist-cover', playlistCoverRoutes);
