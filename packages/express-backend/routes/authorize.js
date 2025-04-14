@@ -79,9 +79,10 @@ router.get('/callback', function (req, res) {
         return response.json();
       })
       .then((json) => {
-        access_token = json.access_token;
-
-        res.send(json);
+        const access_token = json.access_token;
+      
+        const redirectFrontend = `http://localhost:5173/oauth-success?access_token=${access_token}`;
+        res.redirect(redirectFrontend);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -91,7 +92,6 @@ router.get('/callback', function (req, res) {
 });
 
 //session table for access token
-
 //generate random string
 function generateState(length) {
   const characters =

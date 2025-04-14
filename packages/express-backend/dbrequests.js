@@ -5,59 +5,51 @@ import connectDB from './db.js';
 import AccountSchema from './schemas/user.js';
 
 mongoose.set('debug', true);
+
 let dbConnection;
-// MongDB Connection
+
+// Allow injection of test DB connection
 function setDataBaseConn(c) {
   dbConnection = c;
 }
 
+// Helper: get connection depending on mode
 function getdbcon() {
-  if (dbConnection === undefined) {
-    dbConnection = connectDB();
-  }
-  return dbConnection;
+  if (dbConnection) return dbConnection;
+  return connectDB();
 }
 
 async function getAccount(username) {
   const db = await getdbcon();
-  const usermodel = db.model('User', AccountSchema);
-  let user = await usermodel.findOne({ username: username });
-  return user;
+  const userModel = db.model('User', AccountSchema);
+  return await userModel.findOne({ username });
 }
 
 async function addAccount(account) {
   const db = await getdbcon();
-  const usermodel = db.model('User', AccountSchema);
-  const accountToAdd = new usermodel(account);
-  const user = await accountToAdd.save();
-  return user;
+  const userModel = db.model('User', AccountSchema);
+  const accountToAdd = new userModel(account);
+  return await accountToAdd.save();
 }
 
 async function followUser(username, friendUsername) {
   const db = await getdbcon();
   const userModel = db.model('User', AccountSchema);
-
-  // Update following list
-  const updatedUser = await userModel.findOneAndUpdate(
+  return await userModel.findOneAndUpdate(
     { username },
     { $addToSet: { following: friendUsername } },
     { new: true }
   );
-
-  return updatedUser;
 }
 
 async function unfollowUser(username, friendUsername) {
   const db = await getdbcon();
   const userModel = db.model('User', AccountSchema);
-
-  // Update following list
-  const updatedUser = await userModel.findOneAndUpdate(
+  return await userModel.findOneAndUpdate(
     { username },
     { $pull: { following: friendUsername } },
     { new: true }
   );
-  return updatedUser;
 }
 
 async function setPrivacyState(username, status) {

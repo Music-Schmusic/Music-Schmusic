@@ -6,6 +6,7 @@ import {
   Link,
   Navigate,
   useNavigate,
+  useLocation,
 } from 'react-router-dom';
 import './main.css';
 import SplineBackground from './SplineBackground';
@@ -16,13 +17,14 @@ import Recommended from './pages/recs';
 import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
+import OAuthSuccess from './components/OAuthSuccess';
 
-
-// Navbar Component
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem('isLoggedIn'); // Persist logout state
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
   };
 
   return (
@@ -33,34 +35,18 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
       <div className="nav-links">
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" className="nav-button">
-              Dashboard
-            </Link>
-            <Link to="/friends" className="nav-button">
-              Friends
-            </Link>
-            <Link to="/recs" className="nav-button">
-              Recommended
-            </Link>
+            <Link to="/dashboard" className="nav-button">Dashboard</Link>
+            <Link to="/friends" className="nav-button">Friends</Link>
+            <Link to="/recs" className="nav-button">Recommended</Link>
             <Link to="/settings" className="nav-button">
-              <img
-                src="/settings.png"
-                alt="Settings"
-                style={{ width: '24px', height: '24px' }}
-              />
+              <img src="/settings.png" alt="Settings" style={{ width: '24px', height: '24px' }} />
             </Link>
-            <button onClick={handleLogout} className="nav-button">
-              Logout
-            </button>
+            <button onClick={handleLogout} className="nav-button">Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login" className="nav-button">
-              Login
-            </Link>
-            <Link to="/signup" className="nav-button">
-              Sign Up
-            </Link>
+            <Link to="/login" className="nav-button">Login</Link>
+            <Link to="/signup" className="nav-button">Sign Up</Link>
           </>
         )}
       </div>
@@ -68,7 +54,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   );
 };
 
-// Footer Component
 const Footer = () => (
   <nav className="footer">
     <div className="footer-links">
@@ -84,7 +69,6 @@ const Footer = () => (
   </nav>
 );
 
-// Home Component
 const Home = ({ setCurrentScene }) => {
   const navigate = useNavigate();
 
@@ -107,14 +91,11 @@ const Home = ({ setCurrentScene }) => {
         colors="primary:#30e849,secondary:#16c72e"
         style={{ width: '150px', height: '150px' }}
       ></lord-icon>
-      <button className="get-started-btn" onClick={handleGetStarted}>
-        Get Started
-      </button>
+      <button className="get-started-btn" onClick={handleGetStarted}>Get Started</button>
     </div>
   );
 };
 
-// Login Component
 const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -122,15 +103,11 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   const [error, setError] = useState(null);
   const [showContainer, setShowContainer] = useState(false);
 
-  // Delay rendering the login container by 1 second
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowContainer(true);
-    }, 1800);
+    const timer = setTimeout(() => setShowContainer(true), 1800);
     return () => clearTimeout(timer);
   }, []);
 
-  // Set the Spline scene when the login page loads
   useEffect(() => {
     setCurrentScene('scene2.splinecode');
   }, [setCurrentScene]);
@@ -138,7 +115,6 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   async function handleLogin(e) {
     e.preventDefault();
     setError(null);
-
     try {
       const res = await fetch('http://localhost:8000/login', {
         method: 'POST',
@@ -146,14 +122,13 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
         body: JSON.stringify({ username, password }),
       });
 
-      if (!res.ok) {
-        const message = await res.text();
-        throw new Error(message);
-      }
+      if (!res.ok) throw new Error(await res.text());
 
-      const userData = await res.json();
+      const { token, username: user } = await res.json();
+      localStorage.setItem('token', token);
+      localStorage.setItem('username', user);
       localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('username', userData.username);
+
       setIsLoggedIn(true);
       navigate('/dashboard');
     } catch (err) {
@@ -161,7 +136,6 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
     }
   }
 
-  // If not ready to show, return nothing (or you could return a spinner, etc.)
   if (!showContainer) return null;
 
   return (
@@ -169,20 +143,8 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       <h1>Login</h1>
       <p>Sign in to continue</p>
       <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Username or Email"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <input type="text" placeholder="Username or Email" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         {error && <p className="error-message">{error}</p>}
         <button type="submit">Login</button>
       </form>
@@ -190,8 +152,7 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   );
 };
 
-// Signup Component
-const SignUp = (props) => {
+const SignUp = () => {
   const navigate = useNavigate();
 
   function postAccount(account) {
@@ -210,17 +171,11 @@ const SignUp = (props) => {
     postAccount(account)
       .then((res) => {
         if (res.status === 201) {
-          //request auth code upon sign up
           authorizeAccount()
             .then((response) => response.json())
-            .then((response) => {
-              //open new tab to request signin/authorization
-              window.open(response.authUrl, '');
-            })
+            .then((response) => window.open(response.authUrl, ''))
             .catch(console.error);
           navigate('/login');
-          console.log('Success');
-          return undefined;
         } else if (res.status === 409) {
           return res.text();
         }
@@ -236,78 +191,87 @@ const SignUp = (props) => {
       <h3>Create an account to get started</h3>
       <h1>Sign Up</h1>
       <div className="boxes">
-      <Form handleSubmit={handleSubmit} />
+        <Form handleSubmit={handleSubmit} />
       </div>
       <h6> </h6>
       <h5>Already have an account?</h5>
-      <button className="login-btn" onClick={() => navigate('/login')}>
-        Login
-      </button>
-      <button className="back-btn" onClick={() => navigate('/')}>
-        Back to Home
-      </button>
+      <button className="login-btn" onClick={() => navigate('/login')}>Login</button>
+      <button className="back-btn" onClick={() => navigate('/')}>Back to Home</button>
     </div>
   );
 };
 
-// App Component
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem('isLoggedIn') === 'true'
-  );
+function AppRoutes({ isLoggedIn, setIsLoggedIn, currentScene, setCurrentScene }) {
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const [currentScene, setCurrentScene] = useState(
-    'scene1.splinecode' // Default scene URL
-  );
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsLoggedIn(false);
+        return;
+      }
+
+      try {
+        const res = await fetch('http://localhost:8000/protected', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error('Unauthorized');
+
+        setIsLoggedIn(true);
+      } catch (err) {
+        console.log('Token invalid or expired:', err.message);
+        setIsLoggedIn(false);
+        localStorage.removeItem('token');
+        localStorage.removeItem('isLoggedIn');
+        navigate('/login');
+      }
+    };
+
+    checkAuth();
+  }, [location.pathname]);
 
   return (
     <>
-      <Router>
-        <SplineBackground currentScene={currentScene} />
-        <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-        <Routes>
-          {/* Public Routes - Only Accessible if NOT Logged In */}
-          <Route
-            element={
-              <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
-            }
-          >
-            <Route
-              path="/login"
-              element={
-                <Login
-                  setIsLoggedIn={setIsLoggedIn}
-                  setCurrentScene={setCurrentScene}
-                />
-              }
-            />
-            <Route path="/signup" element={<SignUp login={setIsLoggedIn} />} />
-          </Route>
+      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <Routes>
+        <Route element={<PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />}>
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setCurrentScene={setCurrentScene} />} />
+          <Route path="/signup" element={<SignUp />} />
+        </Route>
 
-          {/* Protected Routes - Only Accessible if Logged In */}
-          <Route
-            element={
-              <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
-            }
-          >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/friends" element={<Friends />} />
-            <Route path="/recs" element={<Recommended />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
+        <Route element={<ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/friends" element={<Friends />} />
+          <Route path="/recs" element={<Recommended />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
 
-          {/* Home Page (Always Accessible) */}
-          <Route
-            path="/"
-            element={<Home setCurrentScene={setCurrentScene} />}
-          />
-          {/* Catch-all Route to Redirect Unmatched Paths */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-
-        <Footer />
-      </Router>
+        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
+        <Route path="/oauth-success" element={<OAuthSuccess setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </>
+  );
+}
+
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentScene, setCurrentScene] = useState('scene1.splinecode');
+
+  return (
+    <Router>
+      <SplineBackground currentScene={currentScene} />
+      <AppRoutes
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn}
+        currentScene={currentScene}
+        setCurrentScene={setCurrentScene}
+      />
+      <Footer />
+    </Router>
   );
 }
 

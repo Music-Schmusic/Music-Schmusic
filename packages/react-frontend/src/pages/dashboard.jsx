@@ -11,6 +11,9 @@ import {
   PieChart,
   Cell,
 } from 'recharts';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function Dashboard() {
   // Sample data structure for time spent
@@ -89,9 +92,40 @@ export default function Dashboard() {
     return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
   };
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProtected = async () => {
+      try {
+        const res = await fetch('http://localhost:8000/protected', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error('Unauthorized');
+        }
+
+        const data = await res.text();
+        console.log('Protected data:', data);
+      } catch (err) {
+        console.warn('JWT invalid or expired, redirecting to login...');
+        localStorage.removeItem('token');
+        localStorage.removeItem('isLoggedIn');
+        navigate('/login');
+      }
+    };
+
+    fetchProtected();
+  }, [navigate]);
+
+  const user = localStorage.getItem("username");
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-content">
+        <h1>Welcome back, {user}</h1>
         <h1>Your Music Dashboard</h1>
         <h5>Gain insights into your listening habits and discover trends.</h5>
 

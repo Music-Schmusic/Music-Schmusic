@@ -15,7 +15,12 @@ Activity UML Diagram: https://lucid.app/lucidchart/2a15c796-0234-4499-9d15-3d2da
 
 Spotify Authentication: https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 
-Tech Spec: https://docs.google.com/document/d/1rmt0jja06XbG2fdikjKd7vPXWtoIRsLaYJIko4LYlxQ/edit?usp=sharing
+Tech Spec: https://docs.google.com/document/d/1rmt0jja06XbG2fdikjKd7vPXWtoIRsLaYJIko4LYlxQ/edit?usp=sharing\
+
+Code Coverage Report as of 03/13/25\
+<img width="709" alt="Screenshot 2025-03-14 at 2 22 42 AM" src="https://github.com/user-attachments/assets/a1ff0a59-a9fd-4c0d-8c1d-bcb667ab63ce" />
+
+
 
 ## 📌 Code Style Guide
 
@@ -88,5 +93,5 @@ npm run format-check # Check your formats correspond with prettier configuration
 
 ## 🤝 Contributing Guidelines
 
-- Aleays run Prettier and ESLint before commiting code
+- Always run Prettier and ESLint before commiting code
 - follow the Airbnb Javascript Style Guide
