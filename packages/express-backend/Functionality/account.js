@@ -67,6 +67,14 @@ async function setPrivacyStatus(username, status) {
   await db_req.setPrivacyState(username, status);
 }
 
+async function resetPassword(username, password) {
+  const hashed = hashPassword(password);
+  const account = await db_req.updatePassword(username, hashed);
+  return account;
+}
+
+
+
 export default {
   createAccount,
   hashPassword,
@@ -74,4 +82,5 @@ export default {
   follow,
   setPrivacyStatus,
   unfollow,
+  resetPassword,
 };

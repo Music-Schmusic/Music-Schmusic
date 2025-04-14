@@ -71,8 +71,25 @@ async function setPrivacyState(username, status) {
   if (!user) {
     throw new Error("User doesn't exist");
   }
-  const updated = await userModel.updateOne({ username }, { privacyStatus: status });
-  return updated
+  const updated = await userModel.updateOne(
+    { username },
+    { privacyStatus: status }
+  );
+  return updated;
+}
+
+async function updatePassword(username, newpassword) {
+  const db = await getdbcon();
+  const userModel = db.model('User', AccountSchema);
+  const user = await getAccount(username);
+  if (!user) {
+    throw new Error("User doesn't exist");
+  }
+  const updated = await userModel.updateOne(
+    { username },
+    { password: newpassword }
+  );
+  return updated;
 }
 
 /*
@@ -196,4 +213,5 @@ export default {
   //getUserStatistics,
   setDataBaseConn,
   setPrivacyState,
+  updatePassword,
 };
