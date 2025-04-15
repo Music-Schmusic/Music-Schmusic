@@ -18,6 +18,7 @@ import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
 import OAuthSuccess from './components/OAuthSuccess';
+import AccountRecovery from './pages/AccountRecovery.jsx';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -296,6 +297,7 @@ function AppRoutes({
               />
             }
           />
+          <Route path="/accountrecovery" element={<AccountRecovery />} />
           <Route path="/signup" element={<SignUp />} />
         </Route>
 
