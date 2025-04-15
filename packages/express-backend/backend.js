@@ -14,7 +14,7 @@ import mailer from './mailer.js';
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
 } else {
-  dotenv.config();
+  dotenv.config({ path: path.resolve('packages/express-backend/.env')});
 }
 
 const app = express();
@@ -23,7 +23,10 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 dbrequests.setDataBaseConn(db());
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/', authRoutes);
@@ -45,6 +48,7 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await AccountFuncs.login(username, password);
+    console.log('User object:', user);
     // Choose the correct secret
     const secret =
       process.env.NODE_ENV === 'test'
@@ -65,9 +69,11 @@ app.get('/protected', authenticateUser, (req, res) => {
 });
 
 app.use('/api/playlist-cover', playlistCoverRoutes);
+app.use('/spotify', spotifyRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => console.log(`Server running on port ${port}`));
 }
+
 
 export default app;
