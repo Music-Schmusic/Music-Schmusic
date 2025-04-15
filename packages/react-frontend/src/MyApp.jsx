@@ -9,7 +9,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import './main.css';
-import SplineBackground from './SplineBackground';
+import Spline from '@splinetool/react-spline';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
 import Settings from './pages/settings.jsx';
@@ -86,20 +86,16 @@ const Footer = () => (
   </nav>
 );
 
-const Home = ({ setCurrentScene }) => {
+const Home = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setCurrentScene('scene1.splinecode');
-  }, [setCurrentScene]);
-
   const handleGetStarted = () => {
-    setCurrentScene('/scene2.splinecode');
     navigate('/login');
   };
 
   return (
     <div className="home-container">
+      <Navbar></Navbar>
+      <Spline className="spline" scene="scene1.splinecode"></Spline>
       <lord-icon
         src="https://cdn.lordicon.com/jpzhmobh.json"
         trigger="loop"
@@ -115,7 +111,7 @@ const Home = ({ setCurrentScene }) => {
   );
 };
 
-const Login = ({ setIsLoggedIn, setCurrentScene }) => {
+const Login = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -126,10 +122,6 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
     const timer = setTimeout(() => setShowContainer(true), 1800);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    setCurrentScene('scene2.splinecode');
-  }, [setCurrentScene]);
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -312,7 +304,7 @@ function AppRoutes({
           <Route path="/settings" element={<Settings />} />
         </Route>
 
-        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
+        <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
         <Route
           path="/oauth-success"
           element={<OAuthSuccess setIsLoggedIn={setIsLoggedIn} />}
@@ -322,20 +314,12 @@ function AppRoutes({
     </>
   );
 }
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentScene, setCurrentScene] = useState('scene1.splinecode');
 
   return (
     <Router>
-      <SplineBackground currentScene={currentScene} />
-      <AppRoutes
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
-        currentScene={currentScene}
-        setCurrentScene={setCurrentScene}
-      />
+      <AppRoutes isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Footer />
     </Router>
   );
