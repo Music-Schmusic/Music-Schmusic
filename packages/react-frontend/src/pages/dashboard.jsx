@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BarChart,
   Bar,
@@ -36,6 +36,10 @@ export default function Dashboard() {
   // New state for the AI-generated playlist cover
   const [coverImage, setCoverImage] = useState(null);
 
+    
+  // New state for Spotify Top Tracks fetched from backend
+  const [spotifyTracks, setSpotifyTracks] = useState([]);
+
   // Function to fetch the AI-generated cover from your backend
   const getAICover = async () => {
     try {
@@ -56,6 +60,28 @@ export default function Dashboard() {
     }
   };
 
+    // Fetch Spotify Top Tracks from backend on component mount
+    useEffect(() => {
+      const fetchSpotifyTracks = async () => {
+        try {
+          const response = await fetch('http://localhost:8000/spotify/top-tracks', {
+            credentials: 'include'
+          });
+          if (!response.ok) {
+            throw new Error('Failed to fetch top tracks');
+          }
+          const data = await response.json();
+          // Assuming the data contains an 'items' array with track objects
+          setSpotifyTracks(data.items);
+        } catch (error) {
+          console.error('Error fetching Spotify top tracks:', error);
+        }
+      };
+  
+      fetchSpotifyTracks();
+    }, []);
+  
+
   // Format data for Recharts
   const chartData = [
     { name: '5 Weeks Ago', timeSpent: userStats.twoWeeksAgo.timeSpent },
@@ -74,13 +100,7 @@ export default function Dashboard() {
   ];
   const COLORS = ['#30e849', '#8884d8', '#82ca9d', '#ff8042'];
 
-  // Additional data: Top tracks table
-  const topTracks = [
-    { title: 'Blinding Lights', plays: 150 },
-    { title: 'Levitating', plays: 120 },
-    { title: 'Peaches', plays: 100 },
-    { title: 'Save Your Tears', plays: 90 },
-  ];
+
 
   // Calculate percentage change
   const getPercentageChange = (current, previous) => {
@@ -246,33 +266,33 @@ export default function Dashboard() {
                     borderBottom: '1px solid #444',
                   }}
                 >
-                  Plays
+                  Artists
                 </th>
               </tr>
             </thead>
             <tbody>
-              {topTracks.map((track, index) => (
-                <tr key={index}>
-                  <td
-                    style={{ padding: '8px', borderBottom: '1px solid #444' }}
-                  >
-                    {track.title}
-                  </td>
-                  <td
-                    style={{
-                      padding: '8px',
-                      textAlign: 'right',
-                      borderBottom: '1px solid #444',
-                    }}
-                  >
-                    {track.plays}
-                  </td>
-                </tr>
-              ))}
+            {spotifyTracks.length > 0 ? (
+                spotifyTracks.map((track) => (
+                  <tr key={track.id}>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #444' }}>
+                      {track.name}
+                    </td>
+                    <td style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #444' }}>
+                      {track.artists.map((artist) => artist.name).join(', ')}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="2" style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #444' }}>
+                    No top tracks found.
+                    </td>
+                    </tr>
+                  )}
             </tbody>
           </table>
         </div>
       </div>
-    </div>
+    </div> 
   );
 }

@@ -5,13 +5,17 @@ import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
 import db from './db.js';
 import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
+import spotifyRoutes from './routes/spotifyroutes.js';
 
 const app = express();
 const port = process.env.PORT || 8000;
 
 dbrequests.setDataBaseConn(db());
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://localhost:8000',
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/', authRoutes);
@@ -43,3 +47,5 @@ app.post('/login', async (req, res) => {
 app.use('/api/playlist-cover', playlistCoverRoutes);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
+
+app.use('/spotify', spotifyRoutes);
