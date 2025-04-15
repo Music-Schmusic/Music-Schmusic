@@ -49,8 +49,7 @@ app.post('/login', async (req, res) => {
     const secret = process.env.NODE_ENV === 'test'
       ? process.env.JWT_SECRET
       : process.env.TOKEN_SECRET;
-    console.log("JWT_SECRET in use:", secret);
-    const token = jwt.sign({ username: user.username }, secret, { expiresIn: '5s' });
+    const token = jwt.sign({ username: user.username }, secret, { expiresIn: '15m' });
     res.status(200).json({ token, username: user.username, email: user.email });
   } catch (error) {
     console.log('Login Error:', error.message);
