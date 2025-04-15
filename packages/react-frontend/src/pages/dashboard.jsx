@@ -11,7 +11,6 @@ import {
   PieChart,
   Cell,
 } from 'recharts';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -65,23 +64,30 @@ export default function Dashboard() {
 
     // Fetch Spotify Top Tracks from backend on component mount
     useEffect(() => {
-      const fetchSpotifyTracks = async () => {
+      const fetchTopTracks = async () => {
         try {
+          // Retrieve your JWT from localStorage (assuming it's stored under the key "token")
+          const token = localStorage.getItem('token');
           const response = await fetch('http://localhost:8000/spotify/top-tracks', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
             credentials: 'include'
           });
           if (!response.ok) {
             throw new Error('Failed to fetch top tracks');
           }
           const data = await response.json();
-          // Assuming the data contains an 'items' array with track objects
-          setSpotifyTracks(data.items);
+          // For debugging: Log your returned data
+          console.log('Top tracks data:', data);
+          // Assume Spotify's API returns data with an 'items' array
+          setTopTracks(data.items);
         } catch (error) {
-          console.error('Error fetching Spotify top tracks:', error);
+          console.error('Error fetching top artists:', error);
         }
       };
   
-      fetchSpotifyTracks();
+      fetchTopTracks();
     }, []);
   
 

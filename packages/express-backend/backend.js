@@ -13,7 +13,7 @@ import authenticateUser from './authMiddleware.js';
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
 } else {
-  dotenv.config();
+  dotenv.config({ path: path.resolve('packages/express-backend/.env')});
 }
 
 import spotifyRoutes from './routes/spotifyroutes.js';
@@ -25,7 +25,7 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET;
 dbrequests.setDataBaseConn(db());
 
 app.use(cors({
-  origin: 'https://localhost:8000',
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
@@ -49,11 +49,13 @@ app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await AccountFuncs.login(username, password);
+    console.log('User object:', user);
     // Choose the correct secret
     const secret = process.env.NODE_ENV === 'test'
       ? process.env.JWT_SECRET
       : process.env.TOKEN_SECRET;
-    const token = jwt.sign({ username: user.username }, secret, { expiresIn: '15m' });
+    const token = jwt.sign({ username: user.username, spotifyAccessToken: user.spotifyAccessToken }, secret, { expiresIn: '15m' });
+    console.log('JWT payload:', jwt.decode(token));
     res.status(200).json({ token, username: user.username, email: user.email });
   } catch (error) {
     console.log('Login Error:', error.message);
@@ -67,11 +69,11 @@ app.get('/protected', authenticateUser, (req, res) => {
 });
 
 app.use('/api/playlist-cover', playlistCoverRoutes);
+app.use('/spotify', spotifyRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => console.log(`Server running on port ${port}`));
 }
 
-export default app;
 
-app.use('/spotify', spotifyRoutes);
+export default app;
