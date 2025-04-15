@@ -9,13 +9,13 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import path from 'path';
 import authenticateUser from './authMiddleware.js';
+import mailer from './mailer.js';
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
 } else {
   dotenv.config();
 }
-
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -36,7 +36,7 @@ app.post('/signup', async (req, res) => {
     res.status(201).send(newAccount);
   } catch (error) {
     console.log(error);
-    console.log("bad")
+    console.log('bad');
     res.status(409).send('Username Already Exists');
   }
 });
@@ -46,17 +46,19 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await AccountFuncs.login(username, password);
     // Choose the correct secret
-    const secret = process.env.NODE_ENV === 'test'
-      ? process.env.JWT_SECRET
-      : process.env.TOKEN_SECRET;
-    const token = jwt.sign({ username: user.username }, secret, { expiresIn: '15m' });
+    const secret =
+      process.env.NODE_ENV === 'test'
+        ? process.env.JWT_SECRET
+        : process.env.TOKEN_SECRET;
+    const token = jwt.sign({ username: user.username }, secret, {
+      expiresIn: '15m',
+    });
     res.status(200).json({ token, username: user.username, email: user.email });
   } catch (error) {
     console.log('Login Error:', error.message);
     res.status(401).send(error.message);
   }
 });
-
 
 app.get('/protected', authenticateUser, (req, res) => {
   res.send(`Welcome ${req.user.username}`);
@@ -67,5 +69,7 @@ app.use('/api/playlist-cover', playlistCoverRoutes);
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => console.log(`Server running on port ${port}`));
 }
+
+
 
 export default app;

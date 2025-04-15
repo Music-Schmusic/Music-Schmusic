@@ -1,0 +1,29 @@
+import nodemailer from 'nodemailer';
+
+async function sendEmail(who, message, subject) {
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'greinhard2003@gmail.com',
+      pass: 'ydotgttuffhsptnj',
+    },
+  });
+
+  let mailDetails = {
+    from: 'greinhard2003@gmail.com',
+    to: who,
+    subject: subject,
+    text: message,
+  };
+
+  await transporter.sendMail(mailDetails, (error, info) => {
+    if (error) {
+      console.log('Failed to send email: ', error);
+    }
+    console.log('Email Success');
+  });
+}
+
+export default {
+  sendEmail,
+};
