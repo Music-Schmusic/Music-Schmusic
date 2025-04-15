@@ -28,7 +28,7 @@ router.get('/authorize', function (req, res) {
   console.log('\nauthorization query being sent:\n', auth_query);
 
   //return to user to allow spotify app to request data
-  res.json({authUrl : ('https://accounts.spotify.com/authorize?' + auth_query)});
+  res.json({ authUrl: 'https://accounts.spotify.com/authorize?' + auth_query });
 });
 
 //recieve authorization code and request access tokens
@@ -44,9 +44,8 @@ router.get('/callback', function (req, res) {
         querystring.stringify({
           error: 'state_mismatch',
         })
-  );
-  } 
-  else {
+    );
+  } else {
     const authOptions = {
       url: 'https://accounts.spotify.com/api/token',
       method: 'POST',
@@ -80,7 +79,7 @@ router.get('/callback', function (req, res) {
       })
       .then((json) => {
         const access_token = json.access_token;
-      
+
         const redirectFrontend = `http://localhost:5173/oauth-success?access_token=${access_token}`;
         res.redirect(redirectFrontend);
       })

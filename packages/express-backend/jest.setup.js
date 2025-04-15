@@ -1,11 +1,11 @@
-import dotenv from "dotenv";
-import path from "path";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import dotenv from 'dotenv';
+import path from 'path';
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
-dotenv.config({ path: path.resolve(__dirname, ".env.test") });
+dotenv.config({ path: path.resolve(__dirname, '.env.test') });
 
-console.log("Loaded MongoDB URI in Jest:", process.env.MONGO_URI);
+console.log('Loaded MongoDB URI in Jest:', process.env.MONGO_URI);
 
 jest.setTimeout(20000);
 

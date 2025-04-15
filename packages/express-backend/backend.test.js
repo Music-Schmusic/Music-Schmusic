@@ -118,6 +118,4 @@ describe('Backend API tests', () => {
     expect(res.statusCode).toBe(401);
     expect(res.body).toHaveProperty('message', 'Missing token');
   });
-
 });
-

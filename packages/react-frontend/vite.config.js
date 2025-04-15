@@ -15,8 +15,8 @@ export default defineConfig({
       inline: [
         '@testing-library/jest-dom',
         '@testing-library/react',
-        '@testing-library/user-event'
-      ]
-    }
-  }
+        '@testing-library/user-event',
+      ],
+    },
+  },
 });

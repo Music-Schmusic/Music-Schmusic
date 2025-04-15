@@ -73,8 +73,6 @@ async function resetPassword(username, password) {
   return account;
 }
 
-
-
 export default {
   createAccount,
   hashPassword,

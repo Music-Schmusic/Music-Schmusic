@@ -14,7 +14,6 @@ import {
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
 export default function Dashboard() {
   // Sample data structure for time spent
 
@@ -120,7 +119,7 @@ export default function Dashboard() {
     fetchProtected();
   }, [navigate]);
 
-  const user = localStorage.getItem("username");
+  const user = localStorage.getItem('username');
 
   return (
     <div className="dashboard-page">
