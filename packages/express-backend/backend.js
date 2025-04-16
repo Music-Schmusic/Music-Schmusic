@@ -3,6 +3,7 @@ import cors from 'cors';
 import authRoutes from './routes/authorize.js';
 import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
+import toptracks from './routes/spotify.js'
 import db from './db.js';
 import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
 import jwt from 'jsonwebtoken';
@@ -16,7 +17,6 @@ if (process.env.NODE_ENV === 'test') {
   dotenv.config();
 }
 
-
 const app = express();
 const port = process.env.PORT || 8000;
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
@@ -27,6 +27,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/', authRoutes);
+app.use('/', toptracks)
 app.get('/', (req, res) => res.send('API Running'));
 
 app.post('/signup', async (req, res) => {
