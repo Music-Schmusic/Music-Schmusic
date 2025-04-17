@@ -2,6 +2,8 @@ import AccountSchema from '../schemas/user.js';
 import Account from './account.js'
 import db_req from '../dbrequests.js';
 import { jest } from '@jest/globals';
+import mockingoose from 'mockingoose'
+import mongoose from 'mongoose';
 
 //mock db connection 
 const mockDbConnection = {
@@ -11,8 +13,15 @@ const mockDbConnection = {
   }),
 };
 
+let userModel;
+
+beforeAll(() => {
+  userModel = mongoose.model("User", AccountSchema)
+});
+
 beforeEach(() => {
   jest.clearAllMocks();
+  mockingoose.resetAll();
   db_req.setDataBaseConn(mockDbConnection);
 });
 
@@ -20,9 +29,9 @@ const testAccount = {
   username:"testuser",
   email:"test@email.com",
   password:"bestpassword",
-  following:["None"],
-  Blocked:["None"],
-  privacyStatus:""
+  following:[],
+  Blocked: [],
+  privacyStatus:"something"
 };
 
 test('Testing getAccount function', async () => {
@@ -36,16 +45,18 @@ test('Testing getAccount function', async () => {
   expect(mockDbConnection.model().findOne).toHaveBeenCalledWith({ username: 'testuser' }); 
 });
 
-// this is broken because the mock doesn't construct a UserModel in the AddAccount function 
-  // const accountToAdd = new userModel(account);
-// needs to either mock construction or change strategy
-
 test('Testing addAccount function', async () => {
-  //call getAccount on testuser
+  mockingoose(userModel).toReturn(testAccount, 'save');
+
   const savedAccount = await db_req.addAccount(testAccount);
 
   //test mocked save output
-  expect(savedAccount).toEqual(testAccount);
-  expect(mockDbConnection.model).toHaveBeenCalledWith('User', AccountSchema);
-  expect(mockDbConnection.model().save).toHaveBeenCalledWith(testAccount);
+  expect(savedAccount).toBeTruthy();
+  expect(savedAccount.username).toBe(testAccount.username);
+  expect(savedAccount.email).toBe(testAccount.email);
+  expect(savedAccount.password).toBe(testAccount.password);
+  expect(savedAccount.following).toEqual([]);
+  expect(savedAccount.blocked).toEqual([]);
+  //expect(savedAccount.privacyStatus).toBe(testAccount.privacyStatus);
+  expect(savedAccount).toHaveProperty("_id");
 });
