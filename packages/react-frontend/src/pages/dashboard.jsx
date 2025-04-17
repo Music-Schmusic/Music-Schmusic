@@ -94,23 +94,38 @@ const Dashboard = () => {
         setLoading(false);
 
         // Calculate time spent listening
-        const timeSpent =
-          recentResponse.data.reduce(
-            (acc, track) => acc + track.track.duration_ms,
-            0
-          ) / 3600000; // Convert to hours
+        const totalMs = recentResponse.data.reduce(
+          (acc, track) => acc + track.track.duration_ms,
+          0
+        );
+
+        // Convert to hours and minutes
+        const hours = Math.floor(totalMs / 3600000);
+        const minutes = Math.floor((totalMs % 3600000) / 60000);
+
+        // Format time as "Xh Ym"
+        const formattedTime = `${hours}h ${minutes}m`;
+
         setUserStats((prev) => ({
           ...prev,
           thisWeek: {
             ...prev.thisWeek,
-            timeSpent: timeSpent,
+            timeSpent: formattedTime,
             favoriteArtist: artistsResponse.data[0]?.name || 'No data',
             favoriteGenre: artistsResponse.data[0]?.genres[0] || 'No data',
           },
         }));
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError(err.message);
+        if (err.response?.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem('spotifyToken');
+          setError(
+            'Your Spotify session has expired. Please reconnect your account.'
+          );
+        } else {
+          setError(err.message);
+        }
         setLoading(false);
       }
     };
@@ -119,14 +134,62 @@ const Dashboard = () => {
   }, []);
 
   // Format data for charts
-  const chartData = [
-    { name: '5 Weeks Ago', timeSpent: userStats.twoWeeksAgo.timeSpent },
-    { name: '4 Weeks Ago', timeSpent: userStats.lastWeek.timeSpent },
-    { name: '3 Weeks Ago', timeSpent: userStats.thisWeek.timeSpent },
-    { name: '2 Weeks Ago', timeSpent: userStats.twoWeeksAgo.timeSpent },
-    { name: 'Last Week', timeSpent: userStats.lastWeek.timeSpent },
-    { name: 'This Week', timeSpent: userStats.thisWeek.timeSpent },
-  ];
+  const [chartData, setChartData] = useState([
+    { name: '5 Weeks Ago', timeSpent: 0 },
+    { name: '4 Weeks Ago', timeSpent: 0 },
+    { name: '3 Weeks Ago', timeSpent: 0 },
+    { name: '2 Weeks Ago', timeSpent: 0 },
+    { name: 'Last Week', timeSpent: 0 },
+    { name: 'This Week', timeSpent: 0 },
+  ]);
+
+  // Update chart data with actual time values
+  useEffect(() => {
+    if (userStats.thisWeek.timeSpent) {
+      const timeStr = userStats.thisWeek.timeSpent;
+      const [hours, minutes] = timeStr.split(' ').map((str) => parseInt(str));
+      const totalHours = hours + minutes / 60;
+
+      setChartData((prev) => {
+        const newData = [...prev];
+        newData[5] = { ...newData[5], timeSpent: totalHours };
+        return newData;
+      });
+    }
+  }, [userStats]);
+
+  // Custom formatter for Y-axis
+  const formatYAxis = (value) => {
+    const hours = Math.floor(value);
+    const minutes = Math.round((value - hours) * 60);
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  };
+
+  // Custom tooltip formatter
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const value = payload[0].value;
+      const hours = Math.floor(value);
+      const minutes = Math.round((value - hours) * 60);
+      const timeStr = minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+
+      return (
+        <div
+          className="custom-tooltip"
+          style={{
+            background: 'rgba(255, 255, 255, 0.9)',
+            padding: '10px',
+            borderRadius: '5px',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          <p className="label">{`${label}`}</p>
+          <p className="value">{`Time: ${timeStr}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   const genreData = topArtists.slice(0, 4).map((artist) => ({
     name: artist.genres[0] || 'Unknown',
@@ -254,10 +317,10 @@ const Dashboard = () => {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
+              <YAxis tickFormatter={formatYAxis} />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="timeSpent" fill="#30e849" name="Hours Listened" />
+              <Bar dataKey="timeSpent" fill="#30e849" name="Time Listened" />
             </BarChart>
           </ResponsiveContainer>
         </div>

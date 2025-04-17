@@ -158,23 +158,25 @@ function AppRoutes({
     <>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
+        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
         <Route
+          path="/login"
           element={
-            <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
+            <Login
+              setIsLoggedIn={setIsLoggedIn}
+              setCurrentScene={setCurrentScene}
+            />
           }
-        >
-          <Route
-            path="/login"
-            element={
-              <Login
-                setIsLoggedIn={setIsLoggedIn}
-                setCurrentScene={setCurrentScene}
-              />
-            }
-          />
-          <Route path="/signup" element={<Signup />} />
-        </Route>
-
+        />
+        <Route
+          path="/signup"
+          element={
+            <Signup
+              setIsLoggedIn={setIsLoggedIn}
+              setCurrentScene={setCurrentScene}
+            />
+          }
+        />
         <Route
           element={
             <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
@@ -185,8 +187,6 @@ function AppRoutes({
           <Route path="/recs" element={<Recommended />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
-
-        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
         <Route
           path="/oauth-success"
           element={<OAuthSuccess setIsLoggedIn={setIsLoggedIn} />}
@@ -197,13 +197,18 @@ function AppRoutes({
   );
 }
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentScene, setCurrentScene] = useState('scene1.splinecode');
+const AppContent = ({
+  isLoggedIn,
+  setIsLoggedIn,
+  currentScene,
+  setCurrentScene,
+}) => {
+  const location = useLocation();
+  const showSpline = ['/', '/login', '/signup'].includes(location.pathname);
 
   return (
-    <Router>
-      <SplineBackground currentScene={currentScene} />
+    <>
+      {showSpline && <SplineBackground currentScene={currentScene} />}
       <AppRoutes
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
@@ -211,6 +216,22 @@ function App() {
         setCurrentScene={setCurrentScene}
       />
       <Footer />
+    </>
+  );
+};
+
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentScene, setCurrentScene] = useState('scene1.splinecode');
+
+  return (
+    <Router>
+      <AppContent
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn}
+        currentScene={currentScene}
+        setCurrentScene={setCurrentScene}
+      />
     </Router>
   );
 }
