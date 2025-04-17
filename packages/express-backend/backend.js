@@ -14,7 +14,7 @@ import mailer from './mailer.js';
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
 } else {
-  dotenv.config({ path: path.resolve('packages/express-backend/.env')});
+  dotenv.config({ path: path.resolve('packages/express-backend/.env') });
 }
 
 const app = express();
@@ -23,10 +23,12 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 dbrequests.setDataBaseConn(db());
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use('/', authRoutes);
@@ -39,7 +41,6 @@ app.post('/signup', async (req, res) => {
     res.status(201).send(newAccount);
   } catch (error) {
     console.log(error);
-    console.log('bad');
     res.status(409).send('Username Already Exists');
   }
 });
@@ -64,16 +65,35 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.post('/accountrecovery', async (req, res) => {
+  try {
+    const { username, email } = req.query;
+    const user = await dbrequests.getAccount(username);
+    if (user === null) {
+      res.status(404).send(`User ${username} does not exist`);
+    } else if (user.email != email) {
+      res
+        .status(401)
+        .send(`Email does not match the email for user: ${username}`);
+    } else {
+      //exprdate = now + 5m
+      await mailer.sendEmail(email, 'This is a test message', 'Testing Get');
+      res.status(200).send(`Account recovery email has been sent to ${email}`);
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send(error.message);
+  }
+});
+
 app.get('/protected', authenticateUser, (req, res) => {
   res.send(`Welcome ${req.user.username}`);
 });
 
 app.use('/api/playlist-cover', playlistCoverRoutes);
-app.use('/spotify', spotifyRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => console.log(`Server running on port ${port}`));
 }
-
 
 export default app;
