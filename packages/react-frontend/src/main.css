@@ -171,7 +171,9 @@ img {
    * 2. Remove the margin in Firefox and Safari.
    */
 button,
-input {},
+input {
+}
+,
 optgroup,
 select,
 textarea {
@@ -194,7 +196,6 @@ input {
   /* 1 */
   color: black;
   overflow: visible;
-  
 }
 
 /**
@@ -802,7 +803,7 @@ dd {
   overflow: hidden;
   z-index: 1;
 }
-.spline-background {
+.spline {
   position: fixed; /* Ensures it stays behind everything */
   top: 0;
   left: 0;
@@ -1248,14 +1249,14 @@ body {
 }
 
 button {
-  padding: 18px 25px;           /* Consistent padding for all */
-  text-decoration: none;       /* Remove underline from anchors */
+  padding: 18px 25px; /* Consistent padding for all */
+  text-decoration: none; /* Remove underline from anchors */
   background: white;
   color: #099439;
-  border: none;                /* Remove default button border */
+  border: none; /* Remove default button border */
   border-radius: 5px;
   font-weight: bold;
-  cursor: pointer;             /* Pointer on hover, matching anchors */
+  cursor: pointer; /* Pointer on hover, matching anchors */
   transition: background 0.3s;
   position: relative;
   z-index: 1;
@@ -1370,15 +1371,14 @@ h1 {
 }
 
 .nav-button {
-  
-  padding: 5px 10px;           /* Consistent padding for all */
-  text-decoration: none;       /* Remove underline from anchors */
+  padding: 5px 10px; /* Consistent padding for all */
+  text-decoration: none; /* Remove underline from anchors */
   background: white;
   color: #099439;
-  border: none;                /* Remove default button border */
+  border: none; /* Remove default button border */
   border-radius: 5px;
   font-weight: bold;
-  cursor: pointer;             /* Pointer on hover, matching anchors */
+  cursor: pointer; /* Pointer on hover, matching anchors */
   transition: background 0.3s;
   position: relative;
   z-index: 1;
@@ -1500,12 +1500,12 @@ a:focus {
   justify-content: flex-start;
   align-items: center;
   background-color: #1e1e1e;
-  margin-top: 150px ;
+  margin-top: 150px;
   padding: 50px;
   padding-bottom: 500px;
   color: white;
   font-family: Arial, sans-serif;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 /* Header styling */
@@ -1534,7 +1534,7 @@ a:focus {
 .playlist-box {
   background-color: #666; /* Medium grey background for the box */
   width: 100%;
-  height: 200px;          /* Adjust as needed */
+  height: 200px; /* Adjust as needed */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1555,7 +1555,7 @@ a:focus {
 }
 
 .stats-section {
-  margin: 20px ;
+  margin: 20px;
   padding: 15px;
   border-radius: 8px;
   background: #333;
@@ -1587,42 +1587,67 @@ a:focus {
   border-radius: 5px;
 }
 
-
-
-.container.content-section{
+.container.content-section {
   z-index: 1;
   justify-content: center;
   align-items: center;
-  background-color: #2f2f2f ;
+  background-color: #2f2f2f;
   padding: 10;
   margin-top: 30%; /* pushes the text down from the top */
   margin-bottom: 30%;
 }
-.form-actions{
+.form-actions {
   margin-top: 10px;
   display: flex;
   gap: 10px;
 }
-.tabs{
+.tabs {
   justify-content: center;
   margin-top: 10px;
   display: flex;
   gap: 90px;
 }
 
-.signup-container{
+.AccountRecovery-page {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  display: flex;
+  background-color: #1e1e1e;
+  padding: 200px;
+  padding-top: 700px;
+  color: white;
+  font-family: Arial, sans-serif;
+  flex-direction: column;
+}
+
+.AccountRecovery-container {
   color: #121212;
   position: relative;
   margin-top: 5%;
   height: fit-content;
   text-align: center;
-  padding:0;
-  margin:0;
+  padding: 0;
+  margin: 0;
+  width: 75vw;
+  background-color: #b01313 !important;
+  z-index: 10;
+}
+
+.signup-container {
+  color: #121212;
+  position: relative;
+  margin-top: 5%;
+  height: fit-content;
+  text-align: center;
+  padding: 0;
+  margin: 0;
   width: 75vw;
   background-color: #ffffff !important;
   z-index: 10;
 }
-.boxes{
+.boxes {
   text-align: center;
 }
 
@@ -1637,7 +1662,7 @@ a:focus {
   padding-top: 700px;
   color: white;
   font-family: Arial, sans-serif;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 /* Make sure heading is displayed on its own line */
@@ -1647,7 +1672,7 @@ a:focus {
 
 /* Search and Filter Controls - stacked above the list */
 .controls {
-  display: flex; 
+  display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
@@ -1656,7 +1681,7 @@ a:focus {
 .friends-grid {
   display: flex;
   flex-direction: column; /* Stacks each card vertically */
-  gap: 10px;             /* Spacing between cards */
+  gap: 10px; /* Spacing between cards */
 }
 
 .friend-card {
@@ -1666,7 +1691,7 @@ a:focus {
   padding-right: 100px;
   padding-bottom: 5px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   gap: 15px;
@@ -1683,7 +1708,6 @@ a:focus {
   height: 50px;
   margin: 50px;
 }
-
 
 .dropbtn {
   background-color: white;
@@ -1706,7 +1730,7 @@ a:focus {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 10;
   border-radius: 4%;
 }
@@ -1720,7 +1744,9 @@ a:focus {
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #f1f1f1}
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
 
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {
@@ -1730,8 +1756,7 @@ a:focus {
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {
   background-color: #009938;
-  color:#f1f1f1
-
+  color: #f1f1f1;
 }
 .dropdown2 {
   position: relative;
@@ -1745,7 +1770,7 @@ a:focus {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 10;
   border-radius: 4%;
 }
@@ -1759,7 +1784,9 @@ a:focus {
 }
 
 /* Change color of dropdown links on hover */
-.dropdown2-content a:hover {background-color: #f1f1f1}
+.dropdown2-content a:hover {
+  background-color: #f1f1f1;
+}
 
 /* Show the dropdown menu on hover */
 .dropdown2:hover .dropdown2-content {
@@ -1769,5 +1796,5 @@ a:focus {
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown2:hover .dropbtn2 {
   background-color: #3e8e41;
-  color:#f1f1f1
+  color: #f1f1f1;
 }

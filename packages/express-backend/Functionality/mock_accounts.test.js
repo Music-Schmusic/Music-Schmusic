@@ -5,9 +5,17 @@ import { jest } from '@jest/globals';
 import mockingoose from 'mockingoose'
 import mongoose from 'mongoose';
 
+/*
+This is as far as I've gotten with successful mocking, 
+I'm getting a lot of tedious/confusing errors with everything else I've tried. 
+
+I need more time to understand how to work with the other functions. 
+*/
+
 //mock db connection 
 const mockDbConnection = {
   model: jest.fn().mockReturnValue({
+    //mock findone query
     findOne: jest.fn().mockResolvedValue({ username: 'testuser', email: 'test@example.com' }),
     save: jest.fn().mockResolvedValue(),
   }),

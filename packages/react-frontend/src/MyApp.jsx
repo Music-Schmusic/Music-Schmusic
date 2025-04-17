@@ -9,7 +9,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import './main.css';
-import SplineBackground from './SplineBackground';
+import Spline from '@splinetool/react-spline';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
 import Settings from './pages/settings.jsx';
@@ -18,6 +18,7 @@ import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
 import OAuthSuccess from './components/OAuthSuccess';
+import AccountRecovery from './pages/AccountRecovery.jsx';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -35,18 +36,34 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
       <div className="nav-links">
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" className="nav-button">Dashboard</Link>
-            <Link to="/friends" className="nav-button">Friends</Link>
-            <Link to="/recs" className="nav-button">Recommended</Link>
-            <Link to="/settings" className="nav-button">
-              <img src="/settings.png" alt="Settings" style={{ width: '24px', height: '24px' }} />
+            <Link to="/dashboard" className="nav-button">
+              Dashboard
             </Link>
-            <button onClick={handleLogout} className="nav-button">Logout</button>
+            <Link to="/friends" className="nav-button">
+              Friends
+            </Link>
+            <Link to="/recs" className="nav-button">
+              Recommended
+            </Link>
+            <Link to="/settings" className="nav-button">
+              <img
+                src="/settings.png"
+                alt="Settings"
+                style={{ width: '24px', height: '24px' }}
+              />
+            </Link>
+            <button onClick={handleLogout} className="nav-button">
+              Logout
+            </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="nav-button">Login</Link>
-            <Link to="/signup" className="nav-button">Sign Up</Link>
+            <Link to="/login" className="nav-button">
+              Login
+            </Link>
+            <Link to="/signup" className="nav-button">
+              Sign Up
+            </Link>
           </>
         )}
       </div>
@@ -69,20 +86,16 @@ const Footer = () => (
   </nav>
 );
 
-const Home = ({ setCurrentScene }) => {
+const Home = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setCurrentScene('scene1.splinecode');
-  }, [setCurrentScene]);
-
   const handleGetStarted = () => {
-    setCurrentScene('/scene2.splinecode');
     navigate('/login');
   };
 
   return (
     <div className="home-container">
+      <Navbar></Navbar>
+      <Spline className="spline" scene="scene1.splinecode"></Spline>
       <lord-icon
         src="https://cdn.lordicon.com/jpzhmobh.json"
         trigger="loop"
@@ -91,12 +104,14 @@ const Home = ({ setCurrentScene }) => {
         colors="primary:#30e849,secondary:#16c72e"
         style={{ width: '150px', height: '150px' }}
       ></lord-icon>
-      <button className="get-started-btn" onClick={handleGetStarted}>Get Started</button>
+      <button className="get-started-btn" onClick={handleGetStarted}>
+        Get Started
+      </button>
     </div>
   );
 };
 
-const Login = ({ setIsLoggedIn, setCurrentScene }) => {
+const Login = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -107,10 +122,6 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
     const timer = setTimeout(() => setShowContainer(true), 1800);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    setCurrentScene('scene2.splinecode');
-  }, [setCurrentScene]);
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -143,11 +154,29 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       <h1>Login</h1>
       <p>Sign in to continue</p>
       <form onSubmit={handleLogin}>
-        <input type="text" placeholder="Username or Email" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input
+          type="text"
+          placeholder="Username or Email"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         {error && <p className="error-message">{error}</p>}
         <button type="submit">Login</button>
       </form>
+      <button
+        type="forgotPassword"
+        onClick={() => navigate('/accountrecovery')}
+      >
+        Forgot Passsword?{' '}
+      </button>
     </div>
   );
 };
@@ -195,13 +224,22 @@ const SignUp = () => {
       </div>
       <h6> </h6>
       <h5>Already have an account?</h5>
-      <button className="login-btn" onClick={() => navigate('/login')}>Login</button>
-      <button className="back-btn" onClick={() => navigate('/')}>Back to Home</button>
+      <button className="login-btn" onClick={() => navigate('/login')}>
+        Login
+      </button>
+      <button className="back-btn" onClick={() => navigate('/')}>
+        Back to Home
+      </button>
     </div>
   );
 };
 
-function AppRoutes({ isLoggedIn, setIsLoggedIn, currentScene, setCurrentScene }) {
+function AppRoutes({
+  isLoggedIn,
+  setIsLoggedIn,
+  currentScene,
+  setCurrentScene,
+}) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -237,39 +275,51 @@ function AppRoutes({ isLoggedIn, setIsLoggedIn, currentScene, setCurrentScene })
     <>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
-        <Route element={<PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />}>
-          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setCurrentScene={setCurrentScene} />} />
+        <Route
+          element={
+            <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
+          }
+        >
+          <Route
+            path="/login"
+            element={
+              <Login
+                setIsLoggedIn={setIsLoggedIn}
+                setCurrentScene={setCurrentScene}
+              />
+            }
+          />
+          <Route path="/accountrecovery" element={<AccountRecovery />} />
           <Route path="/signup" element={<SignUp />} />
         </Route>
 
-        <Route element={<ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />}>
+        <Route
+          element={
+            <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
+          }
+        >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/recs" element={<Recommended />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
 
-        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
-        <Route path="/oauth-success" element={<OAuthSuccess setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
+        <Route
+          path="/oauth-success"
+          element={<OAuthSuccess setIsLoggedIn={setIsLoggedIn} />}
+        />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   );
 }
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentScene, setCurrentScene] = useState('scene1.splinecode');
 
   return (
     <Router>
-      <SplineBackground currentScene={currentScene} />
-      <AppRoutes
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
-        currentScene={currentScene}
-        setCurrentScene={setCurrentScene}
-      />
+      <AppRoutes isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Footer />
     </Router>
   );
