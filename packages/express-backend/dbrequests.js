@@ -33,8 +33,8 @@ async function addAccount(account) {
 }
 
 async function followUser(username, friendUsername) {
-  const db = await getdbcon();
-  const userModel = db.model('User', AccountSchema);
+  //const db = await getdbcon();
+  const userModel = mongoose.model('User', AccountSchema);
   return await userModel.findOneAndUpdate(
     { username },
     { $addToSet: { following: friendUsername } },
@@ -43,8 +43,8 @@ async function followUser(username, friendUsername) {
 }
 
 async function unfollowUser(username, friendUsername) {
-  const db = await getdbcon();
-  const userModel = db.model('User', AccountSchema);
+  //const db = await getdbcon();
+  const userModel = mongoose.model('User', AccountSchema);
   return await userModel.findOneAndUpdate(
     { username },
     { $pull: { following: friendUsername } },
@@ -57,8 +57,8 @@ async function setPrivacyState(username, status) {
     throw new Error('Invalid Privacy state');
   }
 
-  const db = await getdbcon();
-  const userModel = db.model('User', AccountSchema);
+  //const db = await getdbcon();
+  const userModel = mongoose.model('User', AccountSchema);
   const user = await getAccount(username);
   if (!user) {
     throw new Error("User doesn't exist");
@@ -71,8 +71,8 @@ async function setPrivacyState(username, status) {
 }
 
 async function updatePassword(username, newpassword) {
-  const db = await getdbcon();
-  const userModel = db.model('User', AccountSchema);
+  //const db = await getdbcon();
+  const userModel = mongoose.model('User', AccountSchema);
   const user = await getAccount(username);
   if (!user) {
     throw new Error("User doesn't exist");

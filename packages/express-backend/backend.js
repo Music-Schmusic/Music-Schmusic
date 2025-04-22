@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import path from 'path';
 import authenticateUser from './authMiddleware.js';
+import spotifyRoutes from './routes/spotifyroutes.js'
 import mailer from './mailer.js';
 
 if (process.env.NODE_ENV === 'test') {
