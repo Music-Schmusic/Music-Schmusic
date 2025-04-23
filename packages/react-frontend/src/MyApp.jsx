@@ -20,6 +20,7 @@ import PublicRoute from './components/PublicRoute.jsx';
 import OAuthSuccess from './components/OAuthSuccess';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import StatsIcon from './components/StatsIcon';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -33,7 +34,9 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   return (
     <nav className="navbar">
       <div className="logo">
-        <Link to="/">Music Shmusic</Link>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <StatsIcon size={40} />
+        </Link>
       </div>
       <div className="nav-links">
         {isLoggedIn ? (

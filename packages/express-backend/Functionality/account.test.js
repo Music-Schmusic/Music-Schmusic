@@ -278,5 +278,7 @@ test('failed unfollow', async () => {
   const account1 = await db_req.addAccount(user1);
 
   await src.setPrivacyStatus(account1.username, 'Public');
-  await expect(src.unfollow(account1.username, 'notauser')).rejects.toThrow("User doesn't exist");
+  await expect(src.unfollow(account1.username, 'notauser')).rejects.toThrow(
+    "User doesn't exist"
+  );
 });
