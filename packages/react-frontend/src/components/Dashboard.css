@@ -98,6 +98,7 @@ section h2 {
   border-radius: 8px;
   padding: 16px;
   transition: all 0.3s ease;
+  width: 15em;
 }
 
 .music-item:hover {
@@ -106,7 +107,7 @@ section h2 {
 }
 
 .music-image {
-  width: 100%;
+  width: 12.5rem;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 4px;
