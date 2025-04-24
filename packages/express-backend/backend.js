@@ -10,6 +10,9 @@ import dotenv from 'dotenv';
 import path from 'path';
 import authenticateUser from './authMiddleware.js';
 import mailer from './mailer.js';
+import crypto from 'crypto';
+import cokieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
@@ -30,7 +33,7 @@ app.use(
   })
 );
 app.use(express.json());
-
+app.use(cookieParser());
 app.use('/', authRoutes);
 app.get('/', (req, res) => res.send('API Running'));
 
@@ -66,8 +69,16 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/accountrecovery', async (req, res) => {
+  const id = crypto.randomBytes(32).toString('hex');
+  res.cookie('CRSFtoken', id, {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: false,
+  });
+  console.log(id);
+
   try {
-    const { username, email } = req.query;
+    const { username, email } = req.body;
     const user = await dbrequests.getAccount(username);
     if (user === null) {
       res.status(404).send(`User ${username} does not exist`);
@@ -77,8 +88,47 @@ app.post('/accountrecovery', async (req, res) => {
         .send(`Email does not match the email for user: ${username}`);
     } else {
       //exprdate = now + 5m
-      await mailer.sendEmail(email, 'This is a test message', 'Testing Get');
+      const expiration_date = Date.now() + 300000;
+      const token = crypto.randomBytes(32).toString('hex');
+      const url = `http://localhost:5173/resetpassword?token=${token}`;
+      const recoveryToken = {
+        token: token,
+        expiration: expiration_date,
+        CRSFtoken: id,
+        user: username,
+      };
+      await dbrequests.addRecoveryToken(recoveryToken);
+      await mailer.sendEmail(
+        email,
+        `Click here to recover account: ${url}`,
+        'Testing Get'
+      );
       res.status(200).send(`Account recovery email has been sent to ${email}`);
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send(error.message);
+  }
+});
+
+app.post('/resetvalidation', async (req, res) => {
+  const { token } = req.body;
+  console.log(token);
+  const CRSFtoken = req.cookies.CRSFtoken;
+  const date = Date.now();
+  try {
+    const record = await dbrequests.getRecoveryToken(token);
+    console.log(record);
+    if (record === undefined) {
+      console.log('Could not find request');
+    } else if (
+      token === record.token &&
+      CRSFtoken === record.CRSFtoken &&
+      date < record.expiration
+    ) {
+      res.status(200).send('validated');
+    } else {
+      res.status(401).send('Invalid Credentials');
     }
   } catch (error) {
     console.log(error.message);

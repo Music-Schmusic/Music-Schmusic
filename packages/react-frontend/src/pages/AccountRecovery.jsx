@@ -20,11 +20,12 @@ export default function AccountRecovery() {
       });
   }
 
-  function recoverAccount(credentials) {
+  function recoverAccount(creds) {
     return fetch('http://localhost:8000/accountrecovery', {
       method: 'Post',
       headers: { 'Content-Type': 'application/json' },
-      body: credentials,
+      credentials: 'include',
+      body: JSON.stringify(creds),
     });
   }
 
