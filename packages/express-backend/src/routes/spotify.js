@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import axios from 'axios';
+
 const router = express.Router();
-const axios = require('axios');
 
 // Middleware to extract token from Authorization header
 const getTokenFromHeader = (req) => {
@@ -111,4 +112,5 @@ router.get('/recently-played', async (req, res) => {
   }
 });
 
-module.exports = router;
+// ESM-compatible export
+export default router;

@@ -29,9 +29,6 @@
     "lint": "eslint .",
     "lint-fix": "eslint --fix ."
   },
-  "jest": {
-    "transform": {}
-  },
   "author": "",
   "license": "ISC",
   "description": "",

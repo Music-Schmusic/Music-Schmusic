@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 
 // Get JWT secret from environment or use a fallback for development
 const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-key';
@@ -81,4 +82,5 @@ router.get('/protected', verifyToken, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });
 
-module.exports = router;
+// ESM-compatible export
+export default router;
