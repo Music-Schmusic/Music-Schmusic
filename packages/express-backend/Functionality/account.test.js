@@ -2,6 +2,7 @@ import src from './account.js';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import db_req from '../dbrequests.js';
+import { jest } from '@jest/globals';
 
 let mongoServer;
 
@@ -281,4 +282,22 @@ test('failed unfollow', async () => {
   await expect(src.unfollow(account1.username, 'notauser')).rejects.toThrow(
     "User doesn't exist"
   );
+});
+
+test('Update password', async () => {
+  const body = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234forever',
+  };
+  const user = await src.createAccount(body);
+  const account = await db_req.addAccount(user);
+  const updatedaccount = await src.resetPassword('testuser', '1234never');
+  expect(account.password === updatedaccount.password).toBe(false);
+});
+
+test('Failed to update password', async () => {
+  await expect(
+    src.resetPassword('notauser', 'does not matter')
+  ).rejects.toThrow("User doesn't exist");
 });

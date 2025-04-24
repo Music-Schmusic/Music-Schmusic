@@ -9,6 +9,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import './main.css';
+import Spline from '@splinetool/react-spline';
 import SplineBackground from './SplineBackground';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
@@ -21,6 +22,7 @@ import OAuthSuccess from './components/OAuthSuccess';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import StatsIcon from './components/StatsIcon';
+import AccountRecovery from './pages/AccountRecovery.jsx';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -91,20 +93,16 @@ const Footer = () => (
   </nav>
 );
 
-const Home = ({ setCurrentScene }) => {
+const Home = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setCurrentScene('scene1.splinecode');
-  }, [setCurrentScene]);
-
   const handleGetStarted = () => {
-    setCurrentScene('/scene2.splinecode');
     navigate('/login');
   };
 
   return (
     <div className="home-container">
+      <Navbar></Navbar>
+      <Spline className="spline" scene="scene1.splinecode"></Spline>
       <lord-icon
         src="https://cdn.lordicon.com/jpzhmobh.json"
         trigger="loop"

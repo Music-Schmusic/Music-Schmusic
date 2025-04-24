@@ -351,7 +351,7 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
       </div>
-    </div>
+    </div> 
   );
 };
 

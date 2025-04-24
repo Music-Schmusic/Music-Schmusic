@@ -797,7 +797,7 @@ dd {
   overflow: hidden;
   z-index: 1;
 }
-.spline-background {
+.spline {
   position: fixed; /* Ensures it stays behind everything */
   top: 0;
   left: 0;
@@ -806,6 +806,22 @@ dd {
   z-index: 0; /* Places it behind other content */
   overflow: hidden; /* Prevents any unwanted scrollbars */
   background-color: #ffffff;
+}
+
+.spline-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* push behind other UI */
+  overflow: hidden;
+}
+
+.spline-background canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover; /* makes sure the scene fills the space without letterboxing */
 }
 
 /**
