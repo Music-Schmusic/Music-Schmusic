@@ -1,4 +1,3 @@
-// spotifyroutes.test.js
 import request from 'supertest';
 import { jest } from '@jest/globals';
 
