@@ -27,8 +27,8 @@ async function getAccount(username) {
 }
 
 async function addAccount(account) {
-  const db = await getdbcon();
-  const userModel = db.model('User', AccountSchema);
+  //const db = await getdbcon();
+  const userModel = mongoose.model('User', AccountSchema);
   const accountToAdd = new userModel(account);
   return await accountToAdd.save();
 }
