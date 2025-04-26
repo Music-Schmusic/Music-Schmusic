@@ -90,7 +90,7 @@ app.post('/accountrecovery', async (req, res) => {
       //exprdate = now + 5m
       const expiration_date = Date.now() + 300000;
       const token = crypto.randomBytes(32).toString('hex');
-      const url = `http://localhost:5173/resetpassword?token=${token}`;
+      const url = `http://localhost:5173/resetvalidation?token=${token}`;
       const recoveryToken = {
         token: token,
         expiration: expiration_date,
@@ -113,7 +113,6 @@ app.post('/accountrecovery', async (req, res) => {
 
 app.post('/resetvalidation', async (req, res) => {
   const { token } = req.body;
-  console.log(token);
   const CRSFtoken = req.cookies.CRSFtoken;
   const date = Date.now();
   try {
@@ -126,13 +125,30 @@ app.post('/resetvalidation', async (req, res) => {
       CRSFtoken === record.CRSFtoken &&
       date < record.expiration
     ) {
-      res.status(200).send('validated');
+      res.status(200).json({ user: record.user });
     } else {
       res.status(401).send('Invalid Credentials');
     }
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error.message);
+  }
+});
+
+app.post('/resetpassword', async (req, res) => {
+  const { p1, p2, user } = req.body;
+  console.log(user);
+  console.log('\n');
+  console.log(p1);
+  try {
+    if (p1 === p2) {
+      await AccountFuncs.resetPassword(user, p1);
+      res.status(200).send('Password successfully updated');
+    } else {
+      res.status(400).send('Passwords do not match');
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
   }
 });
 

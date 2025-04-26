@@ -20,6 +20,7 @@ import PublicRoute from './components/PublicRoute.jsx';
 import OAuthSuccess from './components/OAuthSuccess';
 import AccountRecovery from './pages/AccountRecovery.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
+import ResetValidation from './pages/ResetValidation.jsx';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -112,13 +113,12 @@ const Home = ({ isLoggedIn, setIsLoggedIn }) => {
   );
 };
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ setIsLoggedIn }, { setTempLogin }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [showContainer, setShowContainer] = useState(false);
-
   useEffect(() => {
     const timer = setTimeout(() => setShowContainer(true), 1800);
     return () => clearTimeout(timer);
@@ -240,10 +240,11 @@ function AppRoutes({
   setIsLoggedIn,
   currentScene,
   setCurrentScene,
+  tempLogin,
+  setTempLogin,
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
@@ -292,9 +293,29 @@ function AppRoutes({
           />
           <Route path="/accountrecovery" element={<AccountRecovery />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/resetpassword" element={<ResetPassword />} />
+          <Route
+            path="/resetvalidation"
+            element={
+              <ResetValidation
+                tempLogin={tempLogin}
+                setTempLogin={setTempLogin}
+              />
+            }
+          />
         </Route>
-
+        <Route
+          element={<ProtectedRoute isLoggedIn={tempLogin} redirectTo={'/'} />}
+        >
+          <Route
+            path="/resetpassword"
+            element={
+              <ResetPassword
+                tempLogin={tempLogin}
+                setTempLogin={setTempLogin}
+              />
+            }
+          />
+        </Route>
         <Route
           element={
             <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
@@ -318,10 +339,15 @@ function AppRoutes({
 }
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const [tempLogin, setTempLogin] = useState(false);
   return (
     <Router>
-      <AppRoutes isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <AppRoutes
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn}
+        tempLogin={tempLogin}
+        setTempLogin={setTempLogin}
+      />
       <Footer />
     </Router>
   );

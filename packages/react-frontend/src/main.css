@@ -173,7 +173,6 @@ img {
 button,
 input {
 }
-,
 optgroup,
 select,
 textarea {
@@ -812,6 +811,49 @@ dd {
   z-index: 0; /* Places it behind other content */
   overflow: hidden; /* Prevents any unwanted scrollbars */
   background-color: #ffffff;
+}
+.resetpassword-form {
+  max-width: 400px;
+  margin: 5rem auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.resetpassword-form label {
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.resetpassword-form input[type='password'] {
+  padding: 0.75rem;
+  border: 1px solid #ffffff;
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.resetpassword-form input[type='password']:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.resetpassword-form input[type='button'] {
+  padding: 0.75rem;
+  background-color: #007bff;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.resetpassword-form input[type='button']:hover {
+  background-color: #0056b3;
 }
 
 /**

@@ -88,9 +88,6 @@ async function updatePassword(username, newpassword) {
   const db = await getdbcon();
   const userModel = db.model('User', AccountSchema);
   const user = await getAccount(username);
-  if (!user) {
-    throw new Error("User doesn't exist");
-  }
   const updated = await userModel.updateOne(
     { username },
     { password: newpassword }
