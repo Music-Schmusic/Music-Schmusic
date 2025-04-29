@@ -25,12 +25,14 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
-  // Drop collections instead of entire database (fixes "not allowed to drop database" error)
+  if (mongoose.connection.readyState !== 1) return; // 1 = connected
+
   const collections = await mongoose.connection.db.collections();
   for (let collection of collections) {
     await collection.deleteMany({});
   }
 });
+
 
 test('Test Get User', async () => {
   const body1 = {
@@ -65,6 +67,11 @@ test('Should skip MongoDB connection in test mode', async () => {
 test('Should handle MongoDB connection failure', async () => {
   process.env.NODE_ENV = 'development';
   process.env.MONGO_URI = 'invalid-uri'; // Force a connection failure
+
+  // Disconnect mongoose so connectDB doesn't skip connection attempt
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
 
   const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {}); // Prevent Jest from exiting
 
