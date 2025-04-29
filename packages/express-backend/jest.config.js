@@ -1,8 +1,8 @@
 export default {
-  testEnvironment: 'node',
+  transform: {},
   extensionsToTreatAsEsm: ['.js'],
-  transform: {}, // Disable Babel by default since we're running native ESM
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1', // Needed for imports to resolve in ESM
-  },
+  testEnvironment: 'node',
+  rootDir: 'packages/express-backend',
+  moduleDirectories: ['node_modules', '<rootDir>'],
+  setupFilesAfterEnv: ['./jest.setup.js'], // Load Jest setup before tests
 };

@@ -2,17 +2,16 @@
   "name": "express-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "src/server.js",
+  "main": "backend.js",
   "scripts": {
     "test": "dotenv -e .env.test -- jest",
-    "dev": "npx nodemon src/server.js",
-    "start": "node src/server.js"
+    "dev": "npx nodemon backend.js",
+    "start": "node backend.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@splinetool/react-spline": "^4.0.0",
-    "axios": "^1.8.4",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

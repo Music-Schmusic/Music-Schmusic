@@ -5,12 +5,13 @@ const OAuthSuccess = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.hash.substring(1));
+    const params = new URLSearchParams(window.location.search);
     const accessToken = params.get('access_token');
 
     if (accessToken) {
-      // Store Spotify token
-      localStorage.setItem('spotifyToken', accessToken);
+      // Store token (in memory, localStorage, cookie, etc)
+      localStorage.setItem('access_token', accessToken);
+      localStorage.setItem('isLoggedIn', 'true');
       setIsLoggedIn(true);
       navigate('/dashboard');
     } else {
