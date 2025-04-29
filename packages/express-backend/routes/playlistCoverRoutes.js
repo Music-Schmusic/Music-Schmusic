@@ -1,44 +1,80 @@
-import express from 'express';
-import { generatePlaylistCover } from '../imagen.js';
+import { Router } from 'express';
+import { GoogleAuth } from 'google-auth-library';
+import axios from 'axios';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const router = express.Router();
+const router = Router();
+const PROJECT = 'spotify-stat-ai';
+const LOCATION = 'us-central1';
+const MODEL = 'imagen-3.0-generate-002';
 
-/**
- * Dummy function to get top genres for a user.
- * In production, you’d calculate this from your listening data.
- */
-async function getTopGenres(userId) {
-  // Replace with a real query or aggregation based on the user's listening data.
-  return ['Rock', 'Hip-Hop', 'Pop'];
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 router.post('/generate', async (req, res) => {
-  const { userId } = req.body;
-  if (!userId) {
-    return res
-      .status(400)
-      .json({ error: 'userId is required in the request body.' });
-  }
-
   try {
-    // Retrieve the user's top 3 genres.
-    const genres = await getTopGenres(userId);
-    // Build a prompt using these genres.
-    const prompt = `Create a vibrant, modern playlist cover that captures the essence of ${genres.join(
-      ', '
-    )} music. Use bold colors and dynamic imagery.`;
+    // 1) Load service acc
+    const keyFile = path.join(
+      __dirname,
+      '../auth/spotify-stat-ai-8587b4801d2d.json'
+    );
+    console.log('→ loading credentials from', keyFile);
 
-    // Generate the image using Vertex AI.
-    const response = await generatePlaylistCover(prompt);
-    // The structure of the response depends on the API; assume response.predictions[0] holds the image data.
-    const generatedImage = response.predictions && response.predictions[0];
-    if (!generatedImage) {
-      throw new Error('No image generated.');
+    const auth = new GoogleAuth({
+      keyFilename: keyFile,
+      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+    });
+    const client = await auth.getClient();
+    const { token } = await client.getAccessToken();
+
+    // 2) Imagen REST endpoint
+    const url =
+      `https://${LOCATION}-aiplatform.googleapis.com/v1/` +
+      `projects/${PROJECT}/locations/${LOCATION}` +
+      `/publishers/google/models/${MODEL}:predict`;
+
+    // 3) prompt + params
+    const body = {
+      instances: [
+        {
+          prompt:
+            'Generate a creative playlist cover image based on the genres: bunny.',
+        },
+      ],
+      parameters: { sampleCount: 1, aspectRatio: '1:1' },
+    };
+
+    // 4) call Imagen
+    const aiResp = await axios.post(url, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      timeout: 120_000,
+    });
+
+    console.log(
+      '✅ Status',
+      aiResp.status,
+      'Payload keys:',
+      Object.keys(aiResp.data)
+    );
+
+    // 5) pull out the Base64 string & mimeType
+    const p = aiResp.data.predictions?.[0];
+    const mimeType = p?.mimeType || 'image/png';
+    const b64 = p?.bytesBase64Encoded;
+    if (!b64) {
+      return res.status(500).json({ error: 'No image data in response' });
     }
-    res.json({ image: generatedImage });
-  } catch (error) {
-    console.error('Error generating playlist cover:', error);
-    res.status(500).json({ error: 'Failed to generate playlist cover.' });
+
+    // 6) form a proper Data-URI
+    const dataUri = `data:${mimeType};base64,${b64}`;
+    return res.json({ image: dataUri });
+  } catch (err) {
+    console.error('🌄 Imagen API error:', err);
+    return res.status(500).json({ error: 'Internal AI error' });
   }
 });
 
