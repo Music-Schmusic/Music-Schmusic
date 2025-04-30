@@ -22,7 +22,7 @@ export default function AccountRecovery() {
 
   function recoverAccount(creds) {
     return fetch('http://localhost:8000/accountrecovery', {
-      method: 'Post',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(creds),

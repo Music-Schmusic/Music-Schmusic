@@ -5,38 +5,21 @@ import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
 import db from './db.js';
 import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
+import spotifyStatsRoutes from './routes/spotifyStats.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import path from 'path';
 import authenticateUser from './authMiddleware.js';
 import mailer from './mailer.js';
 import crypto from 'crypto';
-import cokieParser from 'cookie-parser';
 import cookieParser from 'cookie-parser';
 
-if (process.env.NODE_ENV === 'test') {
-  dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
-} else {
-  dotenv.config({ path: path.resolve('packages/express-backend/.env') });
-}
-
-const app = express();
-const port = process.env.PORT || 8000;
-const TOKEN_SECRET = process.env.TOKEN_SECRET;
+const app = express.Router();
 
 dbrequests.setDataBaseConn(db());
 
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-  })
-);
-app.use(express.json());
-app.use(cookieParser());
-app.use('/', authRoutes);
 app.get('/', (req, res) => res.send('API Running'));
-
+app.use(cookieParser());
 app.post('/signup', async (req, res) => {
   try {
     const accountToAdd = await AccountFuncs.createAccount(req.body);
@@ -69,12 +52,14 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/accountrecovery', async (req, res) => {
+  console.log(req);
   const id = crypto.randomBytes(32).toString('hex');
   res.cookie('CRSFtoken', id, {
     httpOnly: true,
     sameSite: 'strict',
     secure: false,
   });
+
   console.log(id);
 
   try {
@@ -157,9 +142,6 @@ app.get('/protected', authenticateUser, (req, res) => {
 });
 
 app.use('/api/playlist-cover', playlistCoverRoutes);
-
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => console.log(`Server running on port ${port}`));
-}
+app.use('/spotify', spotifyStatsRoutes);
 
 export default app;

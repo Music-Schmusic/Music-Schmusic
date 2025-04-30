@@ -9,44 +9,33 @@ export default function ResetValidation({ tempLogin, setTempLogin }) {
     token: urlParams.get('token'),
   };
 
-  const [user, setUser] = useState('');
+  async function validateToken() {
+    try {
+      const res = await fetch('http://localhost:8000/resetvalidation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(token),
+      });
 
-  // Fetch the validation token and set tempLogin state
-  useEffect(() => {
-    const validateToken = async () => {
-      try {
-        const res = await fetch('http://localhost:8000/resetvalidation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(token),
+      if (res.status === 200) {
+        const data = await res.json();
+        setTempLogin(true, () => {
+          navigate(`/resetpassword?username=${data.user}`);
         });
-
-        if (res.status === 200) {
-          console.log('success');
-          setTempLogin(true);
-          const data = await res.json();
-          if (data && data.user) {
-            console.log(data.user);
-            setUser(data.user);
-          }
-        } else {
-          navigate('/');
-        }
-      } catch (error) {
-        console.error(error);
+      } else {
+        navigate('/');
       }
-    };
+    } catch (error) {
+      console.error(error);
+      navigate('/');
+    }
+  }
 
+  // Initial validation effect
+  useEffect(() => {
     validateToken();
   }, []);
-
-  // Navigate once tempLogin is true and user is set
-  useEffect(() => {
-    if (tempLogin && user) {
-      navigate(`/resetpassword?user=${user}`);
-    }
-  }, [tempLogin, user, navigate]);
 
   return <p>Validating reset token...</p>;
 }

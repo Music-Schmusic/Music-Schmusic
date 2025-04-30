@@ -4,13 +4,14 @@ import { useNavigate } from 'react-router-dom';
 export default function resetPassword({ tempLogin, setTempLogin }) {
   const query = window.location.search;
   const urlParams = new URLSearchParams(query);
-  const user = urlParams.get('user');
+  const user = urlParams.get('username');
   const navigate = useNavigate();
   const [data, setData] = useState({
     p1: '',
     p2: '',
     user: user,
   });
+
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === 'password')
