@@ -112,7 +112,7 @@ const Dashboard = () => {
 
         // Format time as "Xh Ym"
         const formattedTime = `${hours}h ${minutes}m`;
-
+        console.log(formattedTime)
         setUserStats((prev) => ({
           ...prev,
           thisWeek: {
