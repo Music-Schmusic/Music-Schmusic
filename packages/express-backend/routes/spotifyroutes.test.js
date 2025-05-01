@@ -8,8 +8,8 @@ const mockRecentResponse = { data: { items: ['recent1', 'recent2'] } };
 // Mock the axios module before importing the app
 jest.unstable_mockModule('axios', () => ({
   default: {
-    get: jest.fn()
-  }
+    get: jest.fn(),
+  },
 }));
 
 // Now dynamically import axios and the app
@@ -27,7 +27,7 @@ describe('Spotify Routes', () => {
     axios.get.mockResolvedValueOnce(mockTracksResponse);
 
     const res = await request(app)
-      .get('/spotify/top-tracks')
+      .get('/spotify/stats/top-tracks')
       .set('Authorization', mockToken);
 
     expect(res.statusCode).toBe(200);
@@ -36,8 +36,8 @@ describe('Spotify Routes', () => {
       expect.stringContaining('/top/tracks'),
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: mockToken
-        })
+          Authorization: mockToken,
+        }),
       })
     );
   });
@@ -46,7 +46,7 @@ describe('Spotify Routes', () => {
     axios.get.mockResolvedValueOnce(mockArtistsResponse);
 
     const res = await request(app)
-      .get('/spotify/top-artists')
+      .get('/spotify/stats/top-artists')
       .set('Authorization', mockToken);
 
     expect(res.statusCode).toBe(200);
@@ -57,7 +57,7 @@ describe('Spotify Routes', () => {
     axios.get.mockResolvedValueOnce(mockRecentResponse);
 
     const res = await request(app)
-      .get('/spotify/recently-played')
+      .get('/spotify/stats/recently-played')
       .set('Authorization', mockToken);
 
     expect(res.statusCode).toBe(200);
@@ -65,7 +65,7 @@ describe('Spotify Routes', () => {
   });
 
   test('GET /spotify/top-tracks - missing token', async () => {
-    const res = await request(app).get('/spotify/top-tracks');
+    const res = await request(app).get('/spotify/stats/top-tracks');
     expect(res.statusCode).toBe(401);
     expect(res.body).toHaveProperty('error', 'No Spotify token provided');
   });
@@ -74,12 +74,12 @@ describe('Spotify Routes', () => {
     axios.get.mockRejectedValueOnce({
       response: {
         status: 403,
-        data: { error: 'Invalid token' }
-      }
+        data: { error: 'Invalid token' },
+      },
     });
 
     const res = await request(app)
-      .get('/spotify/top-tracks')
+      .get('/spotify/stats/top-tracks')
       .set('Authorization', mockToken);
 
     expect(res.statusCode).toBe(403);

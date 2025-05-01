@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { jest } from '@jest/globals';
+import app from '../backend.js'
 
 // Mock Account model and fetch API
 jest.unstable_mockModule('../schemas/account.js', () => ({
@@ -13,10 +14,6 @@ global.fetch = jest.fn(); // mock global fetch
 const Account = (await import('../schemas/account.js')).default;
 const spotifyRouter = (await import('./authorize.js')).default;
 const express = await import('express');
-
-const app = express.default();
-app.use(express.default.json());
-app.use('/', spotifyRouter);
 
 describe('Spotify OAuth Routes', () => {
   beforeEach(() => {
@@ -61,7 +58,7 @@ describe('Spotify OAuth Routes', () => {
     });
 
     const res = await request(app)
-      .get('/callback')
+      .get('/authorize/callback')
       .query({
         code: 'valid-code',
         state: 'valid',
