@@ -13,8 +13,37 @@ import authenticateUser from './authMiddleware.js';
 import mailer from './mailer.js';
 import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
+import spotifyRoutes from './routes/spotifyroutes.js';
 
-const app = express.Router();
+dotenv.config();
+
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
+} else {
+  dotenv.config({ path: path.resolve('packages/express-backend/.env') });
+}
+
+const app = express();
+const routes = express.Router();
+const TOKEN_SECRET = process.env.TOKEN_SECRET;
+const PORT = process.env.PORT || 8000;
+
+// Middleware
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+
+// Routes
+app.use('/spotify', spotifyRoutes);
+app.use('/authorize', authRoutes);
+app.use('/', routes);
+app.use('/api/playlist-cover', playlistCoverRoutes);
+app.use('/spotify/stats', spotifyStatsRoutes);
 
 dbrequests.setDataBaseConn(db());
 
@@ -141,7 +170,22 @@ app.get('/protected', authenticateUser, (req, res) => {
   res.send(`Welcome ${req.user.username}`);
 });
 
-app.use('/api/playlist-cover', playlistCoverRoutes);
-app.use('/spotify', spotifyStatsRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log('Environment variables loaded:', {
+      PORT: process.env.PORT,
+      JWT_SECRET: process.env.JWT_SECRET ? 'Set' : 'Not set',
+      SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID ? 'Set' : 'Not set',
+    });
+  });
+}
 
 export default app;

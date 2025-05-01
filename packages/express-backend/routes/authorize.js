@@ -3,9 +3,7 @@ import querystring from 'querystring';
 import cors from 'cors';
 import Account from '../schemas/account.js';
 
-const app = express();
 const router = express.Router();
-app.use(cors());
 
 //throwaway account its fine
 let client_id = '1d896050be0f4f0c8aef60ca671d3789';

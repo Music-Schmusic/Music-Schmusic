@@ -24,7 +24,7 @@ describe('Spotify OAuth Routes', () => {
   });
 
   test('GET /authorize returns valid Spotify auth URL', async () => {
-    const res = await request(app).get('/authorize');
+    const res = await request(app).get('/authorize/authorize');
 
     expect(res.statusCode).toBe(200);
     expect(res.body.authUrl).toContain('https://accounts.spotify.com/authorize');
@@ -33,7 +33,7 @@ describe('Spotify OAuth Routes', () => {
   });
 
   test('GET /callback returns error on state mismatch', async () => {
-    const res = await request(app).get('/callback');
+    const res = await request(app).get('/authorize/callback');
 
     expect(res.statusCode).toBe(302); // redirected
     expect(res.headers.location).toContain('state_mismatch');
@@ -77,7 +77,7 @@ describe('Spotify OAuth Routes', () => {
     fetch.mockRejectedValueOnce(new Error('Fetch failed'));
 
     const res = await request(app)
-      .get('/callback')
+      .get('/authorize/callback')
       .query({
         code: 'valid-code',
         state: 'valid',
