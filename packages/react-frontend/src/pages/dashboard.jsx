@@ -49,7 +49,9 @@ const Dashboard = () => {
     console.log('Fetching auth URL...'); // Debug log
     const fetchAuthUrl = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/authorize');
+        const response = await axios.get(
+          'http://localhost:8000/authorize/authorize'
+        );
         console.log('Auth URL received:', response.data.authUrl); // Debug log
         setAuthUrl(response.data.authUrl);
       } catch (err) {
@@ -80,9 +82,13 @@ const Dashboard = () => {
         console.log('Making API requests...'); // Debug log
         const [tracksResponse, artistsResponse, recentResponse] =
           await Promise.all([
-            axios.get('http://localhost:8000/spotify/top-tracks', { headers }),
-            axios.get('http://localhost:8000/spotify/top-artists', { headers }),
-            axios.get('http://localhost:8000/spotify/recently-played', {
+            axios.get('http://localhost:8000/spotify/stats/top-tracks', {
+              headers,
+            }),
+            axios.get('http://localhost:8000/spotify/stats/top-artists', {
+              headers,
+            }),
+            axios.get('http://localhost:8000/spotify/stats/recently-played', {
               headers,
             }),
           ]);
@@ -92,6 +98,7 @@ const Dashboard = () => {
         setTopArtists(artistsResponse.data);
         setRecentlyPlayed(recentResponse.data);
         setLoading(false);
+        console.log(tracksResponse, artistsResponse, recentResponse);
 
         // Calculate time spent listening
         const totalMs = recentResponse.data.reduce(
@@ -351,7 +358,7 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
       </div>
-    </div> 
+    </div>
   );
 };
 

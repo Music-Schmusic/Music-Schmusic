@@ -5,7 +5,7 @@ const OAuthSuccess = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.hash.substring(1));
+    const params = new URLSearchParams(window.location.search);
     const accessToken = params.get('access_token');
 
     if (accessToken) {

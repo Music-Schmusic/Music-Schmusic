@@ -2,13 +2,15 @@ import express from 'express';
 import querystring from 'querystring';
 import cors from 'cors';
 import Account from '../schemas/account.js';
+import dotenv from 'dotenv';
 
 const router = express.Router();
 
+dotenv.config();
 //throwaway account its fine
-let client_id = '1d896050be0f4f0c8aef60ca671d3789';
-let client_secret = '26391446c4ba4249952b65b90d84238e';
-const redirect_uri = 'http://localhost:8000/callback';
+let client_id = process.env.SPOTIFY_CLIENT_ID;
+let client_secret = process.env.SPOTIFY_SECRET_ID;
+const redirect_uri = 'http://localhost:8000/authorize/callback';
 
 //request authorization code
 router.get('/authorize', function (req, res) {
@@ -33,9 +35,12 @@ router.get('/authorize', function (req, res) {
 
 //recieve authorization code and request access tokens
 router.get('/callback', async function (req, res) {
+  console.log('Hit!');
   var code = req.query.code || null;
   var state = req.query.state || null;
   var username = req.query.username || null;
+
+  console.log(code, state, username);
 
   //security feature, in case of cross-site request forgery
   if (state === null) {
@@ -70,7 +75,6 @@ router.get('/callback', async function (req, res) {
         headers: authOptions.headers,
         body: authOptions.body,
       });
-
       if (!response.ok) {
         throw new Error('Network response was not ok: ' + response.statusText);
       }

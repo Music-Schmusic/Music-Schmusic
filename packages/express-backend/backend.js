@@ -14,6 +14,7 @@ import mailer from './mailer.js';
 import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import spotifyRoutes from './routes/spotifyroutes.js';
+import auth from './src/routes/auth.js'
 
 dotenv.config();
 
@@ -44,6 +45,8 @@ app.use('/authorize', authRoutes);
 app.use('/', routes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
+app.use('/auth', auth)
+
 
 dbrequests.setDataBaseConn(db());
 

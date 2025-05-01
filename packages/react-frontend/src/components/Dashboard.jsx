@@ -9,7 +9,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const username = localStorage.getItem('username');
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,9 +24,13 @@ const Dashboard = () => {
 
         const [tracksResponse, artistsResponse, recentResponse] =
           await Promise.all([
-            axios.get('http://localhost:8000/spotify/top-tracks', { headers }),
-            axios.get('http://localhost:8000/spotify/top-artists', { headers }),
-            axios.get('http://localhost:8000/spotify/recently-played', {
+            axios.get('http://localhost:8000/spotify/stats/top-tracks', {
+              headers,
+            }),
+            axios.get('http://localhost:8000/spotify/stats/top-artists', {
+              headers,
+            }),
+            axios.get('http://localhost:8000/spotify/stats/recently-played', {
               headers,
             }),
           ]);
