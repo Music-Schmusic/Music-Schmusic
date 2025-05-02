@@ -94,17 +94,17 @@ const Dashboard = () => {
           ]);
 
         console.log('API responses received'); // Debug log
-        setTopTracks(tracksResponse.data);
-        setTopArtists(artistsResponse.data);
-        setRecentlyPlayed(recentResponse.data);
+        setTopTracks(tracksResponse.data.items);
+        setTopArtists(artistsResponse.data.items);
+        setRecentlyPlayed(recentResponse.data.items);
         setLoading(false);
         console.log(tracksResponse, artistsResponse, recentResponse);
 
         // Calculate time spent listening
-        const totalMs = recentResponse.data.reduce(
-          (acc, track) => acc + track.track.duration_ms,
-          0
-        );
+        var totalMs = 0;
+        for (let i = 0; i < recentResponse.data.items.length; i++) {
+          totalMs = totalMs + recentResponse.data.items[i].track.duration_ms;
+        }
 
         // Convert to hours and minutes
         const hours = Math.floor(totalMs / 3600000);
@@ -112,7 +112,7 @@ const Dashboard = () => {
 
         // Format time as "Xh Ym"
         const formattedTime = `${hours}h ${minutes}m`;
-        console.log(formattedTime)
+        console.log(formattedTime);
         setUserStats((prev) => ({
           ...prev,
           thisWeek: {

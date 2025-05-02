@@ -3,7 +3,7 @@ import querystring from 'querystring';
 import cors from 'cors';
 import Account from '../schemas/account.js';
 import dotenv from 'dotenv';
-
+import spotifyFetch from './authorizehelper.js';
 const router = express.Router();
 
 dotenv.config();
@@ -70,11 +70,7 @@ router.get('/callback', async function (req, res) {
 
     try {
       //request access token
-      const response = await fetch(authOptions.url, {
-        method: authOptions.method,
-        headers: authOptions.headers,
-        body: authOptions.body,
-      });
+      const response = await spotifyFetch(authOptions);
       if (!response.ok) {
         throw new Error('Network response was not ok: ' + response.statusText);
       }
@@ -83,7 +79,6 @@ router.get('/callback', async function (req, res) {
       const access_token = json.access_token;
       const refresh_token = json.refresh_token;
       const expires_in = json.expires_in;
-
       // Store tokens in user's account
       if (username) {
         const user = await Account.findOne({ username });
@@ -98,7 +93,7 @@ router.get('/callback', async function (req, res) {
       const redirectFrontend = `http://localhost:5173/oauth-success?access_token=${access_token}`;
       res.redirect(redirectFrontend);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('THIS IS NOT AUTOMATED:', error);
       res.status(500).send('Error retrieving access token');
     }
   }

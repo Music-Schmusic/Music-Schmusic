@@ -15,7 +15,6 @@ import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import spotifyRoutes from './routes/spotifyroutes.js';
 
-
 dotenv.config();
 
 if (process.env.NODE_ENV === 'test') {
@@ -46,7 +45,6 @@ app.use('/', routes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
 
-
 dbrequests.setDataBaseConn(db());
 
 app.get('/', (req, res) => res.send('API Running'));
@@ -58,7 +56,11 @@ app.post('/signup', async (req, res) => {
     res.status(201).send(newAccount);
   } catch (error) {
     console.log(error);
-    res.status(409).send('Username Already Exists');
+    if (error.message === 'Username already exists') {
+      res.status(409).send('Username already in use');
+    } else {
+      res.status(400).send(error.message);
+    }
   }
 });
 
