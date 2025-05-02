@@ -12,322 +12,243 @@ import {
   Cell,
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import '../components/Dashboard.css';
 
-const Dashboard = () => {
-  console.log('Dashboard component rendered'); // Debug log
+export default function Dashboard() {
+  // Sample data structure for time spent
 
   const [userStats, setUserStats] = useState({
     thisWeek: {
-      timeSpent: 0,
-      favoriteArtist: '',
-      favoriteGenre: '',
+      timeSpent: 12,
+      favoriteArtist: 'Taylor Swift',
+      favoriteGenre: 'Pop',
     },
     lastWeek: {
-      timeSpent: 0,
-      favoriteArtist: '',
-      favoriteGenre: '',
+      timeSpent: 10,
+      favoriteArtist: 'Drake',
+      favoriteGenre: 'Hip-Hop',
     },
     twoWeeksAgo: {
-      timeSpent: 0,
-      favoriteArtist: '',
-      favoriteGenre: '',
+      timeSpent: 8,
+      favoriteArtist: 'The Weeknd',
+      favoriteGenre: 'R&B',
     },
   });
 
-  const [topTracks, setTopTracks] = useState([]);
-  const [topArtists, setTopArtists] = useState([]);
-  const [recentlyPlayed, setRecentlyPlayed] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [authUrl, setAuthUrl] = useState(null);
+  // New state for the AI-generated playlist cover
+  const [coverImage, setCoverImage] = useState(null);
+
+    
+  // New state for Spotify Top Tracks fetched from backend
+  const [spotifyTracks, setSpotifyTracks] = useState([]);
+
+  // Function to fetch the AI-generated cover from your backend
+  const getAICover = async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:8000/api/playlist-cover/generate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: 'test-user' }),
+        }
+      );
+      const data = await response.json();
+      console.log('API Response:', data);
+      setCoverImage(data.image);
+      console.log('Cover Image URL:', data.image);
+    } catch (error) {
+      console.error('Error fetching AI cover:', error);
+    }
+  };
+
+    // Fetch Spotify Top Tracks from backend on component mount
+    useEffect(() => {
+      const fetchTopTracks = async () => {
+        try {
+          // Retrieve your JWT from localStorage (assuming it's stored under the key "token")
+          const token = localStorage.getItem('token');
+          const response = await fetch('http://localhost:8000/spotify/top-tracks', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: 'include'
+          });
+          if (!response.ok) {
+            throw new Error('Failed to fetch top tracks');
+          }
+          const data = await response.json();
+          // For debugging: Log your returned data
+          console.log('Top tracks data:', data);
+          // Assume Spotify's API returns data with an 'items' array
+          setTopTracks(data.items);
+        } catch (error) {
+          console.error('Error fetching top artists:', error);
+        }
+      };
+  
+      fetchTopTracks();
+    }, []);
+  
+
+  // Format data for Recharts
+  const chartData = [
+    { name: '5 Weeks Ago', timeSpent: userStats.twoWeeksAgo.timeSpent },
+    { name: '4 Weeks Ago', timeSpent: userStats.lastWeek.timeSpent },
+    { name: '3 Weeks Ago', timeSpent: userStats.thisWeek.timeSpent },
+    { name: '2 Weeks Ago', timeSpent: userStats.twoWeeksAgo.timeSpent },
+    { name: 'Last Week', timeSpent: userStats.lastWeek.timeSpent },
+    { name: 'This Week', timeSpent: userStats.thisWeek.timeSpent },
+  ];
+
+  const genreData = [
+    { name: 'Pop', value: 50 },
+    { name: 'Hip-Hop', value: 25 },
+    { name: 'R&B', value: 15 },
+    { name: 'Rock', value: 10 },
+  ];
+  const COLORS = ['#30e849', '#8884d8', '#82ca9d', '#ff8042'];
+
+
+
+  // Calculate percentage change
+  const getPercentageChange = (current, previous) => {
+    if (previous === 0) return 'N/A'; // Avoid division by zero
+    const change = ((current - previous) / previous) * 100;
+    return change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+  };
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('Fetching auth URL...'); // Debug log
-    const fetchAuthUrl = async () => {
+    const fetchProtected = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/authorize');
-        console.log('Auth URL received:', response.data.authUrl); // Debug log
-        setAuthUrl(response.data.authUrl);
-      } catch (err) {
-        console.error('Error fetching auth URL:', err);
-        setError('Failed to get Spotify authorization URL');
-      }
-    };
-
-    fetchAuthUrl();
-  }, []);
-
-  useEffect(() => {
-    console.log('Fetching data...'); // Debug log
-    const fetchData = async () => {
-      try {
-        const spotifyToken = localStorage.getItem('spotifyToken');
-        console.log('Spotify token found:', !!spotifyToken); // Debug log
-
-        if (!spotifyToken) {
-          setLoading(false);
-          return;
-        }
-
-        const headers = {
-          Authorization: `Bearer ${spotifyToken}`,
-        };
-
-        console.log('Making API requests...'); // Debug log
-        const [tracksResponse, artistsResponse, recentResponse] =
-          await Promise.all([
-            axios.get('http://localhost:8000/spotify/top-tracks', { headers }),
-            axios.get('http://localhost:8000/spotify/top-artists', { headers }),
-            axios.get('http://localhost:8000/spotify/recently-played', {
-              headers,
-            }),
-          ]);
-
-        console.log('API responses received'); // Debug log
-        setTopTracks(tracksResponse.data);
-        setTopArtists(artistsResponse.data);
-        setRecentlyPlayed(recentResponse.data);
-        setLoading(false);
-
-        // Calculate time spent listening
-        const totalMs = recentResponse.data.reduce(
-          (acc, track) => acc + track.track.duration_ms,
-          0
-        );
-
-        // Convert to hours and minutes
-        const hours = Math.floor(totalMs / 3600000);
-        const minutes = Math.floor((totalMs % 3600000) / 60000);
-
-        // Format time as "Xh Ym"
-        const formattedTime = `${hours}h ${minutes}m`;
-
-        setUserStats((prev) => ({
-          ...prev,
-          thisWeek: {
-            ...prev.thisWeek,
-            timeSpent: formattedTime,
-            favoriteArtist: artistsResponse.data[0]?.name || 'No data',
-            favoriteGenre: artistsResponse.data[0]?.genres[0] || 'No data',
+        const res = await fetch('http://localhost:8000/protected', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-        }));
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        if (err.response?.status === 401) {
-          // Token expired or invalid
-          localStorage.removeItem('spotifyToken');
-          setError(
-            'Your Spotify session has expired. Please reconnect your account.'
-          );
-        } else {
-          setError(err.message);
+        });
+
+        if (!res.ok) {
+          throw new Error('Unauthorized');
         }
-        setLoading(false);
+
+        const data = await res.text();
+        console.log('Protected data:', data);
+      } catch (err) {
+        console.warn('JWT invalid or expired, redirecting to login...');
+        localStorage.removeItem('token');
+        localStorage.removeItem('isLoggedIn');
+        navigate('/login');
       }
     };
 
-    fetchData();
-  }, []);
-
-  // Format data for charts
-  const [chartData, setChartData] = useState([
-    { name: '5 Weeks Ago', timeSpent: 0 },
-    { name: '4 Weeks Ago', timeSpent: 0 },
-    { name: '3 Weeks Ago', timeSpent: 0 },
-    { name: '2 Weeks Ago', timeSpent: 0 },
-    { name: 'Last Week', timeSpent: 0 },
-    { name: 'This Week', timeSpent: 0 },
-  ]);
-
-  // Update chart data with actual time values
-  useEffect(() => {
-    if (userStats.thisWeek.timeSpent) {
-      const timeStr = userStats.thisWeek.timeSpent;
-      const [hours, minutes] = timeStr.split(' ').map((str) => parseInt(str));
-      const totalHours = hours + minutes / 60;
-
-      setChartData((prev) => {
-        const newData = [...prev];
-        newData[5] = { ...newData[5], timeSpent: totalHours };
-        return newData;
-      });
-    }
-  }, [userStats]);
-
-  // Custom formatter for Y-axis
-  const formatYAxis = (value) => {
-    const hours = Math.floor(value);
-    const minutes = Math.round((value - hours) * 60);
-    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
-  };
-
-  // Custom tooltip formatter
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const value = payload[0].value;
-      const hours = Math.floor(value);
-      const minutes = Math.round((value - hours) * 60);
-      const timeStr = minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
-
-      return (
-        <div
-          className="custom-tooltip"
-          style={{
-            background: 'rgba(255, 255, 255, 0.9)',
-            padding: '10px',
-            borderRadius: '5px',
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-          }}
-        >
-          <p className="label">{`${label}`}</p>
-          <p className="value">{`Time: ${timeStr}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const genreData = topArtists.slice(0, 4).map((artist) => ({
-    name: artist.genres[0] || 'Unknown',
-    value: artist.popularity,
-  }));
-
-  const COLORS = ['#30e849', '#8884d8', '#82ca9d', '#ff8042'];
+    fetchProtected();
+  }, [navigate]);
 
   const user = localStorage.getItem('username');
-  const spotifyToken = localStorage.getItem('spotifyToken');
-
-  console.log('Rendering state:', { loading, error, spotifyToken }); // Debug log
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Loading your music data...</p>
-      </div>
-    );
-  }
-
-  if (!spotifyToken) {
-    return (
-      <div className="connect-spotify-container">
-        <h2>Connect Your Spotify Account</h2>
-        <p>To view your music data, please connect your Spotify account.</p>
-        {authUrl && (
-          <button
-            onClick={() => window.open(authUrl, '_self')}
-            className="connect-spotify-button"
-          >
-            Connect Spotify
-          </button>
-        )}
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="error-container">
-        <h2>Oops! Something went wrong</h2>
-        <p>{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="try-again-button"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
 
   return (
-    <div className="dashboard">
+    <div className="dashboard-page">
       <div className="dashboard-content">
         <h1>Welcome back, {user}</h1>
         <h1>Your Music Dashboard</h1>
         <h5>Gain insights into your listening habits and discover trends.</h5>
-      </div>
 
-      <div className="sections-container">
-        <section className="top-tracks">
-          <h2>Your Top Tracks</h2>
-          <div className="music-grid">
-            {topTracks.slice(0, 5).map((track) => (
-              <div key={track.id} className="music-item">
-                <img
-                  src={track.album?.images[0]?.url}
-                  alt={track.name}
-                  className="music-image"
-                />
-                <div className="music-info">
-                  <h3>{track.name}</h3>
-                  <p>{track.artists.map((artist) => artist.name).join(', ')}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* New AI Cover Section */}
+        <div
+          className="ai-cover-section"
+          style={{
+            margin: '20px 0',
+            padding: '10px',
+            background: '#f2f2f2',
+            borderRadius: '8px',
+          }}
+        >
+          <h2>AI Generated Playlist Cover</h2>
+          <button
+            className="button"
+            onClick={getAICover}
+            style={{ marginBottom: '10px' }}
+          >
+            Generate Playlist Cover
+          </button>
+          {coverImage && (
+            <img
+              src={coverImage}
+              alt="AI Generated Playlist Cover"
+              style={{
+                maxWidth: '300px',
+                display: 'block',
+                border: '3px solid red',
+              }}
+            />
+          )}
 
-        <section className="top-artists">
-          <h2>Your Top Artists</h2>
-          <div className="music-grid">
-            {topArtists.slice(0, 5).map((artist) => (
-              <div key={artist.id} className="music-item">
-                <img
-                  src={artist.images[0]?.url}
-                  alt={artist.name}
-                  className="music-image"
-                />
-                <div className="music-info">
-                  <h3>{artist.name}</h3>
-                  <p>{artist.genres.slice(0, 2).join(', ')}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="recently-played">
-          <h2>Recently Played</h2>
-          <div className="music-grid">
-            {recentlyPlayed.slice(0, 5).map((item) => (
-              <div key={item.track.id} className="music-item">
-                <img
-                  src={item.track.album?.images[0]?.url}
-                  alt={item.track.name}
-                  className="music-image"
-                />
-                <div className="music-info">
-                  <h3>{item.track.name}</h3>
-                  <p>
-                    {item.track.artists.map((artist) => artist.name).join(', ')}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <div className="chart-container">
-          <h2>Listening Time</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData}>
-              <XAxis dataKey="name" />
-              <YAxis tickFormatter={formatYAxis} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="timeSpent" fill="#30e849" name="Time Listened" />
-            </BarChart>
-          </ResponsiveContainer>
+          {!coverImage && <p>No cover generated yet.</p>}
         </div>
 
-        <div className="chart-container">
-          <h2>Top Genres</h2>
+        {/* Time Spent Bar Chart */}
+        <div className="stats-section">
+          <h2>Time Spent Listening</h2>
           <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <XAxis dataKey="name" />
+              <YAxis
+                label={{ value: 'Hours', angle: -90, position: 'insideLeft' }}
+              />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="timeSpent" fill="#30e849" barSize={40} />
+            </BarChart>
+          </ResponsiveContainer>
+          <p>
+            Change from last week:{' '}
+            <strong>
+              {getPercentageChange(
+                userStats.thisWeek.timeSpent,
+                userStats.lastWeek.timeSpent
+              )}
+            </strong>
+          </p>
+        </div>
+
+        {/* Favorite Artist */}
+        <div className="stats-section">
+          <h2>Favorite Artist</h2>
+          <p>
+            This Week: <strong>{userStats.thisWeek.favoriteArtist}</strong>
+          </p>
+          <p>
+            Last Week: <strong>{userStats.lastWeek.favoriteArtist}</strong>
+          </p>
+        </div>
+
+        {/* Favorite Genre */}
+        <div className="stats-section">
+          <h2>Favorite Genre</h2>
+          <p>
+            This Week: <strong>{userStats.thisWeek.favoriteGenre}</strong>
+          </p>
+          <p>
+            Last Week: <strong>{userStats.lastWeek.favoriteGenre}</strong>
+          </p>
+        </div>
+        <div
+          className="stats-section"
+          style={{
+            backgroundColor: '#252525',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+          }}
+        >
+          <h2 style={{ marginBottom: '10px', fontSize: '1.5rem' }}>
+            Genre Distribution
+          </h2>
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
                 data={genreData}
@@ -345,14 +266,72 @@ const Dashboard = () => {
                   />
                 ))}
               </Pie>
-              <Tooltip />
-              <Legend />
+              <Tooltip
+                contentStyle={{ backgroundColor: '#333', border: 'none' }}
+                labelStyle={{ color: '#fff' }}
+              />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+        {/* Top Tracks */}
+        <div
+          className="stats-section"
+          style={{
+            backgroundColor: '#252525',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+          }}
+        >
+          <h2 style={{ marginBottom: '10px', fontSize: '1.5rem' }}>
+            Top Tracks
+          </h2>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th
+                  style={{
+                    textAlign: 'left',
+                    padding: '8px',
+                    borderBottom: '1px solid #444',
+                  }}
+                >
+                  Track
+                </th>
+                <th
+                  style={{
+                    textAlign: 'right',
+                    padding: '8px',
+                    borderBottom: '1px solid #444',
+                  }}
+                >
+                  Artists
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+            {spotifyTracks.length > 0 ? (
+                spotifyTracks.map((track) => (
+                  <tr key={track.id}>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #444' }}>
+                      {track.name}
+                    </td>
+                    <td style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #444' }}>
+                      {track.artists.map((artist) => artist.name).join(', ')}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="2" style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #444' }}>
+                    No top tracks found.
+                    </td>
+                    </tr>
+                  )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div> 
   );
-};
-
-export default Dashboard;
+}

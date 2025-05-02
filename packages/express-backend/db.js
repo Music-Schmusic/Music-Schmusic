@@ -9,14 +9,11 @@ const connectDB = async () => {
     return;
   }
 
-  // Prevent multiple connections
-  if (mongoose.connection.readyState !== 0) {
-    console.log('MongoDB already connected. Skipping reconnect.');
-    return mongoose;
-  }
-
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     return mongoose;
   } catch (err) {
