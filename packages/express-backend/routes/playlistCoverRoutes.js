@@ -1,4 +1,3 @@
-// packages/express-backend/routes/playlistCoverRoutes.js
 import express from 'express';
 import { generatePlaylistCover } from '../imagen.js';
 

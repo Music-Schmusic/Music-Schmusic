@@ -298,6 +298,18 @@ test('Update password', async () => {
 
 test('Failed to update password', async () => {
   await expect(
-    src.resetPassword('notauser', 'does not matter')
+    src.resetPassword('user', 'does not matter')
   ).rejects.toThrow("User doesn't exist");
+});
+
+test('Failed same password', async () => {
+  const body = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234forever',
+  };
+  const user = await src.createAccount(body);
+  const account = await db_req.addAccount(user);
+  await expect(src.resetPassword('testuser', '1234forever')).rejects.toThrow('New password cannot be the same as the existing');
+
 });

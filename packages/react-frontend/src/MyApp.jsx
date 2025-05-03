@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 import './main.css';
 import Spline from '@splinetool/react-spline';
+import SplineBackground from './SplineBackground';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
 import Settings from './pages/settings.jsx';
@@ -18,7 +19,13 @@ import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
 import OAuthSuccess from './components/OAuthSuccess';
+import Login from './components/Login';
+import SignUp from './components/Signup';
+import StatsIcon from './components/StatsIcon';
 import AccountRecovery from './pages/AccountRecovery.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
+import ResetValidation from './pages/ResetValidation.jsx';
+import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -26,12 +33,18 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('spotifyToken');
   };
 
   return (
     <nav className="navbar">
       <div className="logo">
-        <Link to="/">Music Shmusic</Link>
+        <Link
+          to="/"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        >
+          <StatsIcon size={40} />
+        </Link>
       </div>
       <div className="nav-links">
         {isLoggedIn ? (
@@ -111,138 +124,16 @@ const Home = ({ isLoggedIn, setIsLoggedIn }) => {
   );
 };
 
-const Login = ({ setIsLoggedIn }) => {
-  const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [showContainer, setShowContainer] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowContainer(true), 1800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  async function handleLogin(e) {
-    e.preventDefault();
-    setError(null);
-    try {
-      const res = await fetch('http://localhost:8000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-
-      const { token, username: user } = await res.json();
-      localStorage.setItem('token', token);
-      localStorage.setItem('username', user);
-      localStorage.setItem('isLoggedIn', 'true');
-
-      setIsLoggedIn(true);
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid Login Information');
-    }
-  }
-
-  if (!showContainer) return null;
-
-  return (
-    <div className="login-container">
-      <h1>Login</h1>
-      <p>Sign in to continue</p>
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Username or Email"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error && <p className="error-message">{error}</p>}
-        <button type="submit">Login</button>
-      </form>
-      <button
-        type="forgotPassword"
-        onClick={() => navigate('/accountrecovery')}
-      >
-        Forgot Passsword?{' '}
-      </button>
-    </div>
-  );
-};
-
-const SignUp = () => {
-  const navigate = useNavigate();
-
-  function postAccount(account) {
-    return fetch('http://localhost:8000/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(account),
-    });
-  }
-
-  function authorizeAccount() {
-    return fetch('http://localhost:8000/authorize');
-  }
-
-  function handleSubmit(account) {
-    postAccount(account)
-      .then((res) => {
-        if (res.status === 201) {
-          authorizeAccount()
-            .then((response) => response.json())
-            .then((response) => window.open(response.authUrl, ''))
-            .catch(console.error);
-          navigate('/login');
-        } else if (res.status === 409) {
-          return res.text();
-        }
-      })
-      .then((text) => {
-        if (text) window.alert(text);
-      })
-      .catch(console.error);
-  }
-
-  return (
-    <div className="signup-container">
-      <h3>Create an account to get started</h3>
-      <h1>Sign Up</h1>
-      <div className="boxes">
-        <Form handleSubmit={handleSubmit} />
-      </div>
-      <h6> </h6>
-      <h5>Already have an account?</h5>
-      <button className="login-btn" onClick={() => navigate('/login')}>
-        Login
-      </button>
-      <button className="back-btn" onClick={() => navigate('/')}>
-        Back to Home
-      </button>
-    </div>
-  );
-};
-
 function AppRoutes({
   isLoggedIn,
   setIsLoggedIn,
   currentScene,
   setCurrentScene,
+  tempLogin,
+  setTempLogin,
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
@@ -275,6 +166,7 @@ function AppRoutes({
     <>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
+        <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
         <Route
           element={
             <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
@@ -291,8 +183,29 @@ function AppRoutes({
           />
           <Route path="/accountrecovery" element={<AccountRecovery />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route
+            path="/resetvalidation"
+            element={
+              <ResetValidation
+                tempLogin={tempLogin}
+                setTempLogin={setTempLogin}
+              />
+            }
+          />
         </Route>
-
+        <Route
+          element={<ProtectedRoute isLoggedIn={tempLogin} redirectTo={'/'} />}
+        >
+          <Route
+            path="/resetpassword"
+            element={
+              <ResetPassword
+                tempLogin={tempLogin}
+                setTempLogin={setTempLogin}
+              />
+            }
+          />
+        </Route>
         <Route
           element={
             <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
@@ -303,8 +216,6 @@ function AppRoutes({
           <Route path="/recs" element={<Recommended />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
-
-        <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
         <Route
           path="/oauth-success"
           element={<OAuthSuccess setIsLoggedIn={setIsLoggedIn} />}
@@ -314,13 +225,49 @@ function AppRoutes({
     </>
   );
 }
+
+const AppContent = ({
+  isLoggedIn,
+  setIsLoggedIn,
+  currentScene,
+  setCurrentScene,
+  tempLogin,
+  setTempLogin,
+}) => {
+  const location = useLocation();
+  const showSpline = ['/', '/login', '/signup'].includes(location.pathname);
+
+  return (
+    <>
+      {showSpline && <SplineBackground currentScene={currentScene} />}
+      <AppRoutes
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn}
+        currentScene={currentScene}
+        setCurrentScene={setCurrentScene}
+        tempLogin={tempLogin}
+        setTempLogin={setTempLogin}
+      />
+      <Footer />
+    </>
+  );
+};
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [tempLogin, setTempLogin] = useStateWithCallbackLazy(false);
+  const [currentScene, setCurrentScene] = useState('scene1.splinecode');
 
   return (
     <Router>
-      <AppRoutes isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <Footer />
+      <AppContent
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn}
+        tempLogin={tempLogin}
+        setTempLogin={setTempLogin}
+        currentScene={currentScene}
+        setCurrentScene={setCurrentScene}
+      />
     </Router>
   );
 }

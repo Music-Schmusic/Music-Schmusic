@@ -9,9 +9,8 @@ const OAuthSuccess = ({ setIsLoggedIn }) => {
     const accessToken = params.get('access_token');
 
     if (accessToken) {
-      // Store token (in memory, localStorage, cookie, etc)
-      localStorage.setItem('access_token', accessToken);
-      localStorage.setItem('isLoggedIn', 'true');
+      // Store Spotify token
+      localStorage.setItem('spotifyToken', accessToken);
       setIsLoggedIn(true);
       navigate('/dashboard');
     } else {

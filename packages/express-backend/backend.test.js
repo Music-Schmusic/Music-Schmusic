@@ -91,7 +91,7 @@ describe('Backend API tests', () => {
     // Second signup should fail
     const res = await request(app).post('/signup').send(user);
     expect(res.statusCode).toBe(409);
-    expect(res.text).toBe('Username Already Exists');
+    expect(res.text).toBe('Username already in use');
   });
 
   test('Login with invalid credentials returns 401', async () => {

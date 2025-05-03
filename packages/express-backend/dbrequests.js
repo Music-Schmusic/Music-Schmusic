@@ -3,6 +3,7 @@ import listeningDataModel from './schemas/listeningData.js';
 import playlistModel from './schemas/playlist.js';
 import connectDB from './db.js';
 import AccountSchema from './schemas/user.js';
+import RecoveryToken from './schemas/recoveryToken.js';
 
 mongoose.set('debug', true);
 
@@ -30,6 +31,19 @@ async function addAccount(account) {
   const userModel = mongoose.model('User', AccountSchema);
   const accountToAdd = new userModel(account);
   return await accountToAdd.save();
+}
+
+async function addRecoveryToken(token) {
+  const db = await getdbcon();
+  const tokenModel = db.model('RecoveryTokens', RecoveryToken);
+  const tokenToAdd = new tokenModel(token);
+  return await tokenToAdd.save();
+}
+
+async function getRecoveryToken(token) {
+  const db = await getdbcon();
+  const tokenModel = db.model('RecoveryTokens', RecoveryToken);
+  return await tokenModel.findOne({ token });
 }
 
 async function followUser(username, friendUsername) {
@@ -74,9 +88,6 @@ async function updatePassword(username, newpassword) {
   const db = await getdbcon();
   const userModel = db.model('User', AccountSchema);
   const user = await getAccount(username);
-  if (!user) {
-    throw new Error("User doesn't exist");
-  }
   const updated = await userModel.updateOne(
     { username },
     { password: newpassword }
@@ -197,6 +208,8 @@ export default {
   addAccount,
   followUser,
   unfollowUser,
+  addRecoveryToken,
+  getRecoveryToken,
   //addSongToBlock,
   //removeSongFromBock,
   //getSpotifyStatistics,

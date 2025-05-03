@@ -27,10 +27,7 @@ async function login(username, password) {
   if (!user) {
     throw new Error('Invalid username or email.');
   }
-  const hashedInputPassword = hash
-    .createHash('sha256')
-    .update(password)
-    .digest('hex');
+  const hashedInputPassword = hashPassword(password);
   if (hashedInputPassword !== user.password) {
     throw new Error('Invalid password.');
   }
@@ -69,6 +66,13 @@ async function setPrivacyStatus(username, status) {
 
 async function resetPassword(username, password) {
   const hashed = hashPassword(password);
+  const current = await db_req.getAccount(username);
+  if (current === null) {
+    throw new Error("User doesn't exist")
+  }
+  if (current.password === hashed) {
+    throw new Error('New password cannot be the same as the existing');
+  }
   const account = await db_req.updatePassword(username, hashed);
   return account;
 }
