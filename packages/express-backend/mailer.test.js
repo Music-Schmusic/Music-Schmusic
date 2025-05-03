@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals';
 import mailer from 'mailer.js';
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
 
 jest.mock('nodemailer');
 
