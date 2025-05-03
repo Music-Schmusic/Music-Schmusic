@@ -52,8 +52,8 @@ router.get('/callback', async function (req, res) {
         })
     );
   } else {
+    const url = 'https://accounts.spotify.com/api/token';
     const authOptions = {
-      url: 'https://accounts.spotify.com/api/token',
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -70,7 +70,7 @@ router.get('/callback', async function (req, res) {
 
     try {
       //request access token
-      const response = await spotifyFetch(authOptions);
+      const response = await spotifyFetch(url, authOptions);
       if (!response.ok) {
         throw new Error('Network response was not ok: ' + response.statusText);
       }

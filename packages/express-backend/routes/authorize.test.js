@@ -4,21 +4,26 @@ import app from '../backend.js';
 
 // Mock Account model and fetch API
 jest.mock('../schemas/account.js', () => ({
-  findOne: jest.fn().mockResolvedValue({
-    spotifyAccessToken: '',
-    spotifyRefreshToken: '',
-    spotifyTokenExpiresAt: null,
-  }),
+  __esModule: true,
+  default: {
+    findOne: jest.fn(), // keep it accessible later
+  },
 }));
 
 jest.mock('./authorize.js');
 
-const spotifyFetch = jest.fn();
+jest.mock('./authorizehelper.js', () => ({
+  __esModule: true,
+  default: {
+    spotifyFetch: jest.fn(),
+  },
+}));
 
 global.fetch = jest.fn(); // mock global fetch
 
 const express = await import('express');
-const Account = (await import('../schemas/account.js')).default;
+import Account from '../schemas/account.js';
+import spotifyFetch from './authorizehelper.js';
 
 describe('Spotify OAuth Routes', () => {
   beforeEach(() => {
@@ -54,17 +59,23 @@ describe('Spotify OAuth Routes', () => {
       spotifyAccessToken: '',
       spotifyRefreshToken: '',
       spotifyTokenExpiresAt: null,
-      // save: jest.fn(),
+      save: jest.fn(),
     };
 
-    spotifyFetch.mockResolvedValue({
-      ok: true,
-      json: {
-        access_token: 'mock_access_token',
-        refresh_token: 'mock_refresh_token',
-        expires_in: 3600,
-      },
-    });
+    Account.findOne.mockResolvedValueOnce(mockUser);
+
+    spotifyFetch.mockResolvedValueOnce(
+      jest.fn().mockImplementation(() => {
+        return Promise.resolve({
+          ok: true,
+          json: jest.fn().mockResolvedValue({
+            access_token: 'mock_access_token',
+            refresh_token: 'mock_refresh_token',
+            expires_in: 3600,
+          }),
+        });
+      })
+    );
 
     const res = await request(app).get('/authorize/callback').query({
       code: 'valid-code',
