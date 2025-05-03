@@ -5,6 +5,8 @@ import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
 import db from './db.js';
 import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
+
+dotenv.config();
 import spotifyStatsRoutes from './routes/spotifyStats.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -15,7 +17,7 @@ import mailer from './mailer.js';
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
 } else {
-  dotenv.config({ path: path.resolve('packages/express-backend/.env')});
+  dotenv.config({ path: path.resolve('packages/express-backend/.env') });
 }
 
 const app = express();
@@ -24,14 +26,17 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 dbrequests.setDataBaseConn(db());
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
 app.use(express.json());
 
+app.use('/api/playlist-cover', playlistCoverRoutes);
+
 app.use('/authorize', authRoutes);
-app.get('/', (req, res) => res.send('API Running'));
 
 app.post('/signup', async (req, res) => {
   try {
@@ -69,12 +74,11 @@ app.get('/protected', authenticateUser, (req, res) => {
   res.send(`Welcome ${req.user.username}`);
 });
 
-app.use('/api/playlist-cover', playlistCoverRoutes);
+app.get('/', (req, res) => res.send('API Running'));
 app.use('/spotify', spotifyStatsRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
-
 
 export default app;
