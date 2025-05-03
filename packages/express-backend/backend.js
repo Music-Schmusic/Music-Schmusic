@@ -13,7 +13,7 @@ import authenticateUser from './authMiddleware.js';
 import mailer from './mailer.js';
 import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
-import spotifyRoutes from './routes/spotifyroutes.js';
+
 
 dotenv.config();
 
@@ -39,7 +39,6 @@ app.use(
 app.use(express.json());
 
 // Routes
-app.use('/spotify', spotifyRoutes);
 app.use('/authorize', authRoutes);
 app.use('/', routes);
 app.use('/api/playlist-cover', playlistCoverRoutes);

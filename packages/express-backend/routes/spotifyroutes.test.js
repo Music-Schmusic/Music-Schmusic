@@ -23,7 +23,7 @@ describe('Spotify Routes', () => {
     jest.clearAllMocks();
   });
 
-  test('GET /spotify/top-tracks - success', async () => {
+  test('GET /spotify/stats/top-tracks - success', async () => {
     axios.get.mockResolvedValueOnce(mockTracksResponse);
 
     const res = await request(app)
@@ -42,7 +42,7 @@ describe('Spotify Routes', () => {
     );
   });
 
-  test('GET /spotify/top-artists - success', async () => {
+  test('GET /spotify/stats/top-artists - success', async () => {
     axios.get.mockResolvedValueOnce(mockArtistsResponse);
 
     const res = await request(app)
@@ -53,7 +53,7 @@ describe('Spotify Routes', () => {
     expect(res.body).toEqual(mockArtistsResponse.data);
   });
 
-  test('GET /spotify/recently-played - success', async () => {
+  test('GET /spotify/stats/recently-played - success', async () => {
     axios.get.mockResolvedValueOnce(mockRecentResponse);
 
     const res = await request(app)
@@ -64,13 +64,13 @@ describe('Spotify Routes', () => {
     expect(res.body).toEqual(mockRecentResponse.data);
   });
 
-  test('GET /spotify/top-tracks - missing token', async () => {
+  test('GET /spotify/stats/top-tracks - missing token', async () => {
     const res = await request(app).get('/spotify/stats/top-tracks');
     expect(res.statusCode).toBe(401);
     expect(res.body).toHaveProperty('error', 'No Spotify token provided');
   });
 
-  test('GET /spotify/top-tracks - Spotify API error', async () => {
+  test('GET /spotify/stats/top-tracks - Spotify API error', async () => {
     axios.get.mockRejectedValueOnce({
       response: {
         status: 403,
