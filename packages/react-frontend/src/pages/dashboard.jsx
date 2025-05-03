@@ -1,4 +1,23 @@
 import React, { useState, useEffect } from 'react';
+// PKCE helper functions
+function generateCodeVerifier(length = 128) {
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let text = '';
+  for (let i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
+async function generateCodeChallenge(verifier) {
+  const data = new TextEncoder().encode(verifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(digest)));
+  return base64
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
 import {
   BarChart,
   Bar,
@@ -14,6 +33,14 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/Dashboard.css';
+
+console.log('VITE env:', {
+  CLIENT_ID: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
+  REDIRECT_URI: import.meta.env.VITE_SPOTIFY_REDIRECT_URI
+});
+
+const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+const redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI;
 
 const Dashboard = () => {
   console.log('Dashboard component rendered'); // Debug log
@@ -45,21 +72,28 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('Fetching auth URL...'); // Debug log
-    const fetchAuthUrl = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/authorize');
-        console.log('Auth URL received:', response.data.authUrl); // Debug log
-        setAuthUrl(response.data.authUrl);
-      } catch (err) {
-        console.error('Error fetching auth URL:', err);
-        setError('Failed to get Spotify authorization URL');
-      }
-    };
+  // Handler for client-side Spotify OAuth with PKCE
+  const handleConnectSpotify = async () => {
+    const verifier = generateCodeVerifier();
+    const challenge = await generateCodeChallenge(verifier);
+    localStorage.setItem('pkce_code_verifier', verifier);
 
-    fetchAuthUrl();
-  }, []);
+    const scopes = [
+      'user-read-private',
+      'user-read-email',
+      'user-top-read',
+      'user-read-recently-played'
+    ];
+    const authUrl =
+      'https://accounts.spotify.com/authorize' +
+      `?response_type=code` +
+      `&client_id=${clientId}` +
+      `&scope=${encodeURIComponent(scopes.join(' '))}` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&code_challenge_method=S256` +
+      `&code_challenge=${challenge}`;
+    window.location.href = authUrl;
+  };
 
   useEffect(() => {
     console.log('Fetching data...'); // Debug log
@@ -217,14 +251,9 @@ const Dashboard = () => {
       <div className="connect-spotify-container">
         <h2>Connect Your Spotify Account</h2>
         <p>To view your music data, please connect your Spotify account.</p>
-        {authUrl && (
-          <button
-            onClick={() => window.open(authUrl, '_self')}
-            className="connect-spotify-button"
-          >
-            Connect Spotify
-          </button>
-        )}
+        <button onClick={handleConnectSpotify} className="connect-spotify-button">
+          Connect Spotify
+        </button>
       </div>
     );
   }

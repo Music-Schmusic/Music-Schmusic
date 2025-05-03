@@ -68,13 +68,13 @@ router.post('/signup', (req, res) => {
 router.get('/authorize', (req, res) => {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const redirectUri =
-    process.env.SPOTIFY_REDIRECT_URI || 'http://localhost:5173/oauth-success';
+    process.env.SPOTIFY_REDIRECT_URI || 'http://localhost:5173/oauths';
   const scope =
     'user-read-private user-read-email user-top-read user-read-recently-played';
 
   const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
 
-  res.json({ authUrl });
+  res.redirect({ authUrl });
 });
 
 // Protected route for checking authentication

@@ -189,7 +189,7 @@ function AppRoutes({
           <Route path="/settings" element={<Settings />} />
         </Route>
         <Route
-          path="/oauth-success"
+          path="/oauths"
           element={<OAuthSuccess setIsLoggedIn={setIsLoggedIn} />}
         />
         <Route path="*" element={<Navigate to="/" />} />

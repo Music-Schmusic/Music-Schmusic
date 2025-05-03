@@ -25,7 +25,7 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET;
 dbrequests.setDataBaseConn(db());
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 app.use(express.json());

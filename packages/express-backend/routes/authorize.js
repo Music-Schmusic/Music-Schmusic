@@ -2,6 +2,8 @@ import express from 'express';
 import querystring from 'querystring';
 import cors from 'cors';
 import Account from '../schemas/account.js';
+import dotenv from 'dotenv'
+dotenv.config();
 
 const app = express();
 const router = express.Router();
@@ -10,7 +12,7 @@ app.use(cors());
 //throwaway account its fine
 let client_id = '1d896050be0f4f0c8aef60ca671d3789';
 let client_secret = '26391446c4ba4249952b65b90d84238e';
-const redirect_uri = 'http://localhost:8000/callback';
+const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
 
 //request authorization code
 router.get('/authorize', function (req, res) {
@@ -93,7 +95,7 @@ router.get('/callback', async function (req, res) {
         }
       }
 
-      const redirectFrontend = `http://localhost:5173/oauth-success?access_token=${access_token}`;
+      const redirectFrontend = '${process.env.FRONTEND_URL}/oauths?access_token=${access_token';
       res.redirect(redirectFrontend);
     } catch (error) {
       console.error('Error:', error);
