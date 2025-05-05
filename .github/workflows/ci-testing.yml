@@ -1,0 +1,23 @@
+name: CI Testing
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm ci
+
+      # Lint and test backend
+      - run: npm run -w express-backend lint
+      - run: npm run -w express-backend test
+
+      # Lint and build frontend
+      - run: npm run -w react-frontend lint
+      - run: npm run -w react-frontend build

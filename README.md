@@ -20,8 +20,6 @@ Tech Spec: https://docs.google.com/document/d/1rmt0jja06XbG2fdikjKd7vPXWtoIRsLaY
 Code Coverage Report as of 03/13/25\
 <img width="709" alt="Screenshot 2025-03-14 at 2 22 42 AM" src="https://github.com/user-attachments/assets/a1ff0a59-a9fd-4c0d-8c1d-bcb667ab63ce" />
 
-
-
 ## 📌 Code Style Guide
 
 To ensure consistency across the codebase, all contributors must follow these guidelines:
