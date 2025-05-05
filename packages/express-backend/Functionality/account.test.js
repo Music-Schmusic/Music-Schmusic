@@ -2,7 +2,6 @@ import src from './account.js';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import db_req from '../dbrequests.js';
-import { jest } from '@jest/globals';
 
 let mongoServer;
 
@@ -151,7 +150,7 @@ test('set privacy status', async () => {
     password: '1234forever',
   };
   const user = await src.createAccount(body);
-  const account = await db_req.addAccount(user);
+  const _account = await db_req.addAccount(user);
   await src.setPrivacyStatus('testuser', 'Public');
   const updated = await db_req.getAccount('testuser');
   expect(updated.privacyStatus).toBe('Public');
@@ -164,7 +163,7 @@ test('failed to set privacy status', async () => {
     password: '1234forever',
   };
   const user = await src.createAccount(body);
-  const account = await db_req.addAccount(user);
+  const _account = await db_req.addAccount(user);
   await expect(src.setPrivacyStatus('testuser', 'notastatus')).rejects.toThrow(
     'Invalid Privacy state'
   );
@@ -177,7 +176,7 @@ test('user does not exist', async () => {
     password: '1234forever',
   };
   const user = await src.createAccount(body);
-  const account = await db_req.addAccount(user);
+  const _account = await db_req.addAccount(user);
   await expect(src.setPrivacyStatus('notauser', 'Public')).rejects.toThrow(
     "User doesn't exist"
   );

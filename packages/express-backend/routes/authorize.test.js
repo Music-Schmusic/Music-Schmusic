@@ -4,8 +4,8 @@ import { jest } from '@jest/globals';
 // Mock Account model and fetch API
 jest.unstable_mockModule('../schemas/account.js', () => ({
   default: {
-    findOne: jest.fn()
-  }
+    findOne: jest.fn(),
+  },
 }));
 
 global.fetch = jest.fn(); // mock global fetch
@@ -27,7 +27,9 @@ describe('Spotify OAuth Routes', () => {
     const res = await request(app).get('/authorize');
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.authUrl).toContain('https://accounts.spotify.com/authorize');
+    expect(res.body.authUrl).toContain(
+      'https://accounts.spotify.com/authorize'
+    );
     expect(res.body.authUrl).toContain('client_id=');
     expect(res.body.authUrl).toContain('redirect_uri=');
   });
@@ -60,13 +62,11 @@ describe('Spotify OAuth Routes', () => {
       json: async () => mockTokenData,
     });
 
-    const res = await request(app)
-      .get('/callback')
-      .query({
-        code: 'valid-code',
-        state: 'valid',
-        username: 'testuser',
-      });
+    const res = await request(app).get('/callback').query({
+      code: 'valid-code',
+      state: 'valid',
+      username: 'testuser',
+    });
 
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toContain('oauth-success?access_token=');
@@ -76,13 +76,11 @@ describe('Spotify OAuth Routes', () => {
   test('GET /callback returns 500 if fetch fails', async () => {
     fetch.mockRejectedValueOnce(new Error('Fetch failed'));
 
-    const res = await request(app)
-      .get('/callback')
-      .query({
-        code: 'valid-code',
-        state: 'valid',
-        username: 'testuser',
-      });
+    const res = await request(app).get('/callback').query({
+      code: 'valid-code',
+      state: 'valid',
+      username: 'testuser',
+    });
 
     expect(res.statusCode).toBe(500);
     expect(res.text).toContain('Error retrieving access token');

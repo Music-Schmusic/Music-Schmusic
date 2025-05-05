@@ -36,7 +36,10 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   return (
     <nav className="navbar">
       <div className="logo">
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <Link
+          to="/"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        >
           <StatsIcon size={40} />
         </Link>
       </div>

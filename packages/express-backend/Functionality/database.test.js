@@ -33,7 +33,6 @@ afterEach(async () => {
   }
 });
 
-
 test('Test Get User', async () => {
   const body1 = {
     username: 'testuser',

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import fetch from 'node-fetch';
 
 const Recommended = () => {
   // 1. Create local state for the cover image

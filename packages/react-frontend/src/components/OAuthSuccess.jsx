@@ -33,7 +33,8 @@ const OAuthSuccess = ({ setIsLoggedIn }) => {
           }),
         });
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Token exchange failed');
+        if (!response.ok)
+          throw new Error(data.error || 'Token exchange failed');
         localStorage.setItem('spotifyToken', data.access_token);
         navigate('/dashboard', { replace: true });
       } catch (err) {

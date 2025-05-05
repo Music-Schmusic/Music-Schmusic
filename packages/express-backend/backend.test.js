@@ -5,7 +5,6 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import db_req from './dbrequests.js';
 
 let mongoServer;
-let token;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -52,7 +51,6 @@ describe('Backend API tests', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('token');
-    token = res.body.token;
   });
 
   test('Access protected route with token', async () => {

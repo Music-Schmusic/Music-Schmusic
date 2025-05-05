@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 // PKCE helper functions
 function generateCodeVerifier(length = 128) {
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let text = '';
   for (let i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
@@ -13,10 +14,7 @@ async function generateCodeChallenge(verifier) {
   const data = new TextEncoder().encode(verifier);
   const digest = await crypto.subtle.digest('SHA-256', data);
   const base64 = btoa(String.fromCharCode(...new Uint8Array(digest)));
-  return base64
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 import {
   BarChart,
@@ -36,7 +34,7 @@ import '../components/Dashboard.css';
 
 console.log('VITE env:', {
   CLIENT_ID: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-  REDIRECT_URI: import.meta.env.VITE_SPOTIFY_REDIRECT_URI
+  REDIRECT_URI: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
 });
 
 const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
@@ -82,7 +80,7 @@ const Dashboard = () => {
       'user-read-private',
       'user-read-email',
       'user-top-read',
-      'user-read-recently-played'
+      'user-read-recently-played',
     ];
     const authUrl =
       'https://accounts.spotify.com/authorize' +
@@ -251,7 +249,10 @@ const Dashboard = () => {
       <div className="connect-spotify-container">
         <h2>Connect Your Spotify Account</h2>
         <p>To view your music data, please connect your Spotify account.</p>
-        <button onClick={handleConnectSpotify} className="connect-spotify-button">
+        <button
+          onClick={handleConnectSpotify}
+          className="connect-spotify-button"
+        >
           Connect Spotify
         </button>
       </div>
@@ -380,7 +381,7 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
       </div>
-    </div> 
+    </div>
   );
 };
 

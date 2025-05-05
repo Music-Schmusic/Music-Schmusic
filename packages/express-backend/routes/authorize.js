@@ -2,7 +2,7 @@ import express from 'express';
 import querystring from 'querystring';
 import cors from 'cors';
 import Account from '../schemas/account.js';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
@@ -95,7 +95,8 @@ router.get('/callback', async function (req, res) {
         }
       }
 
-      const redirectFrontend = '${process.env.FRONTEND_URL}/oauths?access_token=${access_token';
+      const redirectFrontend =
+        '${process.env.FRONTEND_URL}/oauths?access_token=${access_token';
       res.redirect(redirectFrontend);
     } catch (error) {
       console.error('Error:', error);

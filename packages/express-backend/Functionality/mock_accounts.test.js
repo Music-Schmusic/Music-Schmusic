@@ -1,8 +1,7 @@
 import AccountSchema from '../schemas/user.js';
-import Account from './account.js'
 import db_req from '../dbrequests.js';
 import { jest } from '@jest/globals';
-import mockingoose from 'mockingoose'
+import mockingoose from 'mockingoose';
 import mongoose from 'mongoose';
 
 /*
@@ -12,11 +11,13 @@ I'm getting a lot of tedious/confusing errors with everything else I've tried.
 I need more time to understand how to work with the other functions. 
 */
 
-//mock db connection 
+//mock db connection
 const mockDbConnection = {
   model: jest.fn().mockReturnValue({
     //mock findone query
-    findOne: jest.fn().mockResolvedValue({ username: 'testuser', email: 'test@example.com' }),
+    findOne: jest
+      .fn()
+      .mockResolvedValue({ username: 'testuser', email: 'test@example.com' }),
     save: jest.fn().mockResolvedValue(),
   }),
 };
@@ -24,7 +25,7 @@ const mockDbConnection = {
 let userModel;
 
 beforeAll(() => {
-  userModel = mongoose.model("User", AccountSchema)
+  userModel = mongoose.model('User', AccountSchema);
 });
 
 beforeEach(() => {
@@ -34,12 +35,12 @@ beforeEach(() => {
 });
 
 const testAccount = {
-  username:"testuser",
-  email:"test@email.com",
-  password:"bestpassword",
-  following:[],
+  username: 'testuser',
+  email: 'test@email.com',
+  password: 'bestpassword',
+  following: [],
   Blocked: [],
-  privacyStatus:"something"
+  privacyStatus: 'something',
 };
 
 test('Testing getAccount function', async () => {
@@ -47,10 +48,15 @@ test('Testing getAccount function', async () => {
   const newAccount = await db_req.getAccount('testuser');
 
   //test mocked findone output
-  expect(newAccount).toEqual({ username: 'testuser', email: 'test@example.com' }); 
+  expect(newAccount).toEqual({
+    username: 'testuser',
+    email: 'test@example.com',
+  });
   //check model call
   expect(mockDbConnection.model).toHaveBeenCalledWith('User', AccountSchema);
-  expect(mockDbConnection.model().findOne).toHaveBeenCalledWith({ username: 'testuser' }); 
+  expect(mockDbConnection.model().findOne).toHaveBeenCalledWith({
+    username: 'testuser',
+  });
 });
 
 test('Testing addAccount function', async () => {
@@ -66,5 +72,5 @@ test('Testing addAccount function', async () => {
   expect(savedAccount.following).toEqual([]);
   expect(savedAccount.blocked).toEqual([]);
   //expect(savedAccount.privacyStatus).toBe(testAccount.privacyStatus);
-  expect(savedAccount).toHaveProperty("_id");
+  expect(savedAccount).toHaveProperty('_id');
 });

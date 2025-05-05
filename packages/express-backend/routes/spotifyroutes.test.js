@@ -8,8 +8,8 @@ const mockRecentResponse = { data: { items: ['recent1', 'recent2'] } };
 // Mock the axios module before importing the app
 jest.unstable_mockModule('axios', () => ({
   default: {
-    get: jest.fn()
-  }
+    get: jest.fn(),
+  },
 }));
 
 // Now dynamically import axios and the app
@@ -36,8 +36,8 @@ describe('Spotify Routes', () => {
       expect.stringContaining('/top/tracks'),
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: mockToken
-        })
+          Authorization: mockToken,
+        }),
       })
     );
   });
@@ -74,8 +74,8 @@ describe('Spotify Routes', () => {
     axios.get.mockRejectedValueOnce({
       response: {
         status: 403,
-        data: { error: 'Invalid token' }
-      }
+        data: { error: 'Invalid token' },
+      },
     });
 
     const res = await request(app)

@@ -11,6 +11,7 @@
     "test:vitest": "vitest"
   },
   "dependencies": {
+    "@rollup/pluginutils": "^4.2.1",
     "@splinetool/react-spline": "^4.0.0",
     "@splinetool/runtime": "^1.9.59",
     "jest": "^29.7.0",
