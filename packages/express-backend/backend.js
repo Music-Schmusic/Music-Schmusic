@@ -50,7 +50,6 @@ app.use(express.json());
 
 // Routes
 app.use('/authorize', authRoutes);
-//app.use('/', routes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
 

@@ -37,7 +37,7 @@ test('Testing sendMail', async () => {
 
   expect(mockSendMail).toHaveBeenCalledWith(
     {
-      from: 'greinhard2003@gmail.com',
+      from: 'musicschmusic308.309@gmail.com',
       to: who,
       subject: subject,
       text: msg,

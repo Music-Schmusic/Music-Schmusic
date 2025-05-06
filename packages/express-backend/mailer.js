@@ -11,7 +11,7 @@ async function sendEmail(who, message, subject) {
   });
 
   let mailDetails = {
-    from: 'greinhard2003@gmail.com',
+    from: 'musicschmusic308.309@gmail.com',
     to: who,
     subject: subject,
     text: message,
