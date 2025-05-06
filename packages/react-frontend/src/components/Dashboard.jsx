@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
+const API_URL = import.meta.env.VITE_API_URL;
 
 // PKCE helper functions
 function generateCodeVerifier(length = 128) {
