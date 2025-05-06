@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env: 
+        JWT_SECRET: dummysecret123
 
     steps:
       - uses: actions/checkout@v4
