@@ -20,9 +20,12 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 import PublicRoute from './components/PublicRoute.jsx';
 import OAuthSuccess from './components/OAuthSuccess';
 import Login from './components/Login';
-import Signup from './components/Signup';
+import SignUp from './components/Signup';
 import StatsIcon from './components/StatsIcon';
 import AccountRecovery from './pages/AccountRecovery.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
+import ResetValidation from './pages/ResetValidation.jsx';
+import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
@@ -126,10 +129,11 @@ function AppRoutes({
   setIsLoggedIn,
   currentScene,
   setCurrentScene,
+  tempLogin,
+  setTempLogin,
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
@@ -164,23 +168,44 @@ function AppRoutes({
       <Routes>
         <Route path="/" element={<Home setCurrentScene={setCurrentScene} />} />
         <Route
-          path="/login"
           element={
-            <Login
-              setIsLoggedIn={setIsLoggedIn}
-              setCurrentScene={setCurrentScene}
-            />
+            <PublicRoute isLoggedIn={isLoggedIn} redirectTo="/dashboard" />
           }
-        />
+        >
+          <Route
+            path="/login"
+            element={
+              <Login
+                setIsLoggedIn={setIsLoggedIn}
+                setCurrentScene={setCurrentScene}
+              />
+            }
+          />
+          <Route path="/accountrecovery" element={<AccountRecovery />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route
+            path="/resetvalidation"
+            element={
+              <ResetValidation
+                tempLogin={tempLogin}
+                setTempLogin={setTempLogin}
+              />
+            }
+          />
+        </Route>
         <Route
-          path="/signup"
-          element={
-            <Signup
-              setIsLoggedIn={setIsLoggedIn}
-              setCurrentScene={setCurrentScene}
-            />
-          }
-        />
+          element={<ProtectedRoute isLoggedIn={tempLogin} redirectTo={'/'} />}
+        >
+          <Route
+            path="/resetpassword"
+            element={
+              <ResetPassword
+                tempLogin={tempLogin}
+                setTempLogin={setTempLogin}
+              />
+            }
+          />
+        </Route>
         <Route
           element={
             <ProtectedRoute isLoggedIn={isLoggedIn} redirectTo="/login" />
@@ -206,6 +231,8 @@ const AppContent = ({
   setIsLoggedIn,
   currentScene,
   setCurrentScene,
+  tempLogin,
+  setTempLogin,
 }) => {
   const location = useLocation();
   const showSpline = ['/', '/login', '/signup'].includes(location.pathname);
@@ -218,6 +245,8 @@ const AppContent = ({
         setIsLoggedIn={setIsLoggedIn}
         currentScene={currentScene}
         setCurrentScene={setCurrentScene}
+        tempLogin={tempLogin}
+        setTempLogin={setTempLogin}
       />
       <Footer />
     </>
@@ -226,6 +255,7 @@ const AppContent = ({
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [tempLogin, setTempLogin] = useStateWithCallbackLazy(false);
   const [currentScene, setCurrentScene] = useState('scene1.splinecode');
 
   return (
@@ -233,6 +263,8 @@ function App() {
       <AppContent
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
+        tempLogin={tempLogin}
+        setTempLogin={setTempLogin}
         currentScene={currentScene}
         setCurrentScene={setCurrentScene}
       />

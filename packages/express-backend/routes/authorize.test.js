@@ -1,21 +1,35 @@
 import request from 'supertest';
 import { jest } from '@jest/globals';
 
-// Mock Account model and fetch API
+// Mock modules before import
 jest.unstable_mockModule('../schemas/account.js', () => ({
   default: {
     findOne: jest.fn(),
   },
 }));
 
-global.fetch = jest.fn(); // mock global fetch
+jest.unstable_mockModule('./authorizehelper.js', () => ({
+  default: async (url, options) => {
+    return {
+      ok: true,
+      json: async () => ({
+        access_token: 'mock_access_token',
+        refresh_token: 'mock_refresh_token',
+        expires_in: 3600,
+      }),
+    };
+  },
+}));
 
+global.fetch = jest.fn(); // fallback if anything uses fetch
+
+// Load modules after mocks
+const express = (await import('express')).default;
 const Account = (await import('../schemas/account.js')).default;
 const spotifyRouter = (await import('./authorize.js')).default;
-const express = await import('express');
 
-const app = express.default();
-app.use(express.default.json());
+const app = express();
+app.use(express.json());
 app.use('/', spotifyRouter);
 
 describe('Spotify OAuth Routes', () => {
@@ -27,29 +41,19 @@ describe('Spotify OAuth Routes', () => {
     const res = await request(app).get('/authorize');
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.authUrl).toContain(
-      'https://accounts.spotify.com/authorize'
-    );
+    expect(res.body.authUrl).toContain('https://accounts.spotify.com/authorize');
     expect(res.body.authUrl).toContain('client_id=');
     expect(res.body.authUrl).toContain('redirect_uri=');
   });
 
-  // Test in progress: commenting out for now so we can get CI/CD up and running
+  test('GET /callback returns error on state mismatch', async () => {
+    const res = await request(app).get('/callback');
 
-  // test('GET /callback returns error on state mismatch', async () => {
-  //   const res = await request(app).get('/callback');
-
-  //   expect(res.statusCode).toBe(302); // redirected
-  //   expect(res.headers.location).toContain('state_mismatch');
-  // });
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toContain('state_mismatch');
+  });
 
   test('GET /callback fetches tokens and saves to user', async () => {
-    const mockTokenData = {
-      access_token: 'mock_access_token',
-      refresh_token: 'mock_refresh_token',
-      expires_in: 3600,
-    };
-
     const mockUser = {
       spotifyAccessToken: '',
       spotifyRefreshToken: '',
@@ -58,11 +62,6 @@ describe('Spotify OAuth Routes', () => {
     };
 
     Account.findOne.mockResolvedValue(mockUser);
-
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockTokenData,
-    });
 
     const res = await request(app).get('/callback').query({
       code: 'valid-code',
@@ -76,10 +75,14 @@ describe('Spotify OAuth Routes', () => {
   });
 
   test('GET /callback returns 500 if fetch fails', async () => {
-    fetch.mockRejectedValueOnce(new Error('Fetch failed'));
+    // Override mock for failure
+    const authorizehelper = await import('./authorizehelper.js');
+    authorizehelper.default = async () => {
+      return { ok: false, statusText: 'Bad Request' };
+    };
 
     const res = await request(app).get('/callback').query({
-      code: 'valid-code',
+      code: 'bad-code',
       state: 'valid',
       username: 'testuser',
     });

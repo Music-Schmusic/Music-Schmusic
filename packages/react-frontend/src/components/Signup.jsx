@@ -37,12 +37,18 @@ const Signup = () => {
       });
 
       if (response.status === 201) {
-        const authResponse = await axios.get('http://localhost:8000/authorize');
+        const authResponse = await axios.get(
+          'http://localhost:8000/authorize/authorize'
+        );
         window.open(authResponse.data.authUrl, '_self');
       }
     } catch (err) {
-      console.error('Signup error:', err);
-      setError(err.response?.data?.message || 'Signup failed');
+      if (err.status === 409) {
+        console.log('Username already in use');
+        setError('Username already in use');
+      } else {
+        setError(err.response?.data?.message || 'Signup failed');
+      }
     }
   };
 

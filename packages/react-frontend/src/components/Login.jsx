@@ -19,6 +19,10 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
     setCurrentScene('scene2.splinecode');
   }, [setCurrentScene]);
 
+  function handleNav() {
+    navigate('/accountrecovery');
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
@@ -64,6 +68,9 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
         {error && <p className="error-message">{error}</p>}
         <button type="submit">Login</button>
       </form>
+      <button type="nav-accountRecovery" onClick={handleNav}>
+        Forgot password?
+      </button>
     </div>
   );
 };
