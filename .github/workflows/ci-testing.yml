@@ -9,8 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env: 
-        JWT_SECRET: dummysecret123
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+    
 
     steps:
       - uses: actions/checkout@v4
