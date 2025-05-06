@@ -6,7 +6,8 @@
   "scripts": {
     "test": "dotenv -e .env.test -- jest",
     "dev": "npx nodemon backend.js",
-    "start": "node backend.js"
+    "start": "node backend.js",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",

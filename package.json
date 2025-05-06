@@ -108,7 +108,10 @@
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "lint": "eslint . && prettier --check",
-    "lint-fix": "eslint --fix ."
+    "lint-fix": "eslint --fix .",
+    "build:frontend": "cd packages/react-frontend && npm run build",
+    "build:backend": "cd packages/express-backend && echo 'Backend building'", 
+    "build": "npm-run-all build:frontend build:backend"
   },
   
 
