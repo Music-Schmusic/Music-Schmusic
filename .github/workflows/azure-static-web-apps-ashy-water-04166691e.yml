@@ -39,6 +39,15 @@ jobs:
             return await coredemo.getIDToken()
           result-encoding: string
 
+      - name: Inject env vars into Vite
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env.production
+          echo "VITE_SPOTIFY_CLIENT_ID=${{ secrets.VITE_SPOTIFY_CLIENT_ID }}" >> .env.production
+          echo "VITE_SPOTIFY_REDIRECT_URI=${{ secrets.VITE_SPOTIFY_REDIRECT_URI }}" >> .env.production
+          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env.production
+        working-directory: ./packages/react-frontend
+    
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
