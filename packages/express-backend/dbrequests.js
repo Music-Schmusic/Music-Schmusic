@@ -87,7 +87,6 @@ async function setPrivacyState(username, status) {
 async function updatePassword(username, newpassword) {
   const db = await getdbcon();
   const userModel = db.model('User', AccountSchema);
-  const user = await getAccount(username);
   const updated = await userModel.updateOne(
     { username },
     { password: newpassword }

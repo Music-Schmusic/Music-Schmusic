@@ -4,7 +4,6 @@ import { jest } from '@jest/globals';
 import mockingoose from 'mockingoose';
 import mongoose from 'mongoose';
 
-
 //mock db connection
 const mockDbConnection = {
   model: jest.fn().mockReturnValue({

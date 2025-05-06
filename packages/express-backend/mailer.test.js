@@ -4,8 +4,8 @@ jest.unstable_mockModule('nodemailer', () => {
   return {
     __esModule: true,
     default: {
-      createTransport: jest.fn()
-    }
+      createTransport: jest.fn(),
+    },
   };
 });
 
@@ -29,9 +29,9 @@ afterEach(() => {
 });
 
 test('Testing sendMail', async () => {
-  const who = "user@gmail.com";
-  const msg = "Hello I would like to sell you stolen power tools";
-  const subject = "Email subject";
+  const who = 'user@gmail.com';
+  const msg = 'Hello I would like to sell you stolen power tools';
+  const subject = 'Email subject';
 
   await mailer.default.sendEmail(who, msg, subject);
 

@@ -14,7 +14,6 @@ import mailer from './mailer.js';
 import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 
-
 dotenv.config();
 
 if (process.env.NODE_ENV === 'test') {

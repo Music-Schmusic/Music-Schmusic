@@ -72,7 +72,7 @@ export default [
         {
           argsIgnorePattern: '^(React|setIsLoggedIn||currentScene|_)',
           varsIgnorePattern:
-            '^(React|Router|Route|Routes|Link|Navbar|Footer|Home|Dashboard|Login|SignUp|MyApp|BarChart|Bar|XAxis|YAxis|Tooltip|Legend|ResponsiveContainer|Pie|PieChart|Cell|CustomTooltip|authUrl|setAuthUrl|navigate|Navigate|Outlet|Spline|useState|AppContent|AppRoutes|useEffect|isLoggedIn|AccountRecovery|StatsIcon|Signup|OAuthSuccess|PublicRoute|ProtectedRoute|Form|Recommended|Settings|Friends|SplineBackground|username|password|mockGenres|dotenv|endpointId|location|projectId|predictionClient|playlistModel|listeningDataModel|_account)$',
+            '^(React|Router|Route|Routes|Link|Navbar|Footer|Home|Dashboard|Login|SignUp|MyApp|BarChart|Bar|XAxis|YAxis|Tooltip|Legend|ResponsiveContainer|Pie|PieChart|Cell|CustomTooltip|authUrl|setAuthUrl|navigate|Navigate|Outlet|Spline|useState|AppContent|AppRoutes|useEffect|isLoggedIn|AccountRecovery|StatsIcon|Signup|OAuthSuccess|PublicRoute|ProtectedRoute|Form|Recommended|Settings|Friends|SplineBackground|username|password|mockGenres|dotenv|endpointId|location|projectId|predictionClient|playlistModel|listeningDataModel|_account|ResetValidation|ResetPassword)$',
         },
       ],
       'node/no-unsupported-features/es-syntax': 'off',

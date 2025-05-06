@@ -12,12 +12,15 @@ router.use(cors());
 
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_SECRET_ID;
-const redirect_uri = process.env.SPOTIFY_REDIRECT_URI || 'http://localhost:8000/authorize/callback';
+const redirect_uri =
+  process.env.SPOTIFY_REDIRECT_URI ||
+  'http://localhost:8000/authorize/callback';
 const frontend_url = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 // Generate a random string for CSRF protection
 function generateState(length) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -28,7 +31,8 @@ function generateState(length) {
 // Step 1: Direct user to Spotify authorization page
 router.get('/authorize', (req, res) => {
   const state = generateState(16);
-  const scope = 'user-read-private user-read-email user-top-read user-read-recently-played';
+  const scope =
+    'user-read-private user-read-email user-top-read user-read-recently-played';
 
   const auth_query = querystring.stringify({
     response_type: 'code',
@@ -62,7 +66,8 @@ router.get('/callback', async (req, res) => {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization:
-        'Basic ' + Buffer.from(`${client_id}:${client_secret}`).toString('base64'),
+        'Basic ' +
+        Buffer.from(`${client_id}:${client_secret}`).toString('base64'),
     },
     body: new URLSearchParams({
       code,

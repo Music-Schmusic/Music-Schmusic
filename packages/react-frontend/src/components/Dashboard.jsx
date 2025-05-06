@@ -104,7 +104,10 @@ const Dashboard = () => {
       <div className="connect-spotify-container">
         <h2>Connect Your Spotify Account</h2>
         <p>To view your music data, please connect your Spotify account.</p>
-        <button onClick={handleConnectSpotify} className="connect-spotify-button">
+        <button
+          onClick={handleConnectSpotify}
+          className="connect-spotify-button"
+        >
           Connect Spotify
         </button>
         {error && <p className="error-msg">{error}</p>}

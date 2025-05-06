@@ -22,17 +22,20 @@ const OAuthSuccess = ({ setIsLoggedIn }) => {
     if (code && verifier) {
       (async () => {
         try {
-          const response = await fetch('https://accounts.spotify.com/api/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-              client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-              grant_type: 'authorization_code',
-              code,
-              redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
-              code_verifier: verifier,
-            }),
-          });
+          const response = await fetch(
+            'https://accounts.spotify.com/api/token',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({
+                client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
+                grant_type: 'authorization_code',
+                code,
+                redirect_uri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
+                code_verifier: verifier,
+              }),
+            }
+          );
           const data = await response.json();
           if (!response.ok)
             throw new Error(data.error || 'Token exchange failed');

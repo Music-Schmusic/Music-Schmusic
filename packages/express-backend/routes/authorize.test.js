@@ -41,7 +41,9 @@ describe('Spotify OAuth Routes', () => {
     const res = await request(app).get('/authorize');
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.authUrl).toContain('https://accounts.spotify.com/authorize');
+    expect(res.body.authUrl).toContain(
+      'https://accounts.spotify.com/authorize'
+    );
     expect(res.body.authUrl).toContain('client_id=');
     expect(res.body.authUrl).toContain('redirect_uri=');
   });
@@ -82,20 +84,20 @@ describe('Spotify OAuth Routes', () => {
         return { ok: false, statusText: 'Bad Request' };
       },
     }));
-  
+
     const express = (await import('express')).default;
     const spotifyRouter = (await import('./authorize.js')).default;
     const app = express();
     app.use(express.json());
     app.use('/', spotifyRouter);
-  
+
     const res = await request(app).get('/callback').query({
       code: 'bad-code',
       state: 'valid',
       username: 'testuser',
     });
-  
+
     expect(res.statusCode).toBe(500);
     expect(res.text).toContain('Error retrieving access token');
-  });  
+  });
 });

@@ -101,9 +101,15 @@ const Dashboard = () => {
 
         const headers = { Authorization: `Bearer ${spotifyToken}` };
         const [tracksRes, artistsRes, recentRes] = await Promise.all([
-          axios.get('http://localhost:8000/spotify/stats/top-tracks', { headers }),
-          axios.get('http://localhost:8000/spotify/stats/top-artists', { headers }),
-          axios.get('http://localhost:8000/spotify/stats/recently-played', { headers }),
+          axios.get('http://localhost:8000/spotify/stats/top-tracks', {
+            headers,
+          }),
+          axios.get('http://localhost:8000/spotify/stats/top-artists', {
+            headers,
+          }),
+          axios.get('http://localhost:8000/spotify/stats/recently-played', {
+            headers,
+          }),
         ]);
 
         setTopTracks(tracksRes.data.items);
@@ -132,7 +138,9 @@ const Dashboard = () => {
         console.error('Error fetching data:', err);
         if (err.response?.status === 401) {
           localStorage.removeItem('spotifyToken');
-          setError('Your Spotify session has expired. Please reconnect your account.');
+          setError(
+            'Your Spotify session has expired. Please reconnect your account.'
+          );
         } else {
           setError(err.message);
         }
@@ -202,7 +210,10 @@ const Dashboard = () => {
       <div className="connect-spotify-container">
         <h2>Connect Your Spotify Account</h2>
         <p>To view your music data, please connect your Spotify account.</p>
-        <button onClick={handleConnectSpotify} className="connect-spotify-button">
+        <button
+          onClick={handleConnectSpotify}
+          className="connect-spotify-button"
+        >
           Connect Spotify
         </button>
       </div>
@@ -214,7 +225,10 @@ const Dashboard = () => {
       <div className="error-container">
         <h2>Oops! Something went wrong</h2>
         <p>{error}</p>
-        <button onClick={() => window.location.reload()} className="try-again-button">
+        <button
+          onClick={() => window.location.reload()}
+          className="try-again-button"
+        >
           Try Again
         </button>
       </div>
@@ -236,7 +250,11 @@ const Dashboard = () => {
           <div className="music-grid">
             {topTracks.slice(0, 5).map((track) => (
               <div key={track.id} className="music-item">
-                <img src={track.album?.images[0]?.url} alt={track.name} className="music-image" />
+                <img
+                  src={track.album?.images[0]?.url}
+                  alt={track.name}
+                  className="music-image"
+                />
                 <div className="music-info">
                   <h3>{track.name}</h3>
                   <p>{track.artists.map((artist) => artist.name).join(', ')}</p>
@@ -252,7 +270,11 @@ const Dashboard = () => {
           <div className="music-grid">
             {topArtists.slice(0, 5).map((artist) => (
               <div key={artist.id} className="music-item">
-                <img src={artist.images[0]?.url} alt={artist.name} className="music-image" />
+                <img
+                  src={artist.images[0]?.url}
+                  alt={artist.name}
+                  className="music-image"
+                />
                 <div className="music-info">
                   <h3>{artist.name}</h3>
                   <p>{artist.genres.slice(0, 2).join(', ')}</p>
@@ -275,7 +297,9 @@ const Dashboard = () => {
                 />
                 <div className="music-info">
                   <h3>{item.track.name}</h3>
-                  <p>{item.track.artists.map((artist) => artist.name).join(', ')}</p>
+                  <p>
+                    {item.track.artists.map((artist) => artist.name).join(', ')}
+                  </p>
                 </div>
               </div>
             ))}
@@ -310,7 +334,10 @@ const Dashboard = () => {
                 label
               >
                 {genreData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip />

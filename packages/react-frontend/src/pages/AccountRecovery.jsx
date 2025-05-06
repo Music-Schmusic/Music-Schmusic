@@ -1,5 +1,4 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 
 export default function AccountRecovery() {
   const [credentials, setcredentials] = useState({

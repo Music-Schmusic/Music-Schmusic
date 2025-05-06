@@ -68,7 +68,7 @@ async function resetPassword(username, password) {
   const hashed = hashPassword(password);
   const current = await db_req.getAccount(username);
   if (current === null) {
-    throw new Error("User doesn't exist")
+    throw new Error("User doesn't exist");
   }
   if (current.password === hashed) {
     throw new Error('New password cannot be the same as the existing');
