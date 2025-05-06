@@ -7,8 +7,8 @@ import db from './db.js';
 import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
 import spotifyStatsRoutes from './routes/spotifyStats.js';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import path from 'path';
+import dotenv from 'dotenv';
 import authenticateUser from './authMiddleware.js';
 
 if (process.env.NODE_ENV === 'test') {

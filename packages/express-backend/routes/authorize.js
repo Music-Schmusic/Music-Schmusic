@@ -95,8 +95,7 @@ router.get('/callback', async function (req, res) {
         }
       }
 
-      const redirectFrontend =
-        '${process.env.FRONTEND_URL}/oauths?access_token=${access_token';
+      const redirectFrontend = `${process.env.FRONTEND_URL}/oauth-success?access_token=${access_token}`;
       res.redirect(redirectFrontend);
     } catch (error) {
       console.error('Error:', error);
