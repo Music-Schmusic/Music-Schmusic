@@ -2,6 +2,24 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
 
+// PKCE helper functions
+function generateCodeVerifier(length = 128) {
+  const possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let text = '';
+  for (let i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
+async function generateCodeChallenge(verifier) {
+  const data = new TextEncoder().encode(verifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(digest)));
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 const Dashboard = () => {
   const [topTracks, setTopTracks] = useState([]);
   const [topArtists, setTopArtists] = useState([]);
@@ -9,35 +27,58 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const username = localStorage.getItem('username');
+  const spotifyToken = localStorage.getItem('spotifyToken');
+
+  // PKCE-based redirect to Spotify
+  const handleConnectSpotify = async () => {
+    const verifier = generateCodeVerifier();
+    const challenge = await generateCodeChallenge(verifier);
+    localStorage.setItem('pkce_code_verifier', verifier);
+
+    const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+    const redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI;
+
+    const scopes = [
+      'user-read-private',
+      'user-read-email',
+      'user-top-read',
+      'user-read-recently-played',
+    ];
+
+    const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(
+      scopes.join(' ')
+    )}&redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}&code_challenge_method=S256&code_challenge=${challenge}`;
+
+    window.location.href = authUrl;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const spotifyToken = localStorage.getItem('spotifyToken');
         if (!spotifyToken) {
-          throw new Error('No Spotify token found');
+          setLoading(false);
+          return;
         }
 
-        const headers = {
-          Authorization: `Bearer ${spotifyToken}`,
-        };
+        const headers = { Authorization: `Bearer ${spotifyToken}` };
 
-        const [tracksResponse, artistsResponse, recentResponse] =
-          await Promise.all([
-            axios.get('http://localhost:8000/spotify/stats/top-tracks', {
-              headers,
-            }),
-            axios.get('http://localhost:8000/spotify/stats/top-artists', {
-              headers,
-            }),
-            axios.get('http://localhost:8000/spotify/stats/recently-played', {
-              headers,
-            }),
-          ]);
+        const [tracksRes, artistsRes, recentRes] = await Promise.all([
+          axios.get('http://localhost:8000/spotify/stats/top-tracks', {
+            headers,
+          }),
+          axios.get('http://localhost:8000/spotify/stats/top-artists', {
+            headers,
+          }),
+          axios.get('http://localhost:8000/spotify/stats/recently-played', {
+            headers,
+          }),
+        ]);
 
-        setTopTracks(tracksResponse.data);
-        setTopArtists(artistsResponse.data);
-        setRecentlyPlayed(recentResponse.data);
+        setTopTracks(tracksRes.data);
+        setTopArtists(artistsRes.data);
+        setRecentlyPlayed(recentRes.data);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -47,7 +88,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [spotifyToken]);
 
   if (loading) {
     return (
@@ -58,17 +99,15 @@ const Dashboard = () => {
     );
   }
 
-  if (error) {
+  if (error || !spotifyToken) {
     return (
-      <div className="error-container">
-        <h2>Oops! Something went wrong</h2>
-        <p>{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="try-again-button"
-        >
-          Try Again
+      <div className="connect-spotify-container">
+        <h2>Connect Your Spotify Account</h2>
+        <p>To view your music data, please connect your Spotify account.</p>
+        <button onClick={handleConnectSpotify} className="connect-spotify-button">
+          Connect Spotify
         </button>
+        {error && <p className="error-msg">{error}</p>}
       </div>
     );
   }
@@ -93,7 +132,7 @@ const Dashboard = () => {
                 />
                 <div className="music-info">
                   <h3>{track.name}</h3>
-                  <p>{track.artists.map((artist) => artist.name).join(', ')}</p>
+                  <p>{track.artists.map((a) => a.name).join(', ')}</p>
                 </div>
               </div>
             ))}
@@ -131,9 +170,7 @@ const Dashboard = () => {
                 />
                 <div className="music-info">
                   <h3>{item.track.name}</h3>
-                  <p>
-                    {item.track.artists.map((artist) => artist.name).join(', ')}
-                  </p>
+                  <p>{item.track.artists.map((a) => a.name).join(', ')}</p>
                 </div>
               </div>
             ))}

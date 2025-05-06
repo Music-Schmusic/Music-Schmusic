@@ -28,17 +28,30 @@ const PORT = process.env.PORT || 8000;
 
 dbrequests.setDataBaseConn(db());
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
+
 app.use(express.json());
 
 // Routes
 app.use('/authorize', authRoutes);
-app.use('/', routes);
+//app.use('/', routes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
 

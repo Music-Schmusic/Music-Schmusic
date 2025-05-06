@@ -75,19 +75,27 @@ describe('Spotify OAuth Routes', () => {
   });
 
   test('GET /callback returns 500 if fetch fails', async () => {
-    // Override mock for failure
-    const authorizehelper = await import('./authorizehelper.js');
-    authorizehelper.default = async () => {
-      return { ok: false, statusText: 'Bad Request' };
-    };
-
+    // Reset modules and mock with failure
+    jest.resetModules();
+    jest.unstable_mockModule('./authorizehelper.js', () => ({
+      default: async () => {
+        return { ok: false, statusText: 'Bad Request' };
+      },
+    }));
+  
+    const express = (await import('express')).default;
+    const spotifyRouter = (await import('./authorize.js')).default;
+    const app = express();
+    app.use(express.json());
+    app.use('/', spotifyRouter);
+  
     const res = await request(app).get('/callback').query({
       code: 'bad-code',
       state: 'valid',
       username: 'testuser',
     });
-
+  
     expect(res.statusCode).toBe(500);
     expect(res.text).toContain('Error retrieving access token');
-  });
+  });  
 });
