@@ -65,13 +65,13 @@ const Dashboard = () => {
         const headers = { Authorization: `Bearer ${spotifyToken}` };
 
         const [tracksRes, artistsRes, recentRes] = await Promise.all([
-          axios.get('http://localhost:8000/spotify/stats/top-tracks', {
+          axios.get(`${API_URL}/spotify/stats/top-tracks`, {
             headers,
           }),
-          axios.get('http://localhost:8000/spotify/stats/top-artists', {
+          axios.get(`${API_URL}/spotify/stats/top-artists`, {
             headers,
           }),
-          axios.get('http://localhost:8000/spotify/stats/recently-played', {
+          axios.get(`${API_URL}/spotify/stats/recently-played`, {
             headers,
           }),
         ]);

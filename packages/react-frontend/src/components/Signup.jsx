@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Signup.css';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/signup', {
+      const response = await axios.post(`${API_URL}/signup`, {
         username: formData.username,
         email: formData.email,
         password: formData.password,
@@ -38,7 +39,7 @@ const Signup = () => {
 
       if (response.status === 201) {
         const authResponse = await axios.get(
-          'http://localhost:8000/authorize/authorize'
+          `${API_URL}/authorize/authorize`
         );
         window.open(authResponse.data.authUrl, '_self');
       }

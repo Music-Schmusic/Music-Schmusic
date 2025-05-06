@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/Dashboard.css';
+const API_URL = import.meta.env.VITE_API_URL;
 
 // PKCE helper functions
 function generateCodeVerifier(length = 128) {
@@ -101,13 +102,13 @@ const Dashboard = () => {
 
         const headers = { Authorization: `Bearer ${spotifyToken}` };
         const [tracksRes, artistsRes, recentRes] = await Promise.all([
-          axios.get('http://localhost:8000/spotify/stats/top-tracks', {
+          axios.get(`${API_URL}/spotify/stats/top-tracks`, {
             headers,
           }),
-          axios.get('http://localhost:8000/spotify/stats/top-artists', {
+          axios.get(`${API_URL}/spotify/stats/top-artists`, {
             headers,
           }),
-          axios.get('http://localhost:8000/spotify/stats/recently-played', {
+          axios.get(`${API_URL}/spotify/stats/recently-played`, {
             headers,
           }),
         ]);

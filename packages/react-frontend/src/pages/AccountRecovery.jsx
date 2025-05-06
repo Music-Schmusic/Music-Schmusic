@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function AccountRecovery() {
   const [credentials, setcredentials] = useState({
@@ -20,7 +21,7 @@ export default function AccountRecovery() {
   }
 
   function recoverAccount(creds) {
-    return fetch('http://localhost:8000/accountrecovery', {
+    return fetch(`${API_URL}/accountrecovery`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

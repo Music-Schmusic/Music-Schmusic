@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function resetPassword({ tempLogin, setTempLogin }) {
   const query = window.location.search;
@@ -29,7 +30,7 @@ export default function resetPassword({ tempLogin, setTempLogin }) {
   }
 
   function resetpassword(data) {
-    return fetch('http://localhost:8000/resetpassword', {
+    return fetch(`${API_URL}/resetpassword`, {
       method: 'Post',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

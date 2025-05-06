@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ResetValidation({ tempLogin, setTempLogin }) {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function ResetValidation({ tempLogin, setTempLogin }) {
 
   async function validateToken() {
     try {
-      const res = await fetch('http://localhost:8000/resetvalidation', {
+      const res = await fetch(`${API_URL}/resetvalidation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

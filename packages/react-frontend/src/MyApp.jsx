@@ -27,6 +27,8 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import ResetValidation from './pages/ResetValidation.jsx';
 import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -143,7 +145,7 @@ function AppRoutes({
       }
 
       try {
-        const res = await fetch('http://localhost:8000/protected', {
+        const res = await fetch(`${API_URL}/protected`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

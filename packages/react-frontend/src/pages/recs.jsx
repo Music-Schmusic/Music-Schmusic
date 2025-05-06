@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL;
 const Recommended = () => {
   // 1. Create local state for the cover image
   const [coverImage, setCoverImage] = useState(null);
@@ -8,7 +9,7 @@ const Recommended = () => {
   const getAICover = async () => {
     try {
       const response = await fetch(
-        'http://localhost:8000/api/playlist-cover/generate',
+        `${API_URL}/api/playlist-cover/generate`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
