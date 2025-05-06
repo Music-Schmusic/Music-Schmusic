@@ -73,5 +73,5 @@ jobs:
         with:
           app-name: 'MusicSchmusic'
           slot-name: 'Production'
-          package: .
+          package: packages/express-backend
           
