@@ -35,11 +35,13 @@ const Signup = () => {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+      }, {
+        withCredentials: true
       });
 
       if (response.status === 201) {
         const authResponse = await axios.get(
-          `${API_URL}/authorize/authorize`
+          `${API_URL}/authorize/authorize`, { withCredentials: true,}
         );
         window.open(authResponse.data.authUrl, '_self');
       }

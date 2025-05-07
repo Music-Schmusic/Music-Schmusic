@@ -8,7 +8,7 @@ import spotifyFetch from './authorizehelper.js'; // abstracted fetch function
 dotenv.config();
 
 const router = express.Router();
-router.use(cors());
+//router.use(cors());
 
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_SECRET_ID;
