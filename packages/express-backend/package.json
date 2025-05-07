@@ -7,7 +7,8 @@
     "test": "dotenv -e .env.test -- node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
     "dev": "npx nodemon backend.js",
     "start": "node backend.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "echo 'No build step needed for backend'"
   },
   "author": "",
   "license": "ISC",
