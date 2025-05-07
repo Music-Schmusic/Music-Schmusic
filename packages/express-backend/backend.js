@@ -16,7 +16,6 @@ import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
-
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
 } else {
@@ -32,32 +31,37 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:3000',
-  'https://ashy-water-04166691e.6.azurestaticapps.net'
+  'https://ashy-water-04166691e.6.azurestaticapps.net',
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // ✅ echo origin properly
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
-app.options('*', cors());
-
-
 app.use(express.json());
+app.use(cookieParser());
+
+// ✅ Handle preflight *after* middleware, before routes
+app.options('*', cors());
 
 // Routes
 app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
 
-dbrequests.setDataBaseConn(db());
-
 app.get('/', (req, res) => res.send('API Running'));
-app.use(cookieParser());
+
 app.post('/signup', async (req, res) => {
   try {
     const accountToAdd = await AccountFuncs.createAccount(req.body);
@@ -78,14 +82,16 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await AccountFuncs.login(username, password);
     console.log('User object:', user);
-    // Choose the correct secret
+
     const secret =
       process.env.NODE_ENV === 'test'
         ? process.env.JWT_SECRET
         : process.env.TOKEN_SECRET;
+
     const token = jwt.sign({ username: user.username }, secret, {
       expiresIn: '15m',
     });
+
     res.status(200).json({ token, username: user.username, email: user.email });
   } catch (error) {
     console.log('Login Error:', error.message);
@@ -94,7 +100,6 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/accountrecovery', async (req, res) => {
-  console.log(req);
   const id = crypto.randomBytes(32).toString('hex');
   res.cookie('CRSFtoken', id, {
     httpOnly: true,
@@ -102,36 +107,29 @@ app.post('/accountrecovery', async (req, res) => {
     secure: false,
   });
 
-  console.log(id);
-
   try {
     const { username, email } = req.body;
     const user = await dbrequests.getAccount(username);
-    if (user === null) {
-      res.status(404).send(`User ${username} does not exist`);
-    } else if (user.email != email) {
-      res
-        .status(401)
-        .send(`Email does not match the email for user: ${username}`);
-    } else {
-      //exprdate = now + 5m
-      const expiration_date = Date.now() + 300000;
-      const token = crypto.randomBytes(32).toString('hex');
-      const url = `http://localhost:5173/resetvalidation?token=${token}`;
-      const recoveryToken = {
-        token: token,
-        expiration: expiration_date,
-        CRSFtoken: id,
-        user: username,
-      };
-      await dbrequests.addRecoveryToken(recoveryToken);
-      await mailer.sendEmail(
-        email,
-        `Click here to recover account: ${url}`,
-        'Testing Get'
-      );
-      res.status(200).send(`Account recovery email has been sent to ${email}`);
+    if (!user) {
+      return res.status(404).send(`User ${username} does not exist`);
     }
+    if (user.email !== email) {
+      return res.status(401).send(`Email does not match the email for user: ${username}`);
+    }
+
+    const expiration_date = Date.now() + 5 * 60 * 1000; // 5 minutes
+    const token = crypto.randomBytes(32).toString('hex');
+    const url = `${process.env.FRONTEND_URL}/resetvalidation?token=${token}`;
+
+    await dbrequests.addRecoveryToken({
+      token,
+      expiration: expiration_date,
+      CRSFtoken: id,
+      user: username,
+    });
+
+    await mailer.sendEmail(email, `Click here to recover account: ${url}`, 'Password Recovery');
+    res.status(200).send(`Account recovery email has been sent to ${email}`);
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error.message);
@@ -142,12 +140,11 @@ app.post('/resetvalidation', async (req, res) => {
   const { token } = req.body;
   const CRSFtoken = req.cookies.CRSFtoken;
   const date = Date.now();
+
   try {
     const record = await dbrequests.getRecoveryToken(token);
-    console.log(record);
-    if (record === undefined) {
-      console.log('Could not find request');
-    } else if (
+    if (
+      record &&
       token === record.token &&
       CRSFtoken === record.CRSFtoken &&
       date < record.expiration
@@ -164,9 +161,6 @@ app.post('/resetvalidation', async (req, res) => {
 
 app.post('/resetpassword', async (req, res) => {
   const { p1, p2, user } = req.body;
-  console.log(user);
-  console.log('\n');
-  console.log(p1);
   try {
     if (p1 === p2) {
       await AccountFuncs.resetPassword(user, p1);
