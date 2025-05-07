@@ -4,7 +4,7 @@
   "type": "module",
   "main": "backend.js",
   "scripts": {
-    "test": "npx --no-install dotenv -e .env.test -- jest",
+    "test": "dotenv -e .env.test -- jest",
     "dev": "npx nodemon backend.js",
     "start": "node backend.js",
     "lint": "eslint ."
@@ -22,6 +22,7 @@
     "mongoose": "^8.10.0"
   },
   "devDependencies": {
+    "dotenv-cli": "^8.0.0",
     "nodemon": "^3.1.9"
   },
   "description": ""
