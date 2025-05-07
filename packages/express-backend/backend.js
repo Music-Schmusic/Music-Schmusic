@@ -38,7 +38,7 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // ✅ echo origin properly
+        callback(null, origin);
       } else {
         callback(new Error('Not allowed by CORS'));
       }
@@ -51,9 +51,6 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-
-// ✅ Handle preflight *after* middleware, before routes
-app.options('*', cors());
 
 // Routes
 app.use('/authorize', authRoutes);
