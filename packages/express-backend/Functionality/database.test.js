@@ -4,8 +4,10 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import db_req from '../dbrequests.js';
 import connectDB from '../db.js';
 import { jest } from '@jest/globals';
+jest.setTimeout(120000);
 
 let mongoServer;
+
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();

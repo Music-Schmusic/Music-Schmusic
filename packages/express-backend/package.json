@@ -4,7 +4,7 @@
   "type": "module",
   "main": "backend.js",
   "scripts": {
-    "test": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "dotenv -e .env.test -- node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
     "dev": "npx nodemon backend.js",
     "start": "node backend.js",
     "lint": "eslint ."
