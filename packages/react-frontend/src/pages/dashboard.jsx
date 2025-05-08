@@ -14,30 +14,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/Dashboard.css';
-const API_URL = import.meta.env.VITE_API_URL;
 
-// PKCE helper functions
-function generateCodeVerifier(length = 128) {
-  const possible =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let text = '';
-  for (let i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
-async function generateCodeChallenge(verifier) {
-  const data = new TextEncoder().encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  const base64 = btoa(String.fromCharCode(...new Uint8Array(digest)));
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-const redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI;
 const Dashboard = () => {
-  const navigate = useNavigate();
+  console.log('Dashboard component rendered'); // Debug log
 
   const [userStats, setUserStats] = useState({
     thisWeek: {
@@ -56,88 +35,97 @@ const Dashboard = () => {
       favoriteGenre: '',
     },
   });
+
   const [topTracks, setTopTracks] = useState([]);
   const [topArtists, setTopArtists] = useState([]);
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [chartData, setChartData] = useState([
-    { name: '5 Weeks Ago', timeSpent: 0 },
-    { name: '4 Weeks Ago', timeSpent: 0 },
-    { name: '3 Weeks Ago', timeSpent: 0 },
-    { name: '2 Weeks Ago', timeSpent: 0 },
-    { name: 'Last Week', timeSpent: 0 },
-    { name: 'This Week', timeSpent: 0 },
-  ]);
+  const [authUrl, setAuthUrl] = useState(null);
 
-  const handleConnectSpotify = async () => {
-    const verifier = generateCodeVerifier();
-    const challenge = await generateCodeChallenge(verifier);
-    localStorage.setItem('pkce_code_verifier', verifier);
-
-    const scopes = [
-      'user-read-private',
-      'user-read-email',
-      'user-top-read',
-      'user-read-recently-played',
-    ];
-
-    const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(
-      scopes.join(' ')
-    )}&redirect_uri=${encodeURIComponent(
-      redirectUri
-    )}&code_challenge_method=S256&code_challenge=${challenge}`;
-
-    window.location.href = authUrl;
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('Fetching auth URL...'); // Debug log
+    const fetchAuthUrl = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:8000/authorize/authorize'
+        );
+        console.log('Auth URL received:', response.data.authUrl); // Debug log
+        setAuthUrl(response.data.authUrl);
+      } catch (err) {
+        console.error('Error fetching auth URL:', err);
+        setError('Failed to get Spotify authorization URL');
+      }
+    };
+
+    fetchAuthUrl();
+  }, []);
+
+  useEffect(() => {
+    console.log('Fetching data...'); // Debug log
     const fetchData = async () => {
       try {
         const spotifyToken = localStorage.getItem('spotifyToken');
+        console.log('Spotify token found:', !!spotifyToken); // Debug log
+
         if (!spotifyToken) {
           setLoading(false);
           return;
         }
 
-        const headers = { Authorization: `Bearer ${spotifyToken}` };
-        const [tracksRes, artistsRes, recentRes] = await Promise.all([
-          axios.get(`${API_URL}/spotify/stats/top-tracks`, {
-            headers,
-          }),
-          axios.get(`${API_URL}/spotify/stats/top-artists`, {
-            headers,
-          }),
-          axios.get(`${API_URL}/spotify/stats/recently-played`, {
-            headers,
-          }),
-        ]);
+        const headers = {
+          Authorization: `Bearer ${spotifyToken}`,
+        };
 
-        setTopTracks(tracksRes.data.items);
-        setTopArtists(artistsRes.data.items);
-        setRecentlyPlayed(recentRes.data.items);
+        console.log('Making API requests...'); // Debug log
+        const [tracksResponse, artistsResponse, recentResponse] =
+          await Promise.all([
+            axios.get('http://localhost:8000/spotify/stats/top-tracks', {
+              headers,
+            }),
+            axios.get('http://localhost:8000/spotify/stats/top-artists', {
+              headers,
+            }),
+            axios.get('http://localhost:8000/spotify/stats/recently-played', {
+              headers,
+            }),
+          ]);
+
+        console.log('API responses received'); // Debug log
+        setTopTracks(tracksResponse.data.items);
+        setTopArtists(artistsResponse.data.items);
+        setRecentlyPlayed(recentResponse.data.items);
         setLoading(false);
+        console.log(tracksResponse, artistsResponse, recentResponse);
 
-        const totalMs = recentRes.data.items.reduce(
-          (acc, item) => acc + item.track.duration_ms,
-          0
-        );
+        // Calculate time spent listening
+        var totalMs = 0;
+        for (let i = 0; i < recentResponse.data.items.length; i++) {
+          totalMs = totalMs + recentResponse.data.items[i].track.duration_ms;
+        }
+
+        // Convert to hours and minutes
         const hours = Math.floor(totalMs / 3600000);
         const minutes = Math.floor((totalMs % 3600000) / 60000);
-        const formattedTime = `${hours}h ${minutes}m`;
 
+        // Format time as "Xh Ym"
+        const formattedTime = `${hours}h ${minutes}m`;
+        console.log(formattedTime);
         setUserStats((prev) => ({
           ...prev,
           thisWeek: {
             ...prev.thisWeek,
             timeSpent: formattedTime,
-            favoriteArtist: artistsRes.data.items[0]?.name || 'No data',
-            favoriteGenre: artistsRes.data.items[0]?.genres[0] || 'No data',
+            favoriteArtist: artistsResponse.data[0]?.name || 'No data',
+            favoriteGenre: artistsResponse.data[0]?.genres[0] || 'No data',
           },
         }));
       } catch (err) {
         console.error('Error fetching data:', err);
         if (err.response?.status === 401) {
+          // Token expired or invalid
           localStorage.removeItem('spotifyToken');
           setError(
             'Your Spotify session has expired. Please reconnect your account.'
@@ -152,36 +140,58 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+  // Format data for charts
+  const [chartData, setChartData] = useState([
+    { name: '5 Weeks Ago', timeSpent: 0 },
+    { name: '4 Weeks Ago', timeSpent: 0 },
+    { name: '3 Weeks Ago', timeSpent: 0 },
+    { name: '2 Weeks Ago', timeSpent: 0 },
+    { name: 'Last Week', timeSpent: 0 },
+    { name: 'This Week', timeSpent: 0 },
+  ]);
+
+  // Update chart data with actual time values
   useEffect(() => {
     if (userStats.thisWeek.timeSpent) {
-      const [hours, minutes] = userStats.thisWeek.timeSpent
-        .split(' ')
-        .map((str) => parseInt(str));
+      const timeStr = userStats.thisWeek.timeSpent;
+      const [hours, minutes] = timeStr.split(' ').map((str) => parseInt(str));
       const totalHours = hours + minutes / 60;
 
       setChartData((prev) => {
-        const updated = [...prev];
-        updated[5] = { ...updated[5], timeSpent: totalHours };
-        return updated;
+        const newData = [...prev];
+        newData[5] = { ...newData[5], timeSpent: totalHours };
+        return newData;
       });
     }
   }, [userStats]);
 
+  // Custom formatter for Y-axis
   const formatYAxis = (value) => {
     const hours = Math.floor(value);
     const minutes = Math.round((value - hours) * 60);
     return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
   };
 
+  // Custom tooltip formatter
   const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload?.length) {
+    if (active && payload && payload.length) {
       const value = payload[0].value;
       const hours = Math.floor(value);
       const minutes = Math.round((value - hours) * 60);
+      const timeStr = minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+
       return (
-        <div className="custom-tooltip">
-          <p className="label">{label}</p>
-          <p className="value">{`Time: ${hours}h ${minutes}m`}</p>
+        <div
+          className="custom-tooltip"
+          style={{
+            background: 'rgba(255, 255, 255, 0.9)',
+            padding: '10px',
+            borderRadius: '5px',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          <p className="label">{`${label}`}</p>
+          <p className="value">{`Time: ${timeStr}`}</p>
         </div>
       );
     }
@@ -194,8 +204,11 @@ const Dashboard = () => {
   }));
 
   const COLORS = ['#30e849', '#8884d8', '#82ca9d', '#ff8042'];
+
   const user = localStorage.getItem('username');
   const spotifyToken = localStorage.getItem('spotifyToken');
+
+  console.log('Rendering state:', { loading, error, spotifyToken }); // Debug log
 
   if (loading) {
     return (
@@ -211,12 +224,14 @@ const Dashboard = () => {
       <div className="connect-spotify-container">
         <h2>Connect Your Spotify Account</h2>
         <p>To view your music data, please connect your Spotify account.</p>
-        <button
-          onClick={handleConnectSpotify}
-          className="connect-spotify-button"
-        >
-          Connect Spotify
-        </button>
+        {authUrl && (
+          <button
+            onClick={() => window.open(authUrl, '_self')}
+            className="connect-spotify-button"
+          >
+            Connect Spotify
+          </button>
+        )}
       </div>
     );
   }
@@ -245,7 +260,6 @@ const Dashboard = () => {
       </div>
 
       <div className="sections-container">
-        {/* Top Tracks Section */}
         <section className="top-tracks">
           <h2>Your Top Tracks</h2>
           <div className="music-grid">
@@ -265,7 +279,6 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Top Artists Section */}
         <section className="top-artists">
           <h2>Your Top Artists</h2>
           <div className="music-grid">
@@ -285,7 +298,6 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Recently Played Section */}
         <section className="recently-played">
           <h2>Recently Played</h2>
           <div className="music-grid">
@@ -307,7 +319,6 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Charts */}
         <div className="chart-container">
           <h2>Listening Time</h2>
           <ResponsiveContainer width="100%" height={300}>
