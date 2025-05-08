@@ -1,4 +1,3 @@
-import src from './account.js';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import db_req from '../dbrequests.js';
