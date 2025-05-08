@@ -8,14 +8,11 @@ const Recommended = () => {
   // 2. Create the same AI cover fetch function
   const getAICover = async () => {
     try {
-      const response = await fetch(
-        `${API_URL}/api/playlist-cover/generate`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: 'test-user' }),
-        }
-      );
+      const response = await fetch(`${API_URL}/api/playlist-cover/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: 'test-user' }),
+      });
       const data = await response.json();
       console.log('API Response:', data);
       setCoverImage(data.image);

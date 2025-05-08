@@ -31,18 +31,22 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/signup`, {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      }, {
-        withCredentials: true
-      });
+      const response = await axios.post(
+        `${API_URL}/signup`,
+        {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.status === 201) {
-        const authResponse = await axios.get(
-          `${API_URL}/authorize/authorize`, { withCredentials: true,}
-        );
+        const authResponse = await axios.get(`${API_URL}/authorize/authorize`, {
+          withCredentials: true,
+        });
         window.open(authResponse.data.authUrl, '_self');
       }
     } catch (err) {

@@ -1,6 +1,5 @@
 import express from 'express';
 import querystring from 'querystring';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import Account from '../schemas/account.js';
 import spotifyFetch from './authorizehelper.js'; // abstracted fetch function

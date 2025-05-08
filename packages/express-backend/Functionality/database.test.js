@@ -8,7 +8,6 @@ jest.setTimeout(120000);
 
 let mongoServer;
 
-
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();

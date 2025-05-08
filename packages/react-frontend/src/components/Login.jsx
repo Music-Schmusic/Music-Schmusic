@@ -29,12 +29,16 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
     e.preventDefault();
     setError(null);
     try {
-      const response = await axios.post(`${API_URL}/login`, {
-        username,
-        password,
-      }, {
-        withCredentials: true
-      });
+      const response = await axios.post(
+        `${API_URL}/login`,
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);

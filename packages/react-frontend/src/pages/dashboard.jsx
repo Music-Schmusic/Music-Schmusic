@@ -289,8 +289,8 @@ const Dashboard = () => {
         <section className="recently-played">
           <h2>Recently Played</h2>
           <div className="music-grid">
-          {recentlyPlayed.slice(0, 5).map((item, index) => (
-            <div key={`${item.track.id}-${index}`} className="music-item">
+            {recentlyPlayed.slice(0, 5).map((item, index) => (
+              <div key={`${item.track.id}-${index}`} className="music-item">
                 <img
                   src={item.track.album?.images[0]?.url}
                   alt={item.track.name}

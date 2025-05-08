@@ -20,7 +20,7 @@ beforeEach(() => {
   });
 
   nodemailer.default.createTransport.mockReturnValue({
-    sendMail: mockSendMail
+    sendMail: mockSendMail,
   });
 });
 
