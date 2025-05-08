@@ -87,6 +87,8 @@ router.get('/callback', async (req, res) => {
         user.spotifyTokenExpiresAt = new Date(Date.now() + expires_in * 1000);
         await user.save();
       }
+    } else {
+      throw new Error("No user provided in query")
     }
 
     const redirectFrontend = `${frontend_url}/oauth-success?access_token=${access_token}`;

@@ -34,20 +34,6 @@ afterEach(async () => {
   }
 });
 
-test('Test Get User', async () => {
-  const body1 = {
-    username: 'testuser',
-    email: 'user@example.com',
-    password: '1234forever',
-  };
-
-  const username = await src.createAccount(body1);
-  await db_req.addAccount(username);
-
-  console.log(username);
-  expect(0).toBe(0);
-});
-
 test('Should connect to MongoDB successfully', async () => {
   process.env.NODE_ENV = 'development';
   process.env.MONGO_URI = mongoServer.getUri(); // Use in-memory DB URI
@@ -80,4 +66,38 @@ test('Should handle MongoDB connection failure', async () => {
   expect(mockExit).toHaveBeenCalledWith(1);
 
   mockExit.mockRestore(); // Restore exit behavior
+});
+test('Add recovery token', async () => {
+  process.env.NODE_ENV = 'development';
+  process.env.MONGO_URI = mongoServer.getUri(); // Use in-memory DB URI
+
+  await connectDB();
+
+  const token = {
+    token: 'abc',
+    expiration: Date.now(),
+    CRSFtoken: 'cba',
+    user: 'aab',
+  };
+  await db_req.addRecoveryToken(token);
+  expect(0).toBe(0); //Should only get here if the request succeeds
+});
+test('get recovery token', async () => {
+  process.env.NODE_ENV = 'development';
+  process.env.MONGO_URI = mongoServer.getUri(); // Use in-memory DB URI
+
+  await connectDB();
+  const date = Date.now();
+  const token = {
+    token: 'abc',
+    expiration: date,
+    CRSFtoken: 'cba',
+    user: 'aab',
+  };
+  await db_req.addRecoveryToken(token);
+  const res = await db_req.getRecoveryToken(token.token);
+  expect(res.token).toBe(token.token);
+  expect(res.expiration.getTime()).toBe(date);
+  expect(res.CRSFtoken).toBe(token.CRSFtoken);
+  expect(res.user).toBe(token.user);
 });
