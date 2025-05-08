@@ -86,4 +86,41 @@ describe('Spotify Routes', () => {
     expect(res.body).toHaveProperty('error', 'Failed to fetch top tracks');
     expect(res.body.details).toEqual({ error: 'Invalid token' });
   });
+
+  test('GET /spotify/stats/top-artists - Spotify API error', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: { error: 'Invalid token' },
+      },
+    });
+
+    const res = await request(app)
+      .get('/spotify/stats/top-artists')
+      .set('Authorization', mockToken);
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty('error', 'Failed to fetch top artists');
+    expect(res.body.details).toEqual({ error: 'Invalid token' });
+  });
+
+  test('GET /spotify/stats/recently-played - Spotify API error', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: { error: 'Invalid token' },
+      },
+    });
+
+    const res = await request(app)
+      .get('/spotify/stats/recently-played')
+      .set('Authorization', mockToken);
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty(
+      'error',
+      'Failed to fetch recently played tracks'
+    );
+    expect(res.body.details).toEqual({ error: 'Invalid token' });
+  });
 });

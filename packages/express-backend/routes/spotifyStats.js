@@ -34,13 +34,13 @@ router.get('/top-tracks', checkSpotifyToken, async (req, res) => {
   } catch (error) {
     console.error(
       'Error fetching top tracks:',
-      error.response?.data || error.message,
+      error.response.data,
       'Status:',
-      error.response?.status
+      error.response.status
     );
-    res.status(error.response?.status || 500).json({
+    res.status(error.response.status).json({
       error: 'Failed to fetch top tracks',
-      details: error.response?.data || error.message,
+      details: error.response.data,
     });
   }
 });
@@ -65,13 +65,13 @@ router.get('/top-artists', checkSpotifyToken, async (req, res) => {
   } catch (error) {
     console.error(
       'Error fetching top artists:',
-      error.response?.data || error.message,
+      error.response.data,
       'Status:',
-      error.response?.status
+      error.response.status
     );
-    res.status(error.response?.status || 500).json({
+    res.status(error.response.status).json({
       error: 'Failed to fetch top artists',
-      details: error.response?.data || error.message,
+      details: error.response.data,
     });
   }
 });
@@ -96,13 +96,13 @@ router.get('/recently-played', checkSpotifyToken, async (req, res) => {
   } catch (error) {
     console.error(
       'Error fetching recently played:',
-      error.response?.data || error.message,
+      error.response.data,
       'Status:',
-      error.response?.status
+      error.response.status
     );
-    res.status(error.response?.status || 500).json({
+    res.status(error.response.status).json({
       error: 'Failed to fetch recently played tracks',
-      details: error.response?.data || error.message,
+      details: error.response.data,
     });
   }
 });
