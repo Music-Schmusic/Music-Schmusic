@@ -3,3 +3,4 @@ node_modules/
 .env.test
 .vs/
 ./packages/express-backend/auth/
+packages/express-backend/auth/spotify-stat-ai-8587b4801d2d.json
