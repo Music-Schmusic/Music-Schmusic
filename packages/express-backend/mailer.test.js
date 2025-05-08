@@ -28,7 +28,7 @@ test('Testing sendMail success', async () => {
   });
 
   nodemailer.default.createTransport.mockReturnValue({
-    sendMail: mockSendMail
+    sendMail: mockSendMail,
   });
 
   await mailer.default.sendEmail(who, msg, subject);
@@ -40,30 +40,30 @@ test('Testing sendMail success', async () => {
       subject: subject,
       text: msg,
     },
-    
+
     expect.any(Function)
   );
 
   expect(mockSendMail).toHaveBeenCalledTimes(1);
 });
 
-test('Transporter returns error', async() => {
-   const err = new Error("Email failed to send");
-   const logSpy = jest.spyOn(global.console, 'log');
+test('Transporter returns error', async () => {
+  const err = new Error('Email failed to send');
+  const logSpy = jest.spyOn(global.console, 'log');
 
   mockSendMail = jest.fn().mockImplementation((mailDetails, callback) => {
     callback(err);
   });
 
   nodemailer.default.createTransport.mockReturnValue({
-    sendMail: mockSendMail
+    sendMail: mockSendMail,
   });
 
   await mailer.default.sendEmail(who, msg, subject);
 
   expect(logSpy).toHaveBeenCalledTimes(2);
   expect(logSpy).toHaveBeenCalledWith('Failed to send email: ', err);
-   expect.any(Function);
+  expect.any(Function);
 
-   logSpy.mockRestore();
- });
+  logSpy.mockRestore();
+});
