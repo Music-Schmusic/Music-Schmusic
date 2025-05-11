@@ -47,3 +47,24 @@ test('/Accountrecovery returns 404 user doesnt exist', async() => {
   expect(dbrequests.getAccount).toHaveBeenCalledTimes(1); 
   expect(dbrequests.getAccount).toHaveBeenCalledWith(username);
 });
+
+test('/accountrecovery returns 401 email mismatch', async() => {
+  jest.mock('./dbrequests.js', () => ({
+    getAccount: jest.fn(),
+  }));
+
+  const username = "Testuser";
+  const password = "O, what a noble mind is here o'erthrown! The piteous ample entrails of this pitiful state, how they do seem to bleed and weep, as if the very fabric of our being were torn asunder by the ravages of time and fortune!";
+
+  const reqUser = {username : username, email : "legit@legit.com", password : password };
+  const mockUser = {username : username, email : "test@test.com", password : password };
+
+  jest.spyOn(dbrequests, 'getAccount').mockImplementationOnce((username) => mockUser);
+
+  const res = await request(app).post('/accountrecovery').send(reqUser);
+
+  expect(res.status).toBe(401);
+  expect(res.text).toBe(`Email does not match the email for user: ${username}`);
+  expect(dbrequests.getAccount).toHaveBeenCalledTimes(1);
+  expect(dbrequests.getAccount).toHaveBeenCalledWith(username);
+});
