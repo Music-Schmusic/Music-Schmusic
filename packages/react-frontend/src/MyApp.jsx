@@ -110,7 +110,7 @@ const Home = ({ isLoggedIn, setIsLoggedIn }) => {
   return (
     <div className="home-container">
       <Navbar></Navbar>
-      <Spline className="spline" scene="scene1.splinecode"></Spline>
+      {/* <Spline className="spline" scene="scene1.splinecode"></Spline> */}
       <lord-icon
         src="https://cdn.lordicon.com/jpzhmobh.json"
         trigger="loop"
@@ -237,11 +237,11 @@ const AppContent = ({
   setTempLogin,
 }) => {
   const location = useLocation();
-  const showSpline = ['/', '/login', '/signup'].includes(location.pathname);
+  // const showSpline = ['/', '/login', '/signup'].includes(location.pathname);
 
   return (
     <>
-      {showSpline && <SplineBackground currentScene={currentScene} />}
+      {/* {showSpline && <SplineBackground currentScene={currentScene} />} */}
       <AppRoutes
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
