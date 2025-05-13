@@ -77,7 +77,7 @@ test('/Account recovery returns recovery token successfully', async() => {
   }));
   const email = "test";
   const username = "test";
-  const user = {username : username, email : email, password : "Thou art as tedious as a twice-told tale, as dull as a butterless pancake, as dry as a lime-kiln, and as flat as a failed soufflé, and thy conversation is as vapid, and as vacuous, and as devoid of interest, as a very desert of Sahara"};
+  const user = {username : username, email : email};
 
   jest.spyOn(dbrequests, 'getAccount').mockImplementationOnce((username) => user);
   jest.spyOn(dbrequests, 'addRecoveryToken').mockImplementationOnce(() => Promise.resolve());
@@ -98,4 +98,29 @@ test('/Account recovery returns recovery token successfully', async() => {
   }));
   expect(mailer.sendEmail).toHaveBeenCalledTimes(1);
   expect(mailer.sendEmail).toHaveBeenCalledWith(email, expect.stringContaining('Click here to recover account:'), "Password Recovery");
+});
+
+test('/Account recovery returns 500 error', async() => {
+  jest.mock('./dbrequests.js', () => ({
+    getAccount: jest.fn(),
+    addRecoveryToken : jest.fn(),
+  }));
+  const email = "test";
+  const username = "test";
+  const user = {username : username, email : email};
+  const err = new Error('failed to add recovery token');
+
+  const getAcc = jest.spyOn(dbrequests, 'getAccount').mockImplementationOnce((username) => user);
+  const addToken = jest.spyOn(dbrequests, 'addRecoveryToken').mockImplementationOnce(() => {throw err});
+  const sendMsg = jest.spyOn(mailer, 'sendEmail').mockImplementationOnce();
+  const consoleSpy = jest.spyOn(global.console, 'log');
+
+  const res = await request(app).post('/accountrecovery').send(user);
+
+  expect(res.status).toBe(500);
+  expect(getAcc).toHaveBeenCalledTimes(1);
+  expect(getAcc).toHaveBeenCalledWith(username);
+  expect(consoleSpy).toHaveBeenCalledTimes(1);
+  expect(consoleSpy).toHaveBeenCalledWith("failed to add recovery token");
+  expect(sendMsg).toHaveBeenCalledTimes(0);
 });
