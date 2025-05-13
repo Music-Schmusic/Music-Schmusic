@@ -1,6 +1,5 @@
 import express from 'express';
 import querystring from 'querystring';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import Account from '../schemas/account.js';
 import spotifyFetch from './authorizehelper.js'; // abstracted fetch function
@@ -8,14 +7,11 @@ import spotifyFetch from './authorizehelper.js'; // abstracted fetch function
 dotenv.config();
 
 const router = express.Router();
-//router.use(cors());
 
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_SECRET_ID;
-const redirect_uri =
-  process.env.SPOTIFY_REDIRECT_URI ||
-  'http://localhost:8000/authorize/callback';
-const frontend_url = process.env.FRONTEND_URL || 'http://localhost:5173';
+const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
+const frontend_url = process.env.FRONTEND_URL;
 
 // Generate a random string for CSRF protection
 function generateState(length) {
@@ -28,7 +24,6 @@ function generateState(length) {
   return result;
 }
 
-// Step 1: Direct user to Spotify authorization page
 router.get('/authorize', (req, res) => {
   const state = generateState(16);
   const scope =
@@ -46,7 +41,6 @@ router.get('/authorize', (req, res) => {
   res.json({ authUrl: `https://accounts.spotify.com/authorize?${auth_query}` });
 });
 
-// Step 2: Handle Spotify redirect with authorization code
 router.get('/callback', async (req, res) => {
   const { code, state, username } = req.query;
 
@@ -93,6 +87,8 @@ router.get('/callback', async (req, res) => {
         user.spotifyTokenExpiresAt = new Date(Date.now() + expires_in * 1000);
         await user.save();
       }
+    } else {
+      throw new Error('No user provided in query');
     }
 
     const redirectFrontend = `${frontend_url}/oauth-success?access_token=${access_token}`;
