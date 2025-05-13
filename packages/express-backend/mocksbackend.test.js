@@ -9,7 +9,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test('Signup returns unknown 400 error', async () => {
+test('/signup returns unknown 400 error', async () => {
   jest.mock('./Functionality/account.js', () => ({
   createAccount: jest.fn(),
   }));
@@ -28,7 +28,7 @@ test('Signup returns unknown 400 error', async () => {
   expect(res.text).toBe(signupError.message);
 });
 
-test('/Accountrecovery returns 404 user doesnt exist', async() => {
+test('/accountrecovery returns 404 user doesnt exist', async() => {
   //mock db_req.get account() -> returns user null
   jest.mock('./dbrequests.js', () => ({
     getAccount: jest.fn(),
@@ -70,7 +70,7 @@ test('/accountrecovery returns 401 email mismatch', async() => {
   expect(dbrequests.getAccount).toHaveBeenCalledWith(username);
 });
 
-test('/Account recovery returns recovery token successfully', async() => {
+test('/accountrecovery returns recovery token successfully', async() => {
   jest.mock('./dbrequests.js', () => ({
     getAccount: jest.fn(),
     addRecoveryToken : jest.fn(),
@@ -81,7 +81,7 @@ test('/Account recovery returns recovery token successfully', async() => {
 
   jest.spyOn(dbrequests, 'getAccount').mockImplementationOnce((username) => user);
   jest.spyOn(dbrequests, 'addRecoveryToken').mockImplementationOnce(() => Promise.resolve());
-  jest.spyOn(mailer, 'sendEmail').mockImplementationOnce();
+  jest.spyOn(mailer, 'sendEmail').mockImplementationOnce(() => Promise.resolve());
 
   const res = await request(app).post('/accountrecovery').send(user);
 
@@ -100,7 +100,7 @@ test('/Account recovery returns recovery token successfully', async() => {
   expect(mailer.sendEmail).toHaveBeenCalledWith(email, expect.stringContaining('Click here to recover account:'), "Password Recovery");
 });
 
-test('/Account recovery returns 500 error', async() => {
+test('/accountrecovery returns 500 error', async() => {
   jest.mock('./dbrequests.js', () => ({
     getAccount: jest.fn(),
     addRecoveryToken : jest.fn(),
@@ -112,7 +112,7 @@ test('/Account recovery returns 500 error', async() => {
 
   const getAcc = jest.spyOn(dbrequests, 'getAccount').mockImplementationOnce((username) => user);
   const addToken = jest.spyOn(dbrequests, 'addRecoveryToken').mockImplementationOnce(() => {throw err});
-  const sendMsg = jest.spyOn(mailer, 'sendEmail').mockImplementationOnce();
+  const sendMsg = jest.spyOn(mailer, 'sendEmail').mockImplementationOnce(() => Promise.resolve());
   const consoleSpy = jest.spyOn(global.console, 'log');
 
   const res = await request(app).post('/accountrecovery').send(user);
@@ -124,3 +124,45 @@ test('/Account recovery returns 500 error', async() => {
   expect(consoleSpy).toHaveBeenCalledWith("failed to add recovery token");
   expect(sendMsg).toHaveBeenCalledTimes(0);
 });
+
+test('/resetvalidation returns successful 200 response', async() => {
+  jest.mock('./dbrequests.js', () => ({
+    getRecoveryToken : jest.fn(),
+  }));
+  const token = "ABC";
+  const CRSFtoken = "ABC";
+  const user = "testuser";
+  const expiration = new Date(2085, 1, 1); 
+
+  const mocReq = { token : token };
+  const mockRecord = {token : token, CRSFtoken : CRSFtoken, user : user, expiration : expiration};
+  const getRecov = jest.spyOn(dbrequests, 'getRecoveryToken').mockImplementationOnce((token) => mockRecord);
+  const res = await request(app).post('/resetvalidation').set('Cookie', [`CRSFtoken=${CRSFtoken}`]).send(mocReq);
+
+  expect(res.status).toBe(200);
+  expect(res.text).toEqual(JSON.stringify({user: user}));
+  expect(getRecov).toHaveBeenCalledTimes(1);
+  expect(getRecov).toHaveBeenCalledWith(token);
+});
+
+test('/resetvalidation returns 401 invalid credentials', async() => {
+  jest.mock('./dbrequests.js', () => ({
+    getRecoveryToken : jest.fn(),
+  }));
+  const token = "ABC";
+  const CRSFtoken = "ABC";
+  const user = "testuser";
+  const expiration = new Date(2085, 1, 1); 
+
+  const mocReq = { token : token };
+  const mockRecord = {token : "different-token", CRSFtoken : CRSFtoken, user : user, expiration : expiration};
+  const getRecov = jest.spyOn(dbrequests, 'getRecoveryToken').mockImplementationOnce((token) => mockRecord);
+  const res = await request(app).post('/resetvalidation').set('Cookie', [`CRSFtoken=${CRSFtoken}`]).send(mocReq);
+
+  expect(res.status).toBe(401);
+  expect(res.text).toBe('Invalid Credentials');
+  expect(getRecov).toHaveBeenCalledTimes(1);
+  expect(getRecov).toHaveBeenCalledWith(token);
+});
+
+
