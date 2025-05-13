@@ -34,20 +34,21 @@ const allowedOrigins = [
   'https://ashy-water-04166691e.6.azurestaticapps.net',
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, origin);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, origin);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -111,7 +112,9 @@ app.post('/accountrecovery', async (req, res) => {
       return res.status(404).send(`User ${username} does not exist`);
     }
     if (user.email !== email) {
-      return res.status(401).send(`Email does not match the email for user: ${username}`);
+      return res
+        .status(401)
+        .send(`Email does not match the email for user: ${username}`);
     }
 
     const expiration_date = Date.now() + 5 * 60 * 1000; // 5 minutes
@@ -125,7 +128,11 @@ app.post('/accountrecovery', async (req, res) => {
       user: username,
     });
 
-    await mailer.sendEmail(email, `Click here to recover account: ${url}`, 'Password Recovery');
+    await mailer.sendEmail(
+      email,
+      `Click here to recover account: ${url}`,
+      'Password Recovery'
+    );
     res.status(200).send(`Account recovery email has been sent to ${email}`);
   } catch (error) {
     console.log(error.message);

@@ -100,4 +100,27 @@ describe('Spotify OAuth Routes', () => {
     expect(res.statusCode).toBe(500);
     expect(res.text).toContain('Error retrieving access token');
   });
+
+  test('GET /callback skips user save if user not found', async () => {
+    Account.findOne.mockResolvedValue(null);
+
+    const res = await request(app).get('/callback').query({
+      code: 'valid-code',
+      state: 'valid',
+      username: 'nonexistentuser',
+    });
+
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toContain('oauth-success?access_token=');
+  });
+
+  test('GET /callback returns 500 if username is not provided', async () => {
+    const res = await request(app).get('/callback').query({
+      code: 'valid-code',
+      state: 'valid',
+    });
+
+    expect(res.statusCode).toBe(500);
+    expect(res.text).toContain('Error retrieving access token');
+  });
 });
