@@ -9,8 +9,8 @@ import {
   useLocation,
 } from 'react-router-dom';
 import './main.css';
-import Spline from '@splinetool/react-spline';
-import SplineBackground from './SplineBackground';
+// import Spline from '@splinetool/react-spline';
+// import SplineBackground from './SplineBackground';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
 import Settings from './pages/settings.jsx';
