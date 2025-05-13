@@ -32,7 +32,7 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       const response = await axios.post(`${API_URL}/login`, 
       { username, password },
       { withCredentials: true}
-      });
+      );
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);
