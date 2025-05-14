@@ -13,6 +13,7 @@ import authenticateUser from './authMiddleware.js';
 import mailer from './mailer.js';
 import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -22,58 +23,35 @@ if (process.env.NODE_ENV === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env') });
 }
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 dbrequests.setDataBaseConn(db());
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'http://localhost:3000',
-  'https://ashy-water-04166691e.6.azurestaticapps.net',
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, origin);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
-});
-app.options('*', (req, res) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.sendStatus(200);
-});
-
-
+// Enable CORS only in development
+if (process.env.NODE_ENV === 'development') {
+  app.use(
+    cors({
+      origin: [
+        'http://127.0.0.1:5173',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:3000',
+      ],
+      credentials: true,
+      methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    })
+  );
+}
 
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
+// API Routes
 app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
@@ -201,12 +179,25 @@ app.get('/protected', authenticateUser, (req, res) => {
   res.send(`Welcome ${req.user.username}`);
 });
 
+// Serve frontend in production only
+if (process.env.NODE_ENV === 'production') {
+  const staticDir = path.join(__dirname, './src/build');
+  console.log('Serving frontend from:', staticDir);
+
+  app.use(express.static(staticDir));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(staticDir, 'index.html'));
+  });
+}
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
+// Start server
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
