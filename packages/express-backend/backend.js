@@ -199,6 +199,8 @@ app.use((err, req, res, next) => {
 
 // Start server
 if (process.env.NODE_ENV !== 'test') {
+  console.log("Backend started in NODE_ENV =", process.env.NODE_ENV);
+
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log('Environment variables loaded:', {
