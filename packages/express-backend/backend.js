@@ -16,6 +16,8 @@ import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
+console.log("backend.js starting up");
+
 dotenv.config();
 
 if (process.env.NODE_ENV === 'test') {
@@ -32,14 +34,12 @@ const PORT = process.env.PORT || 8000;
 
 dbrequests.setDataBaseConn(db());
 
-// Enable CORS only in development
 if (process.env.NODE_ENV === 'development') {
   app.use(
     cors({
       origin: [
         'http://127.0.0.1:5173',
         'http://localhost:5173',
-        'http://127.0.0.1:5173',
         'http://localhost:3000',
       ],
       credentials: true,
@@ -52,7 +52,7 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json());
 app.use(cookieParser());
 
-// API Routes
+// API routes
 app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
@@ -80,14 +80,11 @@ app.post('/login', async (req, res) => {
     const user = await AccountFuncs.login(username, password);
     console.log('User object:', user);
 
-    const secret =
-      process.env.NODE_ENV === 'test'
-        ? process.env.JWT_SECRET
-        : process.env.TOKEN_SECRET;
+    const secret = process.env.NODE_ENV === 'test'
+      ? process.env.JWT_SECRET
+      : process.env.TOKEN_SECRET;
 
-    const token = jwt.sign({ username: user.username }, secret, {
-      expiresIn: '15m',
-    });
+    const token = jwt.sign({ username: user.username }, secret, { expiresIn: '15m' });
 
     res.status(200).json({ token, username: user.username, email: user.email });
   } catch (error) {
@@ -107,32 +104,17 @@ app.post('/accountrecovery', async (req, res) => {
   try {
     const { username, email } = req.body;
     const user = await dbrequests.getAccount(username);
-    if (!user) {
-      return res.status(404).send(`User ${username} does not exist`);
-    }
-    if (user.email !== email) {
-      return res
-        .status(401)
-        .send(`Email does not match the email for user: ${username}`);
-    }
+    if (!user) return res.status(404).send(`User ${username} does not exist`);
+    if (user.email !== email) return res.status(401).send(`Email does not match`);
 
-    const expiration_date = Date.now() + 5 * 60 * 1000; // 5 minutes
+    const expiration = Date.now() + 5 * 60 * 1000;
     const token = crypto.randomBytes(32).toString('hex');
     const url = `${process.env.FRONTEND_URL}/resetvalidation?token=${token}`;
 
-    await dbrequests.addRecoveryToken({
-      token,
-      expiration: expiration_date,
-      CRSFtoken: id,
-      user: username,
-    });
+    await dbrequests.addRecoveryToken({ token, expiration, CRSFtoken: id, user: username });
+    await mailer.sendEmail(email, `Click here to recover account: ${url}`, 'Password Recovery');
 
-    await mailer.sendEmail(
-      email,
-      `Click here to recover account: ${url}`,
-      'Password Recovery'
-    );
-    res.status(200).send(`Account recovery email has been sent to ${email}`);
+    res.status(200).send(`Email sent to ${email}`);
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error.message);
@@ -146,12 +128,7 @@ app.post('/resetvalidation', async (req, res) => {
 
   try {
     const record = await dbrequests.getRecoveryToken(token);
-    if (
-      record &&
-      token === record.token &&
-      CRSFtoken === record.CRSFtoken &&
-      date < record.expiration
-    ) {
+    if (record && token === record.token && CRSFtoken === record.CRSFtoken && date < record.expiration) {
       res.status(200).json({ user: record.user });
     } else {
       res.status(401).send('Invalid Credentials');
@@ -180,39 +157,43 @@ app.get('/protected', authenticateUser, (req, res) => {
   res.send(`Welcome ${req.user.username}`);
 });
 
-// Serve frontend in production only
+// Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
   const staticDir = path.join(__dirname, './build');
   console.log("NODE_ENV =", process.env.NODE_ENV);
-  console.log("Expecting static files at:", path.join(__dirname, './build'));
-  console.log("index.html exists?", fs.existsSync(path.join(__dirname, './build/index.html')));
-
+  console.log("Expecting static files at:", staticDir);
+  console.log("index.html exists?", fs.existsSync(path.join(staticDir, 'index.html')));
 
   app.use(express.static(staticDir));
 
   app.get('*', (req, res) => {
+    console.log('Catch-all route hit:', req.originalUrl);
     res.sendFile(path.join(staticDir, 'index.html'));
   });
 }
 
-// Error handling middleware
+// Error middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start server
-if (process.env.NODE_ENV !== 'test') {
-  console.log("Backend started in NODE_ENV =", process.env.NODE_ENV);
-
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log('Environment variables loaded:', {
-      PORT: process.env.PORT,
-      JWT_SECRET: process.env.JWT_SECRET ? 'Set' : 'Not set',
-      SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID ? 'Set' : 'Not set',
+// Launch the server
+try {
+  if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log('Environment variables:', {
+        NODE_ENV: process.env.NODE_ENV,
+        PORT: process.env.PORT,
+        JWT_SECRET: !!process.env.JWT_SECRET,
+        TOKEN_SECRET: !!process.env.TOKEN_SECRET,
+        FRONTEND_URL: process.env.FRONTEND_URL,
+      });
     });
-  });
+  }
+} catch (err) {
+  console.error('Failed to start server:', err);
 }
 
 export default app;
