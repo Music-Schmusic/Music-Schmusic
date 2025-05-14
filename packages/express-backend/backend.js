@@ -14,6 +14,7 @@ import mailer from './mailer.js';
 import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -182,7 +183,10 @@ app.get('/protected', authenticateUser, (req, res) => {
 // Serve frontend in production only
 if (process.env.NODE_ENV === 'production') {
   const staticDir = path.join(__dirname, './build');
-  console.log('Serving frontend from:', staticDir);
+  console.log("NODE_ENV =", process.env.NODE_ENV);
+  console.log("Expecting static files at:", path.join(__dirname, './build'));
+  console.log("index.html exists?", fs.existsSync(path.join(__dirname, './build/index.html')));
+
 
   app.use(express.static(staticDir));
 
