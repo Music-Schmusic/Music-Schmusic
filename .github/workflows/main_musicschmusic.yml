@@ -26,28 +26,31 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        
+
       - name: Build frontend
         run: npm run build
         working-directory: packages/react-frontend
 
-      - name: Ensure backend src directory exists
-        run: mkdir -p packages/express-backend/src
-      
+      - name: Ensure backend build directory exists
+        run: mkdir -p packages/express-backend/build
+
       - name: Copy frontend build into backend
-        run: cp -r packages/react-frontend/dist packages/express-backend/src/build
-      
+        run: cp -r packages/react-frontend/dist/* packages/express-backend/build/
+
       - name: Build backend
         run: npm run build
         working-directory: packages/express-backend
-        
+
       - name: Run tests
         run: npm run test
-
+        working-directory: packages/express-backend
 
       - name: Zip backend for deployment
         run: zip -r release.zip .
         working-directory: packages/express-backend
+
+      - name: ✅ List ZIP contents for debug
+        run: unzip -l packages/express-backend/release.zip
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4

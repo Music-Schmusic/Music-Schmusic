@@ -181,7 +181,7 @@ app.get('/protected', authenticateUser, (req, res) => {
 
 // Serve frontend in production only
 if (process.env.NODE_ENV === 'production') {
-  const staticDir = path.join(__dirname, './src/build');
+  const staticDir = path.join(__dirname, './build');
   console.log('Serving frontend from:', staticDir);
 
   app.use(express.static(staticDir));
