@@ -279,7 +279,7 @@ test('/resetpassword returns 400 password mismatch', async () => {
 
   const resetPass = jest
     .spyOn(AccountFuncs, 'resetPassword')
-    .mockImplementationOnce((user, pass) => account);
+    .mockImplementationOnce((user, pass) => {});
 
   const res = await request(app).post('/resetpassword').send(mockReq);
   expect(res.status).toBe(400);
