@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 const TOKEN_SECRET =
-  process.env.NODE_ENV === 'test'
+  process.env.Runtime === 'test'
     ? process.env.JWT_SECRET
     : process.env.TOKEN_SECRET || 'yoursecretkey';
 

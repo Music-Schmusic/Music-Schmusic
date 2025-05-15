@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const connectDB = async () => {
-  if (process.env.NODE_ENV === 'test') {
+  if (process.env.Runtime === 'test') {
     console.log('Skipping MongoDB connection in test mode.');
     return;
   }

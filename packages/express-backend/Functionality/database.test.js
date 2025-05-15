@@ -34,7 +34,7 @@ afterEach(async () => {
 });
 
 test('Should connect to MongoDB successfully', async () => {
-  process.env.NODE_ENV = 'development';
+  process.env.Runtime = 'development';
   process.env.MONGO_URI = mongoServer.getUri(); // Use in-memory DB URI
 
   const result = await connectDB();
@@ -43,14 +43,14 @@ test('Should connect to MongoDB successfully', async () => {
 });
 
 test('Should skip MongoDB connection in test mode', async () => {
-  process.env.NODE_ENV = 'test'; // Simulating test environment
+  process.env.Runtime = 'test'; // Simulating test environment
 
   const result = await connectDB();
   expect(result).toBeUndefined(); // Should not connect
 });
 
 test('Should handle MongoDB connection failure', async () => {
-  process.env.NODE_ENV = 'development';
+  process.env.Runtime = 'development';
   process.env.MONGO_URI = 'invalid-uri'; // Force a connection failure
 
   // Disconnect mongoose so connectDB doesn't skip connection attempt
@@ -67,7 +67,7 @@ test('Should handle MongoDB connection failure', async () => {
   mockExit.mockRestore(); // Restore exit behavior
 });
 test('Add recovery token', async () => {
-  process.env.NODE_ENV = 'development';
+  process.env.Runtime = 'development';
   process.env.MONGO_URI = mongoServer.getUri(); // Use in-memory DB URI
 
   await connectDB();
@@ -82,7 +82,7 @@ test('Add recovery token', async () => {
   expect(0).toBe(0); //Should only get here if the request succeeds
 });
 test('get recovery token', async () => {
-  process.env.NODE_ENV = 'development';
+  process.env.Runtime = 'development';
   process.env.MONGO_URI = mongoServer.getUri(); // Use in-memory DB URI
 
   await connectDB();
