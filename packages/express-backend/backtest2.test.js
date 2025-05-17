@@ -138,11 +138,10 @@ test('/accountrecovery returns 500 error', async () => {
   const getAcc = jest
     .spyOn(dbrequests, 'getAccount')
     .mockImplementationOnce((username) => user);
-  const addToken = jest
-    .spyOn(dbrequests, 'addRecoveryToken')
-    .mockImplementationOnce(() => {
-      throw err;
-    });
+
+  jest.spyOn(dbrequests, 'addRecoveryToken').mockImplementationOnce(() => {
+    throw err;
+  });
   const sendMsg = jest
     .spyOn(mailer, 'sendEmail')
     .mockImplementationOnce(() => Promise.resolve());
