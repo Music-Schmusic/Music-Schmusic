@@ -48,10 +48,14 @@ jobs:
       - name: Clean node_modules before deploy
         run: rm -rf packages/express-backend/node_modules
 
-      - name: Zip backend (flat structure, no node_modules)
+      - name: Install backend production dependencies
+        run: npm install --omit=dev
+        working-directory: packages/express-backend
+
+      - name: Zip backend (include node_modules!)
         run: |
           cd packages/express-backend
-          zip -r ../../release.zip . -x "node_modules/*"
+          zip -r ../../release.zip .
 
       - name: List ZIP contents for debug
         run: unzip -l release.zip

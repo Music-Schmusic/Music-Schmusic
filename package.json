@@ -23,8 +23,8 @@
   "scripts": {
     "start:frontend": "cd ./packages/react-frontend && npm run dev",
     "start:backend": "cd ./packages/express-backend && npm run dev",
-    "start": "cross-env NODE_ENV=development npm-run-all --parallel start:frontend start:backend",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test dotenv -e packages/express-backend/.env.test -- jest --coverage --coverageReporters=text",
+    "start": "cross-env Runtime=development npm-run-all --parallel start:frontend start:backend",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules Runtime=test dotenv -e packages/express-backend/.env.test -- jest --coverage --coverageReporters=text",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "lint": "eslint . && prettier --check",

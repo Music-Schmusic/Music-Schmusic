@@ -20,7 +20,7 @@ console.log('backend.js starting up');
 
 dotenv.config();
 
-if (process.env.NODE_ENV === 'test') {
+if (process.env.Runtime === 'test') {
   dotenv.config({ path: path.resolve('packages/express-backend/.env.test') });
 } else {
   dotenv.config({ path: path.resolve('packages/express-backend/.env') });
@@ -34,7 +34,7 @@ const PORT = process.env.PORT || 8080;
 
 dbrequests.setDataBaseConn(db());
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.Runtime === 'development') {
   app.use(
     cors({
       origin: [
@@ -81,7 +81,7 @@ app.post('/login', async (req, res) => {
     console.log('User object:', user);
 
     const secret =
-      process.env.NODE_ENV === 'test'
+      process.env.Runtime === 'test'
         ? process.env.JWT_SECRET
         : process.env.TOKEN_SECRET;
 
@@ -176,9 +176,9 @@ app.get('/protected', authenticateUser, (req, res) => {
 });
 
 // Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
+if (process.env.Runtime === 'production') {
   const staticDir = path.join(__dirname, './build');
-  console.log('NODE_ENV =', process.env.NODE_ENV);
+  console.log('Runtime =', process.env.Runtime);
   console.log('Expecting static files at:', staticDir);
   console.log(
     'index.html exists?',
@@ -201,11 +201,11 @@ app.use((err, req, res, next) => {
 
 // Launch the server
 try {
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.Runtime !== 'test') {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log('Environment variables:', {
-        NODE_ENV: process.env.NODE_ENV,
+        Runtime: process.env.Runtime,
         PORT: process.env.PORT,
         JWT_SECRET: !!process.env.JWT_SECRET,
         TOKEN_SECRET: !!process.env.TOKEN_SECRET,
