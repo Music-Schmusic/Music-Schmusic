@@ -20,8 +20,7 @@
     "express": "^4.21.2",
     "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.10.0",
-    "cookie-parser": "^1.4.6"
+    "mongoose": "^8.10.0"
   },
   "devDependencies": {
     "dotenv-cli": "^8.0.0",
