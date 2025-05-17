@@ -16,7 +16,7 @@ import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-console.log("backend.js starting up");
+console.log('backend.js starting up');
 
 dotenv.config();
 
@@ -80,11 +80,14 @@ app.post('/login', async (req, res) => {
     const user = await AccountFuncs.login(username, password);
     console.log('User object:', user);
 
-    const secret = process.env.Runtime === 'test'
-      ? process.env.JWT_SECRET
-      : process.env.TOKEN_SECRET;
+    const secret =
+      process.env.Runtime === 'test'
+        ? process.env.JWT_SECRET
+        : process.env.TOKEN_SECRET;
 
-    const token = jwt.sign({ username: user.username }, secret, { expiresIn: '15m' });
+    const token = jwt.sign({ username: user.username }, secret, {
+      expiresIn: '15m',
+    });
 
     res.status(200).json({ token, username: user.username, email: user.email });
   } catch (error) {
@@ -105,14 +108,24 @@ app.post('/accountrecovery', async (req, res) => {
     const { username, email } = req.body;
     const user = await dbrequests.getAccount(username);
     if (!user) return res.status(404).send(`User ${username} does not exist`);
-    if (user.email !== email) return res.status(401).send(`Email does not match`);
+    if (user.email !== email)
+      return res.status(401).send(`Email does not match`);
 
     const expiration = Date.now() + 5 * 60 * 1000;
     const token = crypto.randomBytes(32).toString('hex');
     const url = `${process.env.FRONTEND_URL}/resetvalidation?token=${token}`;
 
-    await dbrequests.addRecoveryToken({ token, expiration, CRSFtoken: id, user: username });
-    await mailer.sendEmail(email, `Click here to recover account: ${url}`, 'Password Recovery');
+    await dbrequests.addRecoveryToken({
+      token,
+      expiration,
+      CRSFtoken: id,
+      user: username,
+    });
+    await mailer.sendEmail(
+      email,
+      `Click here to recover account: ${url}`,
+      'Password Recovery'
+    );
 
     res.status(200).send(`Email sent to ${email}`);
   } catch (error) {
@@ -128,7 +141,12 @@ app.post('/resetvalidation', async (req, res) => {
 
   try {
     const record = await dbrequests.getRecoveryToken(token);
-    if (record && token === record.token && CRSFtoken === record.CRSFtoken && date < record.expiration) {
+    if (
+      record &&
+      token === record.token &&
+      CRSFtoken === record.CRSFtoken &&
+      date < record.expiration
+    ) {
       res.status(200).json({ user: record.user });
     } else {
       res.status(401).send('Invalid Credentials');
@@ -160,9 +178,12 @@ app.get('/protected', authenticateUser, (req, res) => {
 // Serve frontend in production
 if (process.env.Runtime === 'production') {
   const staticDir = path.join(__dirname, './build');
-  console.log("Runtime =", process.env.Runtime);
-  console.log("Expecting static files at:", staticDir);
-  console.log("index.html exists?", fs.existsSync(path.join(staticDir, 'index.html')));
+  console.log('Runtime =', process.env.Runtime);
+  console.log('Expecting static files at:', staticDir);
+  console.log(
+    'index.html exists?',
+    fs.existsSync(path.join(staticDir, 'index.html'))
+  );
 
   app.use(express.static(staticDir));
 
