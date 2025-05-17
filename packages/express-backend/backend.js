@@ -33,20 +33,27 @@ const PORT = process.env.PORT || 8080;
 
 dbrequests.setDataBaseConn(db());
 
-  app.use(
-    cors({
-      origin: [
-        'http://127.0.0.1:5173',
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'https://ashy-water-04166691e.6.azurestaticapps.net',
-      ],
-      credentials: true,
-      methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-    })
-  );
+allowedOrigins = [
+  'http://127.0.0.1:5173',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://ashy-water-04166691e.6.azurestaticapps.net',
+];
 
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
