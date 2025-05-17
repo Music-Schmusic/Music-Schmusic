@@ -31,12 +31,6 @@ jobs:
         run: npm run build
         working-directory: packages/react-frontend
 
-      - name: Ensure backend build directory exists
-        run: mkdir -p packages/express-backend/build
-
-      - name: Copy frontend build into backend
-        run: cp -r packages/react-frontend/dist/* packages/express-backend/build/
-
       - name: Run backend tests
         run: npm run test
         working-directory: packages/express-backend

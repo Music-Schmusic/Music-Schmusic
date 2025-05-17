@@ -17,7 +17,6 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 
 console.log('backend.js starting up');
-
 dotenv.config();
 
 if (process.env.Runtime === 'test') {
@@ -34,20 +33,20 @@ const PORT = process.env.PORT || 8080;
 
 dbrequests.setDataBaseConn(db());
 
-if (process.env.Runtime === 'development') {
   app.use(
     cors({
       origin: [
         'http://127.0.0.1:5173',
         'http://localhost:5173',
         'http://localhost:3000',
+        'https://ashy-water-04166691e.6.azurestaticapps.net',
       ],
       credentials: true,
       methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
-}
+
 
 app.use(express.json());
 app.use(cookieParser());
@@ -174,24 +173,6 @@ app.post('/resetpassword', async (req, res) => {
 app.get('/protected', authenticateUser, (req, res) => {
   res.send(`Welcome ${req.user.username}`);
 });
-
-// Serve frontend in production
-if (process.env.Runtime === 'production') {
-  const staticDir = path.join(__dirname, './build');
-  console.log('Runtime =', process.env.Runtime);
-  console.log('Expecting static files at:', staticDir);
-  console.log(
-    'index.html exists?',
-    fs.existsSync(path.join(staticDir, 'index.html'))
-  );
-
-  app.use(express.static(staticDir));
-
-  app.get('*', (req, res) => {
-    console.log('Catch-all route hit:', req.originalUrl);
-    res.sendFile(path.join(staticDir, 'index.html'));
-  });
-}
 
 // Error middleware
 app.use((err, req, res, next) => {
