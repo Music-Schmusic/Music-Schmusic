@@ -57,8 +57,7 @@ test('/accountrecovery returns 401 email mismatch', async () => {
   }));
 
   const username = 'Testuser';
-  const password =
-    "O, what a noble mind is here o'erthrown! The piteous ample entrails of this pitiful state, how they do seem to bleed and weep, as if the very fabric of our being were torn asunder by the ravages of time and fortune!";
+  const password = 'test';
 
   const reqUser = {
     username: username,
@@ -78,7 +77,7 @@ test('/accountrecovery returns 401 email mismatch', async () => {
   const res = await request(app).post('/accountrecovery').send(reqUser);
 
   expect(res.status).toBe(401);
-  expect(res.text).toBe(`Email does not match the email for user: ${username}`);
+  expect(res.text).toBe(`Email does not match`);
   expect(dbrequests.getAccount).toHaveBeenCalledTimes(1);
   expect(dbrequests.getAccount).toHaveBeenCalledWith(username);
 });
@@ -88,6 +87,7 @@ test('/accountrecovery returns recovery token successfully', async () => {
     getAccount: jest.fn(),
     addRecoveryToken: jest.fn(),
   }));
+
   const email = 'test';
   const username = 'test';
   const user = { username: username, email: email };
@@ -105,7 +105,7 @@ test('/accountrecovery returns recovery token successfully', async () => {
   const res = await request(app).post('/accountrecovery').send(user);
 
   expect(res.status).toBe(200);
-  expect(res.text).toBe(`Account recovery email has been sent to ${email}`);
+  expect(res.text).toBe(`Email sent to ${email}`);
   expect(dbrequests.getAccount).toHaveBeenCalledTimes(1);
   expect(dbrequests.getAccount).toHaveBeenCalledWith(username);
   expect(dbrequests.addRecoveryToken).toHaveBeenCalledTimes(1);
