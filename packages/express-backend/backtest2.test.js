@@ -218,20 +218,6 @@ test('/resetvalidation returns 401 invalid credentials', async () => {
   expect(getRecov).toHaveBeenCalledWith(token);
 });
 
-// app.post('/resetpassword', async (req, res) => {
-//   const { p1, p2, user } = req.body;
-//   try {
-//     if (p1 === p2) {
-//       await AccountFuncs.resetPassword(user, p1);
-//       res.status(200).send('Password successfully updated');
-//     } else {
-//       res.status(400).send('Passwords do not match');
-//     }
-//   } catch (error) {
-//     res.status(400).send(error.message);
-//   }
-// });
-
 test('/resetpassword returns 200 successful response', async () => {
   jest.mock('./Functionality/account.js', () => ({
     resetPassword: jest.fn(),
