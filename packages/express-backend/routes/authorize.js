@@ -11,7 +11,7 @@ const router = express.Router();
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_SECRET_ID;
 const redirect_uri = process.env.SPOTIFY_REDIRECT_URI?.trim();
-const frontend_url = process.env.FRONTEND_URL;
+const frontend_url = process.env.FRONTEND_URL?.trim();
 
 // Generate a random string for CSRF protection
 function generateState(length) {
@@ -43,6 +43,7 @@ router.get('/authorize', (req, res) => {
 
 router.get('/callback', async (req, res) => {
   const { code, state, username } = req.query;
+  console.log('Redirecting to:', `${frontend_url}/oauth-success?access_token=${access_token}`);
 
   if (!state) {
     console.log('State mismatch');
