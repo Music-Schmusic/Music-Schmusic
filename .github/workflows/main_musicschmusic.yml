@@ -38,14 +38,14 @@ jobs:
       - name: Clean root node_modules
         run: rm -rf node_modules
 
-      - name: Install production dependencies for backend
-        run: npm install --omit=dev
-        working-directory: packages/express-backend
-      
-      - name: Zip backend with production node_modules
+      - name: Prepare deployment folder
         run: |
-          cd packages/express-backend
-          zip -r ../../release.zip .
+          mkdir release-dist
+          cp -r packages/express-backend/* release-dist/
+          cd release-dist
+          npm install --omit=dev
+          zip -r ../release.zip .
+      
       
       - name: List ZIP contents for debug
         run: unzip -l release.zip | grep node_modules
