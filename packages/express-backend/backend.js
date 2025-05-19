@@ -199,6 +199,10 @@ app.use((err, req, res, next) => {
 // Launch the server
 try {
   if (process.env.Runtime !== 'test') {
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    });
+    
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log('Environment variables:', {
@@ -213,5 +217,8 @@ try {
 } catch (err) {
   console.error('Failed to start server:', err);
 }
+process.on('exit', (code) => {
+  console.log('Node process exiting with code:', code);
+});
 
 export default app;
