@@ -43,7 +43,6 @@ router.get('/authorize', (req, res) => {
 
 router.get('/callback', async (req, res) => {
   const { code, state, username } = req.query;
-  console.log('Redirecting to:', `${frontend_url}/oauth-success?access_token=${access_token}`);
 
   if (!state) {
     console.log('State mismatch');
@@ -93,6 +92,8 @@ router.get('/callback', async (req, res) => {
     }
 
     const redirectFrontend = `${frontend_url}/oauth-success?access_token=${access_token}`;
+    console.log('Redirecting to:', redirectFrontend);
+
     res.redirect(redirectFrontend);
   } catch (err) {
     console.error('Spotify OAuth error:', err);
