@@ -40,12 +40,14 @@ var allowedOrigins = [
   'https://ashy-water-04166691e.6.azurestaticapps.net',
 ];
 
+app.options('*', cors());
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.warn('CORS blocked:', origin);
         callback(new Error('Not allowed by CORS'));
       }
     },
