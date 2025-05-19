@@ -10,7 +10,7 @@ const router = express.Router();
 
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_SECRET_ID;
-const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
+const redirect_uri = process.env.SPOTIFY_REDIRECT_URI?.trim();
 const frontend_url = process.env.FRONTEND_URL;
 
 // Generate a random string for CSRF protection
@@ -28,7 +28,7 @@ router.get('/authorize', (req, res) => {
   const state = generateState(16);
   const scope =
     'user-read-private user-read-email user-top-read user-read-recently-played';
-
+  console.log('Redirect URI:', `[${redirect_uri}]`);
   const auth_query = querystring.stringify({
     response_type: 'code',
     client_id,
