@@ -42,6 +42,7 @@ router.get('/authorize', (req, res) => {
 });
 
 router.get('/callback', async (req, res) => {
+  console.log('Callback query params:', req.query);
   const { code, state, username } = req.query;
 
   if (!state) {
