@@ -5,13 +5,6 @@ import { jest } from '@jest/globals';
 const mockImageData = 'base64-image-data';
 const mockGenres = ['Rock', 'Hip-Hop', 'Pop'];
 
-// Mock generatePlaylistCover and getTopGenres
-jest.unstable_mockModule('../imagen.js', () => ({
-  generatePlaylistCover: jest.fn(),
-}));
-
-const { generatePlaylistCover } = await import('../imagen.js');
-
 // Now import the Express app and router
 const express = await import('express');
 const playlistCoverRoutes = (await import('./playlistCoverRoutes.js')).default;

@@ -4,21 +4,28 @@ const API_URL = import.meta.env.VITE_API_URL;
 const Recommended = () => {
   // 1. Create local state for the cover image
   const [coverImage, setCoverImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // 2. Create the same AI cover fetch function
   const getAICover = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${API_URL}/api/playlist-cover/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: 'test-user' }),
       });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
-      console.log('API Response:', data);
+      console.log('AI Cover Response:', data);
       setCoverImage(data.image);
-      console.log('Cover Image URL:', data.image);
-    } catch (error) {
-      console.error('Error fetching AI cover:', error);
+    } catch (err) {
+      console.error('Error fetching AI cover:', err);
+      setError('Failed to generate cover.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,17 +46,15 @@ const Recommended = () => {
           </ul>
         </section>
 
-        {/* Center Column: Generate Playlist */}
+        {/* Center: AI Playlist Cover */}
         <section className="generate-playlist">
           <h2>Generate Playlist</h2>
-
-          {/* 3. Add a button to trigger the AI cover fetch */}
-          <button onClick={getAICover} style={{ marginBottom: '10px' }}>
-            Generate Playlist Cover
+          <button onClick={getAICover} disabled={loading}>
+            {loading ? 'Generating...' : 'Generate Playlist Cover'}
           </button>
 
-          {/* 4. Display the AI cover if available, otherwise show “?” */}
-          <div className="playlist-box" style={{ position: 'relative' }}>
+          <div className="playlist-box" style={{ marginTop: '10px' }}>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
             {coverImage ? (
               <img
                 src={coverImage}
@@ -61,7 +66,7 @@ const Recommended = () => {
                 }}
               />
             ) : (
-              <span style={{ fontSize: '2rem' }}>?</span>
+              !loading && <span style={{ fontSize: '2rem' }}>?</span>
             )}
           </div>
         </section>
