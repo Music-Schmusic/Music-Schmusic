@@ -188,8 +188,8 @@ const Dashboard = () => {
     return null;
   };
 
-  const genreData = topArtists.slice(0, 4).map((artist) => ({
-    name: artist.genres[0] || 'Unknown',
+  const genreData = topArtists.filter(artist => artist.genres.length  > 0).slice(0, 4).map((artist) => ({
+    name: artist.genres[0],
     value: artist.popularity,
   }));
 
