@@ -61,6 +61,7 @@ const Dashboard = () => {
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [playlists, setPlaylists] = useState([]);
   const [chartData, setChartData] = useState([
     { name: '5 Weeks Ago', timeSpent: 0 },
     { name: '4 Weeks Ago', timeSpent: 0 },
@@ -69,7 +70,7 @@ const Dashboard = () => {
     { name: 'Last Week', timeSpent: 0 },
     { name: 'This Week', timeSpent: 0 },
   ]);
-
+  
   const handleConnectSpotify = async () => {
     const verifier = generateCodeVerifier();
     const challenge = await generateCodeChallenge(verifier);
@@ -80,6 +81,8 @@ const Dashboard = () => {
       'user-read-email',
       'user-top-read',
       'user-read-recently-played',
+      'playlist-read-private',
+      'playlist-read-collaborative',
     ];
 
     const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(
@@ -101,17 +104,14 @@ const Dashboard = () => {
         }
 
         const headers = { Authorization: `Bearer ${spotifyToken}` };
-        const [tracksRes, artistsRes, recentRes] = await Promise.all([
-          axios.get(`${API_URL}/spotify/stats/top-tracks`, {
-            headers,
-          }),
-          axios.get(`${API_URL}/spotify/stats/top-artists`, {
-            headers,
-          }),
-          axios.get(`${API_URL}/spotify/stats/recently-played`, {
-            headers,
-          }),
+        const [tracksRes, artistsRes, recentRes, playlistsRes] = await Promise.all([
+          axios.get(`${API_URL}/spotify/stats/top-tracks`, { headers }),
+          axios.get(`${API_URL}/spotify/stats/top-artists`, { headers }),
+          axios.get(`${API_URL}/spotify/stats/recently-played`, { headers }),
+          axios.get(`${API_URL}/spotify/stats/playlists`, { headers }),
         ]);
+        
+        setPlaylists(playlistsRes.data.items);
 
         setTopTracks(tracksRes.data.items);
         setTopArtists(artistsRes.data.items);
@@ -301,6 +301,26 @@ const Dashboard = () => {
                   <p>
                     {item.track.artists.map((artist) => artist.name).join(', ')}
                   </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Top Playlists Section */}
+        <section className="top-playlists">
+          <h2>Your Playlists</h2>
+          <div className="music-grid">
+            {playlists.slice(0, 5).map((playlist) => (
+              <div key={playlist.id} className="music-item">
+                <img
+                  src={playlist.images[0]?.url}
+                  alt={playlist.name}
+                  className="music-image"
+                />
+                <div className="music-info">
+                  <h3>{playlist.name}</h3>
+                  <p>{playlist.tracks.total} tracks</p>
                 </div>
               </div>
             ))}

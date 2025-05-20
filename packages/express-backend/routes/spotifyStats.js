@@ -107,4 +107,35 @@ router.get('/recently-played', checkSpotifyToken, async (req, res) => {
   }
 });
 
+// Get user's playlists
+router.get('/playlists', checkSpotifyToken, async (req, res) => {
+  try {
+    console.log(
+      'Fetching playlists with token:',
+      req.spotifyToken.substring(0, 10) + '...'
+    );
+    const response = await axios.get(
+      'https://api.spotify.com/v1/me/playlists?limit=10',
+      {
+        headers: {
+          Authorization: `Bearer ${req.spotifyToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching playlists:',
+      error.response?.data || error.message,
+      'Status:',
+      error.response?.status || 'Unknown'
+    );
+    res
+      .status(error.response?.status || 500)
+      .json({ error: 'Failed to fetch playlists' });
+  }
+});
+
+
 export default router;
