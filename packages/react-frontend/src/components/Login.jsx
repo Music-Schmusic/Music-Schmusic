@@ -11,6 +11,12 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [showContainer, setShowContainer] = useState(false);
+  const [user, setUser] = useState('');
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('username');
+    if (storedUser) setUser(storedUser);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowContainer(true), 1800);

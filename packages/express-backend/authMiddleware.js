@@ -13,6 +13,7 @@ function authenticateUser(req, res, next) {
 
   jwt.verify(token, TOKEN_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: 'Invalid token' });
+    console.log('Decoded JWT payload:', user);
     req.user = user;
     next();
   });

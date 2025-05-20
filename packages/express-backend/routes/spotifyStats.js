@@ -1,5 +1,7 @@
 import express from 'express';
 import axios from 'axios';
+import WeeklyListening from '../schemas/WeeklyListening.js';
+
 
 const router = express.Router();
 
@@ -79,12 +81,15 @@ router.get('/top-artists', checkSpotifyToken, async (req, res) => {
 // Get user's recently played tracks
 router.get('/recently-played', checkSpotifyToken, async (req, res) => {
   try {
-    console.log(
-      'Fetching recently played with token:',
-      req.spotifyToken.substring(0, 10) + '...'
-    );
+    const username = req.headers['x-username']; // Sent from frontend
+    if (!username) {
+      return res.status(400).json({ error: 'Missing username in headers' });
+    }
+
+    console.log('Fetching recently played with token:', req.spotifyToken.substring(0, 10) + '...');
+
     const response = await axios.get(
-      'https://api.spotify.com/v1/me/player/recently-played?limit=10',
+      'https://api.spotify.com/v1/me/player/recently-played?limit=50',
       {
         headers: {
           Authorization: `Bearer ${req.spotifyToken}`,
@@ -92,19 +97,44 @@ router.get('/recently-played', checkSpotifyToken, async (req, res) => {
         },
       }
     );
+
+    const totalMs = response.data.items.reduce(
+      (acc, item) => acc + item.track.duration_ms,
+      0
+    );
+
+    const startOfWeek = new Date();
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Sunday
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    await WeeklyListening.findOneAndUpdate(
+      { username, weekStart: startOfWeek },
+      { $inc: { durationMs: totalMs } },
+      { upsert: true, new: true }
+    );
+
     res.json(response.data);
   } catch (error) {
-    console.error(
-      'Error fetching recently played:',
-      error.response.data,
-      'Status:',
-      error.response.status
-    );
-    res.status(error.response.status).json({
-      error: 'Failed to fetch recently played tracks',
-      details: error.response.data,
-    });
+    console.error('Error fetching recently played:', error.message);
+    res.status(500).json({ error: 'Failed to fetch recently played tracks' });
   }
+});
+
+router.get('/listening-history', async (req, res) => {
+  const username = req.headers['x-username'];
+  if (!username) {
+    return res.status(400).json({ error: 'Missing username in headers' });
+  }
+
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+  const history = await WeeklyListening.find({
+    username,
+    weekStart: { $gte: oneYearAgo },
+  }).sort({ weekStart: 1 });
+
+  res.json(history);
 });
 
 // Get user's playlists

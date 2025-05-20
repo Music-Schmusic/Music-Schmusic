@@ -103,7 +103,11 @@ const Dashboard = () => {
           return;
         }
 
-        const headers = { Authorization: `Bearer ${spotifyToken}` };
+        const headers = {
+          Authorization: `Bearer ${spotifyToken}`,
+          'x-username': localStorage.getItem('username'),
+        };
+        
         const [tracksRes, artistsRes, recentRes, playlistsRes] = await Promise.all([
           axios.get(`${API_URL}/spotify/stats/top-tracks`, { headers }),
           axios.get(`${API_URL}/spotify/stats/top-artists`, { headers }),
@@ -194,7 +198,14 @@ const Dashboard = () => {
   }));
 
   const COLORS = ['#30e849', '#8884d8', '#82ca9d', '#ff8042'];
-  const user = localStorage.getItem('username');
+  const [user, setUser] = useState('');
+
+    useEffect(() => {
+      const storedUser = localStorage.getItem('username');
+      console.log('Loaded user from localStorage:', storedUser); 
+      if (storedUser) setUser(storedUser);
+    }, []);
+
   const spotifyToken = localStorage.getItem('spotifyToken');
 
   if (loading) {
@@ -239,7 +250,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-content">
-        <h1>Welcome back, {user}</h1>
+        <h1>Welcome back, {user || "Guest"}</h1>
         <h1>Your Music Dashboard</h1>
         <h5>Gain insights into your listening habits and discover trends.</h5>
       </div>

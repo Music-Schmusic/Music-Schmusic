@@ -122,7 +122,8 @@
 }
 
 .dashboard-content {
-  margin-top: 2rem;
+  display: flex;
+  margin-top: 10rem;
 }
 
 .dashboard-content h1 {
