@@ -1,7 +1,7 @@
 .dashboard {
   position: relative;
   z-index: 1;
-  padding-top: 2000px;
+  /* padding-top: 2000px; */
   color: white;
   width: 100vw;
   min-height: 100vh;
@@ -42,7 +42,7 @@
 .dashboard-content {
   width: 95%;
   max-width: 800px;
-  margin: 0 auto 48px auto;
+  margin: 140% auto 48px auto;
   text-align: center;
   background: rgba(255, 255, 255, 0.05);
   padding: 32px;

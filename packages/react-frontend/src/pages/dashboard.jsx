@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/Dashboard.css';
+import FavoriteGenreTile from '../components/FavoriteGenreTile';
 const API_URL = import.meta.env.VITE_API_URL;
 
 // PKCE helper functions
@@ -61,6 +62,7 @@ const Dashboard = () => {
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [playlists, setPlaylists] = useState([]);
   const [chartData, setChartData] = useState([
     { name: '5 Weeks Ago', timeSpent: 0 },
     { name: '4 Weeks Ago', timeSpent: 0 },
@@ -69,7 +71,7 @@ const Dashboard = () => {
     { name: 'Last Week', timeSpent: 0 },
     { name: 'This Week', timeSpent: 0 },
   ]);
-
+  
   const handleConnectSpotify = async () => {
     const verifier = generateCodeVerifier();
     const challenge = await generateCodeChallenge(verifier);
@@ -80,6 +82,8 @@ const Dashboard = () => {
       'user-read-email',
       'user-top-read',
       'user-read-recently-played',
+      'playlist-read-private',
+      'playlist-read-collaborative',
     ];
 
     const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(
@@ -100,18 +104,19 @@ const Dashboard = () => {
           return;
         }
 
-        const headers = { Authorization: `Bearer ${spotifyToken}` };
-        const [tracksRes, artistsRes, recentRes] = await Promise.all([
-          axios.get(`${API_URL}/spotify/stats/top-tracks`, {
-            headers,
-          }),
-          axios.get(`${API_URL}/spotify/stats/top-artists`, {
-            headers,
-          }),
-          axios.get(`${API_URL}/spotify/stats/recently-played`, {
-            headers,
-          }),
+        const headers = {
+          Authorization: `Bearer ${spotifyToken}`,
+          'x-username': localStorage.getItem('username'),
+        };
+        
+        const [tracksRes, artistsRes, recentRes, playlistsRes] = await Promise.all([
+          axios.get(`${API_URL}/spotify/stats/top-tracks`, { headers }),
+          axios.get(`${API_URL}/spotify/stats/top-artists`, { headers }),
+          axios.get(`${API_URL}/spotify/stats/recently-played`, { headers }),
+          axios.get(`${API_URL}/spotify/stats/playlists`, { headers }),
         ]);
+        
+        setPlaylists(playlistsRes.data.items);
 
         setTopTracks(tracksRes.data.items);
         setTopArtists(artistsRes.data.items);
@@ -125,6 +130,21 @@ const Dashboard = () => {
         const hours = Math.floor(totalMs / 3600000);
         const minutes = Math.floor((totalMs % 3600000) / 60000);
         const formattedTime = `${hours}h ${minutes}m`;
+        const historyRes = await axios.get(`${API_URL}/spotify/stats/listening-history`, { headers });
+        const history = historyRes.data;
+        const now = new Date();
+        const updatedChartData = [...chartData];
+
+        for (const item of history) {
+          const weekStart = new Date(item.weekStart);
+          const diffWeeks = Math.floor((now - weekStart) / (7 * 24 * 60 * 60 * 1000));
+          if (diffWeeks >= 0 && diffWeeks <= 5) {
+            const hours = item.durationMs / 3600000;
+            updatedChartData[5 - diffWeeks].timeSpent = hours;
+          }
+        }
+
+        setChartData(updatedChartData);
 
         setUserStats((prev) => ({
           ...prev,
@@ -152,26 +172,12 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (userStats.thisWeek.timeSpent) {
-      const [hours, minutes] = userStats.thisWeek.timeSpent
-        .split(' ')
-        .map((str) => parseInt(str));
-      const totalHours = hours + minutes / 60;
-
-      setChartData((prev) => {
-        const updated = [...prev];
-        updated[5] = { ...updated[5], timeSpent: totalHours };
-        return updated;
-      });
-    }
-  }, [userStats]);
-
   const formatYAxis = (value) => {
     const hours = Math.floor(value);
     const minutes = Math.round((value - hours) * 60);
     return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
   };
+  
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload?.length) {
@@ -194,7 +200,14 @@ const Dashboard = () => {
   }));
 
   const COLORS = ['#30e849', '#8884d8', '#82ca9d', '#ff8042'];
-  const user = localStorage.getItem('username');
+  const [user, setUser] = useState('');
+
+    useEffect(() => {
+      const storedUser = localStorage.getItem('username');
+      console.log('Loaded user from localStorage:', storedUser); 
+      if (storedUser) setUser(storedUser);
+    }, []);
+
   const spotifyToken = localStorage.getItem('spotifyToken');
 
   if (loading) {
@@ -239,7 +252,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-content">
-        <h1>Welcome back, {user}</h1>
+        <h1>Welcome back, {user || "Guest"}</h1>
         <h1>Your Music Dashboard</h1>
         <h5>Gain insights into your listening habits and discover trends.</h5>
       </div>
@@ -264,6 +277,11 @@ const Dashboard = () => {
             ))}
           </div>
         </section>
+
+        <section className="favorite-genre-section">
+        <h2>Your Favorite Genre</h2>
+        <FavoriteGenreTile genre={userStats.thisWeek.favoriteGenre} />
+      </section>
 
         {/* Top Artists Section */}
         <section className="top-artists">
@@ -301,6 +319,26 @@ const Dashboard = () => {
                   <p>
                     {item.track.artists.map((artist) => artist.name).join(', ')}
                   </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Top Playlists Section */}
+        <section className="top-playlists">
+          <h2>Your Playlists</h2>
+          <div className="music-grid">
+            {playlists.slice(0, 5).map((playlist) => (
+              <div key={playlist.id} className="music-item">
+                <img
+                  src={playlist.images[0]?.url}
+                  alt={playlist.name}
+                  className="music-image"
+                />
+                <div className="music-info">
+                  <h3>{playlist.name}</h3>
+                  <p>{playlist.tracks.total} tracks</p>
                 </div>
               </div>
             ))}
