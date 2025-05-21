@@ -69,7 +69,6 @@ const genreSynonyms = {
   
 
 const FavoriteGenreTile = ({ genre }) => {
-    genre = 'rap'
   const matchedKey = getGenreMatch(genre);
   const animationData = genreAnimations[matchedKey];
   const glowColor = genreColors[matchedKey] || genreColors.default;
