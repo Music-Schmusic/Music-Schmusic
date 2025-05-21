@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/Dashboard.css';
+import FavoriteGenreTile from '../components/FavoriteGenreTile';
 const API_URL = import.meta.env.VITE_API_URL;
 
 // PKCE helper functions
@@ -276,6 +277,11 @@ const Dashboard = () => {
             ))}
           </div>
         </section>
+
+        <section className="favorite-genre-section">
+        <h2>Your Favorite Genre</h2>
+        <FavoriteGenreTile genre={userStats.thisWeek.favoriteGenre} />
+      </section>
 
         {/* Top Artists Section */}
         <section className="top-artists">
