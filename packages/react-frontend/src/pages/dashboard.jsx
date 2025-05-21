@@ -129,6 +129,21 @@ const Dashboard = () => {
         const hours = Math.floor(totalMs / 3600000);
         const minutes = Math.floor((totalMs % 3600000) / 60000);
         const formattedTime = `${hours}h ${minutes}m`;
+        const historyRes = await axios.get(`${API_URL}/spotify/stats/listening-history`, { headers });
+        const history = historyRes.data;
+        const now = new Date();
+        const updatedChartData = [...chartData];
+
+        for (const item of history) {
+          const weekStart = new Date(item.weekStart);
+          const diffWeeks = Math.floor((now - weekStart) / (7 * 24 * 60 * 60 * 1000));
+          if (diffWeeks >= 0 && diffWeeks <= 5) {
+            const hours = item.durationMs / 3600000;
+            updatedChartData[5 - diffWeeks].timeSpent = hours;
+          }
+        }
+
+        setChartData(updatedChartData);
 
         setUserStats((prev) => ({
           ...prev,
@@ -156,26 +171,12 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (userStats.thisWeek.timeSpent) {
-      const [hours, minutes] = userStats.thisWeek.timeSpent
-        .split(' ')
-        .map((str) => parseInt(str));
-      const totalHours = hours + minutes / 60;
-
-      setChartData((prev) => {
-        const updated = [...prev];
-        updated[5] = { ...updated[5], timeSpent: totalHours };
-        return updated;
-      });
-    }
-  }, [userStats]);
-
   const formatYAxis = (value) => {
     const hours = Math.floor(value);
     const minutes = Math.round((value - hours) * 60);
     return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
   };
+  
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload?.length) {

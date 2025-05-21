@@ -1,6 +1,8 @@
 import express from 'express';
 import axios from 'axios';
 import WeeklyListening from '../schemas/WeeklyListening.js';
+import authenticateUser from '../authMiddleware.js';
+
 
 
 const router = express.Router();
@@ -103,8 +105,10 @@ router.get('/recently-played', checkSpotifyToken, async (req, res) => {
       0
     );
 
-    const startOfWeek = new Date();
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Sunday
+    // Get the start of the current week (Sunday)
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
     await WeeklyListening.findOneAndUpdate(
@@ -126,16 +130,22 @@ router.get('/listening-history', async (req, res) => {
     return res.status(400).json({ error: 'Missing username in headers' });
   }
 
-  const oneYearAgo = new Date();
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  try {
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-  const history = await WeeklyListening.find({
-    username,
-    weekStart: { $gte: oneYearAgo },
-  }).sort({ weekStart: 1 });
+    const history = await WeeklyListening.find({
+      username,
+      weekStart: { $gte: oneYearAgo },
+    }).sort({ weekStart: 1 });
 
-  res.json(history);
+    res.json(history);
+  } catch (err) {
+    console.error("Error fetching listening history:", err);
+    res.status(500).json({ error: "Failed to fetch listening history" });
+  }
 });
+
 
 // Get user's playlists
 router.get('/playlists', checkSpotifyToken, async (req, res) => {
@@ -164,6 +174,29 @@ router.get('/playlists', checkSpotifyToken, async (req, res) => {
     res
       .status(error.response?.status || 500)
       .json({ error: 'Failed to fetch playlists' });
+  }
+});
+
+//route for adding time to database to test bar chart (Can be removed later to improve test coverage)
+router.post('/test-insert-week', authenticateUser, async (req, res) => {
+  const { weekOffset, durationMs } = req.body; // e.g., { weekOffset: 2, durationMs: 3600000 }
+
+  const username = req.user.username;
+
+  const startOfWeek = new Date();
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() - (7 * weekOffset));
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  try {
+    const result = await WeeklyListening.findOneAndUpdate(
+      { username, weekStart: startOfWeek },
+      { $set: { durationMs } },
+      { upsert: true, new: true }
+    );
+    res.json({ message: 'Inserted test data', result });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Test insert failed' });
   }
 });
 
