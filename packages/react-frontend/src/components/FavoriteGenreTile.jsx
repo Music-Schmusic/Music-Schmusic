@@ -33,7 +33,6 @@ const genreColors = {
   jazz: '#f3c623',
   metal: '#a83279',
   indie: '#30e849',
-  hiphop: '#ffa500',
   pop: '#ff69b4',
   country: '#ffa500',
   punk: '#fc0fc0',
@@ -48,7 +47,7 @@ const normalizeGenreKey = (genre) =>
 const genreSynonyms = {
     rock: ['rock', 'alt', 'alternative', 'classic rock', 'indie rock', 'garage', 'grunge'],
     metal: ['metal', 'doom', 'black metal', 'death', 'hardcore'],
-    edm: ['edm', 'electronic', 'house', 'techno', 'trance', 'dubstep', 'rave', 'jungle', 'beats'],
+    edm: ['edm', 'electronic', 'house', 'techno', 'trance', 'dubstep', 'rave', 'jungle', 'beats', 'break core'],
     jazz: ['jazz', 'swing', 'bebop', 'fusion'],
     classical: ['classical', 'orchestral', 'baroque', 'symphony'],
     pop: ['pop', 'dance pop', 'synthpop', 'electropop', 'teen pop'],
