@@ -119,6 +119,7 @@ const Home = ({ isLoggedIn, setIsLoggedIn }) => {
         colors="primary:#30e849,secondary:#16c72e"
         style={{ width: '150px', height: '150px' }}
       ></lord-icon>
+      <h1>Music Schmusic</h1>
       <button className="get-started-btn" onClick={handleGetStarted}>
         Get Started
       </button>

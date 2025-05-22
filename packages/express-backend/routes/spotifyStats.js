@@ -200,5 +200,58 @@ router.post('/test-insert-week', authenticateUser, async (req, res) => {
   }
 });
 
+// Get user's top albums (based on top tracks)
+router.get('/top-albums', checkSpotifyToken, async (req, res) => {
+  try {
+    console.log('Fetching top albums with token:', req.spotifyToken.substring(0, 10) + '...');
+
+    const topTracksRes = await axios.get(
+      'https://api.spotify.com/v1/me/top/tracks?limit=50',
+      {
+        headers: {
+          Authorization: `Bearer ${req.spotifyToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    // Extract unique album IDs
+    const albumIds = [...new Set(topTracksRes.data.items.map(track => track.album.id))].slice(0, 5);
+
+    // Fetch full album data for each
+    const albumDetails = await Promise.all(
+      albumIds.map(id =>
+        axios.get(`https://api.spotify.com/v1/albums/${id}`, {
+          headers: {
+            Authorization: `Bearer ${req.spotifyToken}`,
+          },
+        }).then(res => res.data)
+      )
+    );
+
+    const formattedAlbums = albumDetails.map(album => ({
+      id: album.id,
+      name: album.name,
+      image: album.images[0]?.url,
+      artists: album.artists.map(a => a.name).join(', '),
+      release_date: album.release_date,
+      total_tracks: album.total_tracks,
+      label: album.label,
+      popularity: album.popularity,
+      url: album.external_urls.spotify,
+    }));
+
+    res.json({ items: formattedAlbums });
+
+  } catch (error) {
+    console.error('Error fetching top albums:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to fetch top albums',
+      details: error.response?.data || error.message,
+    });
+  }
+});
+
+
 
 export default router;

@@ -62,6 +62,7 @@ const Dashboard = () => {
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [topAlbums, setTopAlbums] = useState([]);
   const [playlists, setPlaylists] = useState([]);
   const [chartData, setChartData] = useState([
     { name: '5 Weeks Ago', timeSpent: 0 },
@@ -109,18 +110,19 @@ const Dashboard = () => {
           'x-username': localStorage.getItem('username'),
         };
         
-        const [tracksRes, artistsRes, recentRes, playlistsRes] = await Promise.all([
+        const [tracksRes, artistsRes, recentRes, playlistsRes, albumsRes] = await Promise.all([
           axios.get(`${API_URL}/spotify/stats/top-tracks`, { headers }),
           axios.get(`${API_URL}/spotify/stats/top-artists`, { headers }),
           axios.get(`${API_URL}/spotify/stats/recently-played`, { headers }),
           axios.get(`${API_URL}/spotify/stats/playlists`, { headers }),
+          axios.get(`${API_URL}/spotify/stats/top-albums`, { headers }),
         ]);
         
-        setPlaylists(playlistsRes.data.items);
-
         setTopTracks(tracksRes.data.items);
         setTopArtists(artistsRes.data.items);
         setRecentlyPlayed(recentRes.data.items);
+        setTopAlbums(albumsRes.data.items);       
+        setPlaylists(playlistsRes.data.items);
         setLoading(false);
 
         const totalMs = recentRes.data.items.reduce(
@@ -201,6 +203,13 @@ const Dashboard = () => {
 
   const COLORS = ['#30e849', '#8884d8', '#82ca9d', '#ff8042'];
   const [user, setUser] = useState('');
+  const getPopularityBadge = (popularity) => {
+    if (popularity >= 81) return '🔥 Superstar';
+    if (popularity >= 61) return '🌟 Popular';
+    if (popularity >= 41) return '🌱 Emerging';
+    return '🌑 Indie';
+  };
+  
 
     useEffect(() => {
       const storedUser = localStorage.getItem('username');
@@ -297,11 +306,42 @@ const Dashboard = () => {
                 <div className="music-info">
                   <h3>{artist.name}</h3>
                   <p>{artist.genres.slice(0, 2).join(', ')}</p>
+                  <p>{getPopularityBadge(artist.popularity)} ({artist.popularity}/100)</p>
                 </div>
+
               </div>
             ))}
           </div>
         </section>
+
+        <section className="top-albums">
+  <h2>Your Favorite Albums</h2>
+  <div className="music-grid">
+    {topAlbums.map((album) => (
+      <div key={album.id} className="music-item">
+        <img
+          src={album.image}
+          alt={album.name}
+          className="music-image"
+        />
+        <div className="music-info">
+          <h3>{album.name}</h3>
+          <p>{album.artists}</p>
+          <p>Released: {album.release_date}</p>
+          <p>Popularity: {album.popularity}/100</p>
+          <p>Label: {album.label}</p>
+          <a
+            href={album.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Listen on Spotify
+          </a>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
 
         {/* Recently Played Section */}
         <section className="recently-played">
