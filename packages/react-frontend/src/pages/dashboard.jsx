@@ -64,6 +64,8 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [topAlbums, setTopAlbums] = useState([]);
   const [playlists, setPlaylists] = useState([]);
+  const [profilePic, setProfilePic] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [chartData, setChartData] = useState([
     { name: '5 Weeks Ago', timeSpent: 0 },
     { name: '4 Weeks Ago', timeSpent: 0 },
@@ -109,6 +111,14 @@ const Dashboard = () => {
           Authorization: `Bearer ${spotifyToken}`,
           'x-username': localStorage.getItem('username'),
         };
+
+        const profileRes = await axios.get('https://api.spotify.com/v1/me', {
+          headers: { Authorization: `Bearer ${spotifyToken}` },
+        });
+
+        setDisplayName(profileRes.data.display_name || 'Guest');
+        setProfilePic(profileRes.data.images[0]?.url || '');
+
         
         const [tracksRes, artistsRes, recentRes, playlistsRes, albumsRes] = await Promise.all([
           axios.get(`${API_URL}/spotify/stats/top-tracks`, { headers }),
@@ -261,11 +271,17 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-content">
-        <h1>Welcome back, {user || "Guest"}</h1>
+        <h1>Welcome back, {displayName || "Guest"}</h1>
+        {profilePic && (
+          <img
+            src={profilePic}
+            alt="Profile"
+            className="profile-picture"
+          />
+        )}
         <h1>Your Music Dashboard</h1>
         <h5>Gain insights into your listening habits and discover trends.</h5>
       </div>
-
       <div className="sections-container">
         {/* Top Tracks Section */}
         <section className="top-tracks">
@@ -315,33 +331,34 @@ const Dashboard = () => {
         </section>
 
         <section className="top-albums">
-  <h2>Your Favorite Albums</h2>
-  <div className="music-grid">
-    {topAlbums.map((album) => (
-      <div key={album.id} className="music-item">
-        <img
-          src={album.image}
-          alt={album.name}
-          className="music-image"
-        />
-        <div className="music-info">
-          <h3>{album.name}</h3>
-          <p>{album.artists}</p>
-          <p>Released: {album.release_date}</p>
-          <p>Popularity: {album.popularity}/100</p>
-          <p>Label: {album.label}</p>
-          <a
-            href={album.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Listen on Spotify
-          </a>
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
+          <h2>Your Favorite Albums</h2>
+          <div className="music-grid">
+            {topAlbums.map((album) => (
+              <div key={album.id} className="music-item">
+                <img
+                  src={album.image}
+                  alt={album.name}
+                  className="music-image"
+                />
+                {/* Note: this is probably stuff we want to hide in a dropdown/ onclick but ill leave it here for now */}
+                <div className="music-info">
+                  <h3>{album.name}</h3>
+                  <p>{album.artists}</p>
+                  <p>Released: {album.release_date}</p>
+                  <p>{getPopularityBadge(album.popularity)} ({album.popularity}/100)</p>
+                  <p>Label: {album.label}</p>
+                  <a
+                    href={album.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Listen on Spotify
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* Recently Played Section */}
         <section className="recently-played">

@@ -42,7 +42,7 @@
 .dashboard-content {
   width: 95%;
   max-width: 800px;
-  margin: 175% auto 48px auto;
+  margin: 180% auto 48px auto;
   text-align: center;
   background: rgba(255, 255, 255, 0.05);
   padding: 32px;
@@ -74,6 +74,15 @@
   margin: 0 auto;
   line-height: 1.4;
 }
+
+.profile-picture {
+  width: 20%;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 10px auto;
+  display: block;
+}
+
 
 section {
   width: 100%;
