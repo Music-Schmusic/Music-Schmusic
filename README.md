@@ -22,6 +22,8 @@ Spotify Authentication: https://developer.spotify.com/documentation/web-api/tuto
 
 Tech Spec: https://docs.google.com/document/d/1rmt0jja06XbG2fdikjKd7vPXWtoIRsLaYJIko4LYlxQ/edit?usp=sharing\
 
+Acceptance Criteria: https://docs.google.com/document/d/1k2PE1fFzcKwBVmqG2P83pgTkExbzyHHkGJTv9_v_5Mk/edit?usp=sharing
+
 Code Coverage Report as of 03/13/25\
 <img width="709" alt="Screenshot 2025-03-14 at 2 22 42 AM" src="https://github.com/user-attachments/assets/a1ff0a59-a9fd-4c0d-8c1d-bcb667ab63ce" />
 
