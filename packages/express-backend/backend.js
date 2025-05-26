@@ -72,7 +72,7 @@ app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
 
-app.get('/', (req, res) => res.send('API Running'));
+app.get('/', (req, res) => res.status(200).send('API Running'));
 
 app.post('/signup', async (req, res) => {
   try {
