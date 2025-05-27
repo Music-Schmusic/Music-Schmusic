@@ -83,46 +83,58 @@ router.get('/top-artists', checkSpotifyToken, async (req, res) => {
 // Get user's recently played tracks
 router.get('/recently-played', checkSpotifyToken, async (req, res) => {
   try {
-    const username = req.headers['x-username']; // Sent from frontend
+    const username = req.headers['x-username'];
     if (!username) {
       return res.status(400).json({ error: 'Missing username in headers' });
     }
-
-    console.log('Fetching recently played with token:', req.spotifyToken.substring(0, 10) + '...');
 
     const response = await axios.get(
       'https://api.spotify.com/v1/me/player/recently-played?limit=50',
       {
         headers: {
           Authorization: `Bearer ${req.spotifyToken}`,
-          'Content-Type': 'application/json',
         },
       }
     );
 
-    const totalMs = response.data.items.reduce(
-      (acc, item) => acc + item.track.duration_ms,
-      0
-    );
-
-    // Get the start of the current week (Sunday)
     const now = new Date();
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
-    await WeeklyListening.findOneAndUpdate(
-      { username, weekStart: startOfWeek },
-      { $inc: { durationMs: totalMs } },
-      { upsert: true, new: true }
+    let record = await WeeklyListening.findOne({ username, weekStart: startOfWeek });
+
+    const lastUpdated = record?.lastUpdated ?? new Date(0);
+
+    const newTracks = response.data.items.filter(
+      item => new Date(item.played_at) > lastUpdated
     );
 
-    res.json(response.data);
+    const deltaMs = newTracks.reduce(
+      (acc, item) => acc + item.track.duration_ms,
+      0
+    );
+
+    if (!record) {
+      await WeeklyListening.create({
+        username,
+        weekStart: startOfWeek,
+        durationMs: deltaMs,
+        lastUpdated: now,
+      });
+    } else {
+      record.durationMs += deltaMs;
+      record.lastUpdated = now;
+      await record.save();
+    }
+
+    res.json({ items: newTracks });
   } catch (error) {
     console.error('Error fetching recently played:', error.message);
     res.status(500).json({ error: 'Failed to fetch recently played tracks' });
   }
 });
+
 
 router.get('/listening-history', async (req, res) => {
   const username = req.headers['x-username'];
