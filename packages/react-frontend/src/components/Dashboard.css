@@ -77,12 +77,16 @@
 
 .profile-picture {
   width: 20%;
+  aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
   margin: 0 auto 10px auto;
   display: block;
+  padding: 5px;
+  background:
+  linear-gradient(217deg, rgb(0, 255, 128), rgb(15, 133, 0) 70.71%);
+  box-sizing: border-box;
 }
-
 
 section {
   width: 100%;
