@@ -15,7 +15,7 @@ const checkSpotifyToken = (req, res, next) => {
 
 router.get('/', checkSpotifyToken, async (req, res) => {
   const url =
-    'https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=10';
+    'https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=10';
 
   fetch(url, {
     method: 'GET',
@@ -25,31 +25,39 @@ router.get('/', checkSpotifyToken, async (req, res) => {
     .then((json) => {
       if (!json.items) {
         console.log(json);
-        throw new Error('Unexpected response.');
+        throw new Error('Unexpected response');
       }
-      let names = '';
-      let query = '';
-      let track = '';
+
+      let queries = [];
+      let i = 0;
+      for (const artist of json.items) {
+        for (const genre of artist.genres) {
+          queries[i++] = {
+            artist: artist.name,
+            genre: genre,
+          };
+        }
+      }
+      console.log(queries);
+
       let searchUrl = '';
       let results = {};
-
-      for (let i = 0; i < json.items.length; i++) {
-        track = json.items[i];
-        query = track.artists[0].name + ' ' + track.name;
-        searchUrl = `https://api.spotify.com/v1/search?q=${query}&type=track&limit=5`;
-
+      let x = 0;
+      for (const query of queries) {
+        searchUrl = `https://api.spotify.com/v1/search?q=${query.artist}&type=track&limit=5&offset=15&genre=${query.genre}`;
         fetch(searchUrl, {
           method: 'GET',
           headers: { Authorization: `Bearer ${req.spotifyToken}` },
         })
           .then((data) => data.json())
           .then((json) => {
-            if (json.length < 5) {
+            console.log(json);
+            if (json.error) {
               throw new Error('rate limit??');
             }
             const tracks = parseItems(json.tracks.items);
-            console.log(tracks);
-            results[i] = tracks;
+            //console.log(tracks);
+            results[x++] = tracks;
           })
           .catch((error) => {
             console.log(error);
