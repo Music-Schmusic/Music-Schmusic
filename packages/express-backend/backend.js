@@ -15,6 +15,7 @@ import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import spotifySearch from './routes/spotifySearch.js';
 
 console.log('backend.js starting up');
 dotenv.config();
@@ -43,7 +44,10 @@ var allowedOrigins = [
 app.options('*', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE');
-  res.setHeader('Access-Control-Allow-Headers','Content-Type, Authorization, x-spotify-token, x-username');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, x-spotify-token, x-username'
+  );
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.sendStatus(200);
 });
@@ -60,7 +64,12 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-spotify-token', 'x-username'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-spotify-token',
+      'x-username',
+    ],
   })
 );
 
@@ -71,6 +80,7 @@ app.use(cookieParser());
 app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
+app.use('/recommend', spotifySearch);
 
 app.get('/', (req, res) => res.status(200).send('API Running'));
 
@@ -205,8 +215,7 @@ try {
     process.on('uncaughtException', (err) => {
       console.error('Uncaught Exception:', err);
     });
-    
-    
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log('Environment variables:', {
