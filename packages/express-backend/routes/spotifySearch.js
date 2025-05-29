@@ -31,12 +31,10 @@ router.get('/', checkSpotifyToken, async (req, res) => {
       let queries = [];
       let i = 0;
       for (const artist of json.items) {
-        for (const genre of artist.genres) {
-          queries[i++] = {
-            artist: artist.name,
-            genre: genre,
-          };
-        }
+        queries[i++] = {
+          artist: artist.name,
+          genre: artist.genres,
+        };
       }
       console.log(queries);
 
@@ -56,7 +54,6 @@ router.get('/', checkSpotifyToken, async (req, res) => {
               throw new Error('rate limit??');
             }
             const tracks = parseItems(json.tracks.items);
-            //console.log(tracks);
             results[x++] = tracks;
           })
           .catch((error) => {
