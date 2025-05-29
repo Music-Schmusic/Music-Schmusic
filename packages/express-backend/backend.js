@@ -43,7 +43,10 @@ var allowedOrigins = [
 app.options('*', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE');
-  res.setHeader('Access-Control-Allow-Headers','Content-Type, Authorization, x-spotify-token, x-username');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, x-spotify-token, x-username'
+  );
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.sendStatus(200);
 });
@@ -60,7 +63,12 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-spotify-token', 'x-username'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-spotify-token',
+      'x-username',
+    ],
   })
 );
 
@@ -205,8 +213,7 @@ try {
     process.on('uncaughtException', (err) => {
       console.error('Uncaught Exception:', err);
     });
-    
-    
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log('Environment variables:', {
