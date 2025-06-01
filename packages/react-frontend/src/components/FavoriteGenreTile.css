@@ -1,63 +1,78 @@
 .favorite-genre-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .favorite-genre-section {
-    display: flex;
-    justify-content: center;
-    padding: 1rem;
-  }
-  
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.favorite-genre-tile {
+  width: 300px;
+  max-width: 30vw;
+  aspect-ratio: 1 / 1;
+  background: #121212;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 0 20px var(--glow-color);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.favorite-genre-tile:hover {
+  transform: scale(1.05);
+}
+
+.genre-lottie {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+}
+
+.favorite-genre-tile h3 {
+  margin: 0.2rem 0;
+  color: #fff;
+}
+
+.favorite-genre-tile h4 {
+  width: auto;
+  margin: 0.2rem 0;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.favorite-genre-tile p {
+  color: #aaa;
+  font-size: 0.8rem;
+}
+
+.favorite-genre-section h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  text-align: center;
+}
+
+/* 📱 Mobile-specific adjustments */
+@media (max-width: 600px) {
   .favorite-genre-tile {
-    width: 15vw; 
-    aspect-ratio: 1 / 1; 
-    background: #121212;
-    border-radius: 1rem;
-    padding: 1rem;
-    text-align: center;
-    box-shadow: 0 0 20px var(--glow-color);
-    transition: transform 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
+    width: 60vw;
+    max-width: 1000vw;
+    padding: 0.75rem;
   }
-  
-  .favorite-genre-tile:hover {
-    transform: scale(1.05);
-  }
-  
+
   .genre-lottie {
-    width: 60%;
-    height: 650%;
-  }
-  
-  
-  .favorite-genre-tile h3 {
-    margin: 0.2rem 0;
-    color: #fff;
+    max-height: 150px;
   }
 
-  .favorite-genre-section h2 {
-    color: #fff;
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .favorite-genre-tile h4 {
-    width: 20%;
-    margin: 0.2rem 0;
-    font-size: 0.9rem;
-  }
-  
-  
+  .favorite-genre-tile h4,
   .favorite-genre-tile p {
-    color: #aaa;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
   }
-  
+}

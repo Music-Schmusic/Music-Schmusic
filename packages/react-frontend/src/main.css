@@ -1387,11 +1387,8 @@ body {
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
 }
+
 
 .container {
   background: rgba(24, 24, 24, 0.9);
@@ -1508,22 +1505,30 @@ h1 {
 }
 
 .nav-button {
-  padding: 5px 10px;
+  display: inline-block;
   text-decoration: none;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  border-radius: 4px;
   background: white;
   color: #099439;
   border: none;
-  border-radius: 5px;
-  font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
-  position: relative;
-  z-index: 1;
+  transition: background 0.3s, color 0.3s;
+  line-height: 1;
+  font-family: inherit;
 }
 
 .nav-button:hover {
-  background: #12752b;
+  background-color: #12752b;
   color: white;
+}
+
+.nav-button:focus,
+.nav-button:active {
+  outline: none;
+  text-decoration: none;
 }
 
 h1 {
@@ -1534,6 +1539,70 @@ h1 {
   font-family: 'Inter', sans-serif;
   font-weight: 600;
 }
+.hamburger {
+  font-size: 24px;
+  padding: 0;
+  margin: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none;
+}
+
+.nav-links {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex
+  }
+
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    background-color: #099439;
+    position: absolute;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    z-index: 9;
+    padding: 0;
+  }
+  
+  .mobile-menu.open {
+    max-height: 500px;
+    opacity: 1;
+    padding: 10px 0;
+  }
+  
+
+  .mobile-menu .nav-button {
+    width: 90%;
+    margin: 0 auto 10px auto;
+    padding: 12px;
+    text-align: center;
+    font-size: 1rem;
+    border-radius: 6px;
+    background: white;
+    color: #099439;
+  }
+
+  .navbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+}
+
+
 
 button:focus,
 button:active {
@@ -2415,4 +2484,31 @@ a:focus {
 .get-started-btn:hover {
   background-color: #1db954;
   transform: translateY(-2px);
+}
+
+@media (min-width: 769px) {
+  .mobile-menu {
+    padding: 10px 40px;
+  }
+  .nav-links {
+    display: flex !important;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .nav-button {
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    border-radius: 4px;
+    background: white;
+    color: #099439;
+    box-shadow: none;
+    transition: all 0.2s ease;
+    margin: 2px;
+  }
+
+  .nav-button:hover {
+    background: #12752b;
+    color: white;
+  }
 }

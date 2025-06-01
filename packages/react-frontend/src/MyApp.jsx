@@ -31,6 +31,8 @@ import defaultAnim from './lottie/default.json';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const handleLogout = () => {
     setIsLoggedIn(false);
     localStorage.removeItem('isLoggedIn');
@@ -39,54 +41,41 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     localStorage.removeItem('spotifyToken');
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <nav className="navbar">
       <div className="logo">
-        <Link
-          to="/"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <StatsIcon size={40} />
         </Link>
       </div>
-      <div className="nav-links">
+  
+      <button className="hamburger" onClick={toggleMenu}>
+        &#9776;
+      </button>
+  
+      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" className="nav-button">
-              Dashboard
-            </Link>
-            {/* Scrapped Feature, but leaving here if we want to add later */}
-            {/* <Link to="/friends" className="nav-button"> */}
-              {/* Friends */}
-            {/* </Link> */}
-            <Link to="/recs" className="nav-button">
-              Recommended
-            </Link>
-            {/* <Link to="/settings" className="nav-button">
-              <img
-                src="/settings.png"
-                alt="Settings"
-                style={{ width: '24px', height: '24px' }}
-              />
-            </Link> */}
-            <button onClick={handleLogout} className="nav-button">
-              Logout
-            </button>
+            <Link to="/dashboard" className="nav-button">Dashboard</Link>
+            <Link to="/recs" className="nav-button">Recommended</Link>
+            <button onClick={handleLogout} className="nav-button">Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login" className="nav-button">
-              Login
-            </Link>
-            <Link to="/signup" className="nav-button">
-              Sign Up
-            </Link>
+            <Link to="/login" className="nav-button">Login</Link>
+            <Link to="/signup" className="nav-button">Sign Up</Link>
           </>
         )}
       </div>
     </nav>
   );
+  
 };
+
 
 const Footer = () => (
   <nav className="footer">
