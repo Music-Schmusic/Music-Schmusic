@@ -4,6 +4,7 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import node from 'eslint-plugin-node';
 import jest from 'eslint-plugin-jest';
+import cypressPlugin from 'eslint-plugin-cypress';
 
 export default [
   js.configs.recommended,
@@ -93,6 +94,26 @@ export default [
       'jest/no-identical-title': 'error',
       'jest/prefer-to-have-length': 'warn',
       'jest/valid-expect': 'error',
+    },
+  },
+  {
+    files: ['cypress/e2e/**/*.js'],
+    plugins: {
+      cypress: cypressPlugin,
+    },
+    languageOptions: {
+      globals: {
+        cy: 'readonly',
+        describe: 'readonly',
+        context: 'readonly',
+        it: 'readonly',
+        beforeEach: 'readonly',
+        assert: 'readonly',
+        Cypress: 'readonly',
+      },
+    },
+    rules: {
+      'jest/no-identical-title': 'off',
     },
   },
 ];

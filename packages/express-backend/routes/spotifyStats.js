@@ -3,8 +3,6 @@ import axios from 'axios';
 import WeeklyListening from '../schemas/WeeklyListening.js';
 import authenticateUser from '../authMiddleware.js';
 
-
-
 const router = express.Router();
 
 // Middleware to check for Spotify token
@@ -102,12 +100,15 @@ router.get('/recently-played', checkSpotifyToken, async (req, res) => {
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
-    let record = await WeeklyListening.findOne({ username, weekStart: startOfWeek });
+    let record = await WeeklyListening.findOne({
+      username,
+      weekStart: startOfWeek,
+    });
 
     const lastUpdated = record?.lastUpdated ?? new Date(0);
 
     const newTracks = response.data.items.filter(
-      item => new Date(item.played_at) > lastUpdated
+      (item) => new Date(item.played_at) > lastUpdated
     );
 
     const deltaMs = newTracks.reduce(
@@ -135,7 +136,6 @@ router.get('/recently-played', checkSpotifyToken, async (req, res) => {
   }
 });
 
-
 router.get('/listening-history', async (req, res) => {
   const username = req.headers['x-username'];
   if (!username) {
@@ -153,11 +153,10 @@ router.get('/listening-history', async (req, res) => {
 
     res.json(history);
   } catch (err) {
-    console.error("Error fetching listening history:", err);
-    res.status(500).json({ error: "Failed to fetch listening history" });
+    console.error('Error fetching listening history:', err);
+    res.status(500).json({ error: 'Failed to fetch listening history' });
   }
 });
-
 
 // Get user's playlists
 router.get('/playlists', checkSpotifyToken, async (req, res) => {
@@ -196,7 +195,9 @@ router.post('/test-insert-week', authenticateUser, async (req, res) => {
   const username = req.user.username;
 
   const startOfWeek = new Date();
-  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() - (7 * weekOffset));
+  startOfWeek.setDate(
+    startOfWeek.getDate() - startOfWeek.getDay() - 7 * weekOffset
+  );
   startOfWeek.setHours(0, 0, 0, 0);
 
   try {
@@ -215,7 +216,10 @@ router.post('/test-insert-week', authenticateUser, async (req, res) => {
 // Get user's top albums (based on top tracks)
 router.get('/top-albums', checkSpotifyToken, async (req, res) => {
   try {
-    console.log('Fetching top albums with token:', req.spotifyToken.substring(0, 10) + '...');
+    console.log(
+      'Fetching top albums with token:',
+      req.spotifyToken.substring(0, 10) + '...'
+    );
 
     const topTracksRes = await axios.get(
       'https://api.spotify.com/v1/me/top/tracks?limit=50',
@@ -228,24 +232,28 @@ router.get('/top-albums', checkSpotifyToken, async (req, res) => {
     );
 
     // Extract unique album IDs
-    const albumIds = [...new Set(topTracksRes.data.items.map(track => track.album.id))].slice(0, 5);
+    const albumIds = [
+      ...new Set(topTracksRes.data.items.map((track) => track.album.id)),
+    ].slice(0, 5);
 
     // Fetch full album data for each
     const albumDetails = await Promise.all(
-      albumIds.map(id =>
-        axios.get(`https://api.spotify.com/v1/albums/${id}`, {
-          headers: {
-            Authorization: `Bearer ${req.spotifyToken}`,
-          },
-        }).then(res => res.data)
+      albumIds.map((id) =>
+        axios
+          .get(`https://api.spotify.com/v1/albums/${id}`, {
+            headers: {
+              Authorization: `Bearer ${req.spotifyToken}`,
+            },
+          })
+          .then((res) => res.data)
       )
     );
 
-    const formattedAlbums = albumDetails.map(album => ({
+    const formattedAlbums = albumDetails.map((album) => ({
       id: album.id,
       name: album.name,
       image: album.images[0]?.url,
-      artists: album.artists.map(a => a.name).join(', '),
+      artists: album.artists.map((a) => a.name).join(', '),
       release_date: album.release_date,
       total_tracks: album.total_tracks,
       label: album.label,
@@ -254,16 +262,16 @@ router.get('/top-albums', checkSpotifyToken, async (req, res) => {
     }));
 
     res.json({ items: formattedAlbums });
-
   } catch (error) {
-    console.error('Error fetching top albums:', error.response?.data || error.message);
+    console.error(
+      'Error fetching top albums:',
+      error.response?.data || error.message
+    );
     res.status(error.response?.status || 500).json({
       error: 'Failed to fetch top albums',
       details: error.response?.data || error.message,
     });
   }
 });
-
-
 
 export default router;
