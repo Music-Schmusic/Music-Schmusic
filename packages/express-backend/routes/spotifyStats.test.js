@@ -3,14 +3,23 @@ import { jest } from '@jest/globals';
 
 const mockTracksResponse = { data: { items: ['track1', 'track2'] } };
 const mockArtistsResponse = { data: { items: ['artist1', 'artist2'] } };
+const now = new Date().toISOString();
+
 const mockRecentResponse = {
   data: {
     items: [
-      { track: { duration_ms: 123000 } },
-      { track: { duration_ms: 98000 } },
+      {
+        track: { duration_ms: 123000 },
+        played_at: now,
+      },
+      {
+        track: { duration_ms: 98000 },
+        played_at: now,
+      },
     ],
   },
 };
+
 
 // Mock the axios module before importing the app
 jest.unstable_mockModule('axios', () => ({
@@ -21,10 +30,11 @@ jest.unstable_mockModule('axios', () => ({
 
 jest.unstable_mockModule('../schemas/WeeklyListening.js', () => ({
   default: {
+    findOne: jest.fn().mockResolvedValue(null),
     findOneAndUpdate: jest.fn().mockResolvedValue({}),
+    create: jest.fn().mockResolvedValue({}),
   },
 }));
-
 // Now dynamically import axios and the app
 const axios = (await import('axios')).default;
 const app = (await import('../backend.js')).default;
