@@ -63,20 +63,24 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       <form onSubmit={handleLogin}>
         <input
           type="text"
-          placeholder="Username or Email"
+          name="Username"
+          placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
         <input
           type="password"
+          name="Password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         {error && <p className="error-message">{error}</p>}
-        <button type="submit">Login</button>
+        <button type="submit" name="Login">
+          Login
+        </button>
       </form>
       <button type="nav-accountRecovery" onClick={handleNav}>
         Forgot password?

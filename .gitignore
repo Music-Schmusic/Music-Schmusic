@@ -2,3 +2,4 @@ node_modules/
 .env
 .vs/
 packages/express-backend/auth/spotify-stat-ai-8587b4801d2d.json
+cypress.env.json

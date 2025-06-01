@@ -15,16 +15,16 @@ import popAnim from '../lottie/pop.json';
 import rapAnim from '../lottie/rap.json';
 
 const genreAnimations = {
-   rock: rockAnim,
-   edm: edmAnim,
-   jazz: jazzAnim,
-   metal: metalAnim,
-   country: countryAnim,
-   punk: punkAnim,
-   classical: classicalAnim,
-   pop: popAnim,
-   default: defaultAnim,
-   hiphop: rapAnim,
+  rock: rockAnim,
+  edm: edmAnim,
+  jazz: jazzAnim,
+  metal: metalAnim,
+  country: countryAnim,
+  punk: punkAnim,
+  classical: classicalAnim,
+  pop: popAnim,
+  default: defaultAnim,
+  hiphop: rapAnim,
 };
 
 const genreColors = {
@@ -45,27 +45,45 @@ const normalizeGenreKey = (genre) =>
   genre?.toLowerCase().replace(/[^a-z]/g, '') || 'default';
 
 const genreSynonyms = {
-    rock: ['rock', 'alt', 'alternative', 'classic rock', 'indie rock', 'garage', 'grunge'],
-    metal: ['metal', 'doom', 'black metal', 'death', 'hardcore'],
-    edm: ['edm', 'electronic', 'house', 'techno', 'trance', 'dubstep', 'rave', 'jungle', 'beats', 'break core'],
-    jazz: ['jazz', 'swing', 'bebop', 'fusion'],
-    classical: ['classical', 'orchestral', 'baroque', 'symphony'],
-    pop: ['pop', 'dance pop', 'synthpop', 'electropop', 'teen pop'],
-    punk: ['punk', 'emo', 'hardcore punk', 'pop punk', 'ska'],
-    country: ['country', 'americana', 'folk'],
-    hiphop: ['hip hop', 'rap', 'trap', 'drill', 'boom bap'],
-  };
-  
-  const getGenreMatch = (genre) => {
-    const normalized = genre?.toLowerCase() || '';
-    for (const key in genreSynonyms) {
-      if (genreSynonyms[key].some((word) => normalized.includes(word))) {
-        return key;
-      }
+  rock: [
+    'rock',
+    'alt',
+    'alternative',
+    'classic rock',
+    'indie rock',
+    'garage',
+    'grunge',
+  ],
+  metal: ['metal', 'doom', 'black metal', 'death', 'hardcore'],
+  edm: [
+    'edm',
+    'electronic',
+    'house',
+    'techno',
+    'trance',
+    'dubstep',
+    'rave',
+    'jungle',
+    'beats',
+    'break core',
+  ],
+  jazz: ['jazz', 'swing', 'bebop', 'fusion'],
+  classical: ['classical', 'orchestral', 'baroque', 'symphony'],
+  pop: ['pop', 'dance pop', 'synthpop', 'electropop', 'teen pop'],
+  punk: ['punk', 'emo', 'hardcore punk', 'pop punk', 'ska'],
+  country: ['country', 'americana', 'folk'],
+  hiphop: ['hip hop', 'rap', 'trap', 'drill', 'boom bap'],
+};
+
+const getGenreMatch = (genre) => {
+  const normalized = genre?.toLowerCase() || '';
+  for (const key in genreSynonyms) {
+    if (genreSynonyms[key].some((word) => normalized.includes(word))) {
+      return key;
     }
-    return 'default';
-  };
-  
+  }
+  return 'default';
+};
 
 const FavoriteGenreTile = ({ genre }) => {
   const matchedKey = getGenreMatch(genre);
