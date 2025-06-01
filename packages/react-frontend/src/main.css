@@ -2469,6 +2469,20 @@ a:focus {
   margin-bottom: 3rem;
 }
 
+.genre-lottie {
+  max-width: 300px;
+  width: 80%;
+  height: auto;
+  margin: 0 auto 10%;
+}
+
+@media (max-width: 768px) {
+  .genre-lottie {
+    max-width: 200px;
+    width: 90%;
+  }
+}
+
 .get-started-btn {
   background-color: #1ed760;
   color: #ffffff;

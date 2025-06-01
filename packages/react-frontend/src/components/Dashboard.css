@@ -233,12 +233,18 @@ section h2 {
   text-align: center;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
-  margin: 2rem auto;
+  margin: 20rem auto;
   max-width: 600px;
   width: 60%;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 0 100px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 528px){
+  .connect-spotify-container {
+  margin: 10rem auto;
+  }
 }
 
 .connect-spotify-container h2 {

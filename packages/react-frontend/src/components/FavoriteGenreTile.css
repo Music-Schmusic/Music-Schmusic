@@ -59,7 +59,7 @@
   text-align: center;
 }
 
-/* 📱 Mobile-specific adjustments */
+/* Mobile-specific adjustments */
 @media (max-width: 600px) {
   .favorite-genre-tile {
     width: 60vw;
