@@ -1,21 +1,19 @@
 .signup-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.9);
-  padding: 2.5rem;
-  border-radius: 15px;
-  width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 30%;
   text-align: center;
-  color: white;
-  z-index: 1000;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  width: 75vw;
 }
 
 .signup-container h1 {
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
   color: #30e849;
   font-size: 2rem;
   font-weight: 600;
@@ -23,14 +21,15 @@
 }
 
 .signup-container h3 {
-  margin-bottom: 1.5rem;
-  color: #aaa;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
   font-weight: 400;
   font-size: 1rem;
 }
 
 .signup-container form {
   display: flex;
+  width: 80%;
   flex-direction: column;
   gap: 1.2rem;
   margin-bottom: 1.5rem;
@@ -44,7 +43,6 @@
   color: #000000;
   font-size: 0.95rem;
   transition: all 0.3s ease;
-  width: 100%;
   box-sizing: border-box;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -69,7 +67,6 @@
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 100%;
   font-weight: 600;
   font-size: 1rem;
   text-transform: uppercase;
@@ -88,12 +85,13 @@
 
 .signup-container p {
   margin: 1.2rem 0;
-  color: #aaa;
+  color: #ffffff;
   font-size: 0.9rem;
 }
 
 .login-btn,
 .back-btn {
+  width: 80%;
   margin-top: 0.5rem;
   background: transparent;
   border: 1px solid #30e849;
@@ -102,7 +100,7 @@
 
 .login-btn:hover,
 .back-btn:hover {
-  background: rgba(48, 232, 73, 0.1);
+  background: rgba(50, 51, 50, 0.1);
   transform: translateY(-1px);
 }
 
@@ -114,13 +112,4 @@
   background: rgba(255, 68, 68, 0.1);
   border-radius: 4px;
   border: 1px solid rgba(255, 68, 68, 0.2);
-}
-
-.back-btn {
-  margin: 1.5rem auto 0;
-  background: transparent;
-  border: 1px solid #30e849;
-  text-transform: none;
-  display: block;
-  width: 200px;
 }

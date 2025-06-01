@@ -26,9 +26,10 @@ import AccountRecovery from './pages/AccountRecovery.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import ResetValidation from './pages/ResetValidation.jsx';
 import { useStateWithCallbackLazy } from 'use-state-with-callback';
+import Lottie from 'lottie-react';
+import defaultAnim from './lottie/default.json';
 
 const API_URL = import.meta.env.VITE_API_URL;
-
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -54,19 +55,20 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             <Link to="/dashboard" className="nav-button">
               Dashboard
             </Link>
-            <Link to="/friends" className="nav-button">
-              Friends
-            </Link>
+            {/* Scrapped Feature, but leaving here if we want to add later */}
+            {/* <Link to="/friends" className="nav-button"> */}
+              {/* Friends */}
+            {/* </Link> */}
             <Link to="/recs" className="nav-button">
               Recommended
             </Link>
-            <Link to="/settings" className="nav-button">
+            {/* <Link to="/settings" className="nav-button">
               <img
                 src="/settings.png"
                 alt="Settings"
                 style={{ width: '24px', height: '24px' }}
               />
-            </Link>
+            </Link> */}
             <button onClick={handleLogout} className="nav-button">
               Logout
             </button>
@@ -103,27 +105,27 @@ const Footer = () => (
 
 const Home = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
-  const handleGetStarted = () => {
-    navigate('/login');
-  };
+  const handleGetStarted = () => navigate('/login');
 
   return (
-    <div className="home-container">
-      <Navbar></Navbar>
-      {/* <Spline className="spline" scene="scene1.splinecode"></Spline> */}
-      <lord-icon
-        src="https://cdn.lordicon.com/jpzhmobh.json"
-        trigger="loop"
-        delay="1500"
-        stroke="bold"
-        colors="primary:#30e849,secondary:#16c72e"
-        style={{ width: '150px', height: '150px' }}
-      ></lord-icon>
-      <h1>Music Schmusic</h1>
-      <button className="get-started-btn" onClick={handleGetStarted}>
-        Get Started
-      </button>
-    </div>
+    <div className="splash-container">
+  <div className="background-wrapper">
+    <div className="background-gradient"></div>
+    <div className="background-overlay"></div>
+  </div>
+
+  {/* This sits ABOVE the background, not inside it */}
+  <div className="splash-hero">
+    <h1 className="splash-title">Music Schmusic</h1>
+    <p className="splash-subtitle">
+      Your personalized music dashboard powered by Spotify.
+    </p>
+    <Lottie animationData={defaultAnim} loop autoplay className="genre-lottie" />
+    <button className="get-started-btn" onClick={handleGetStarted}>
+      Get Started
+    </button>
+  </div>
+</div>
   );
 };
 
@@ -251,7 +253,7 @@ const AppContent = ({
         tempLogin={tempLogin}
         setTempLogin={setTempLogin}
       />
-      <Footer />
+      
     </>
   );
 };
