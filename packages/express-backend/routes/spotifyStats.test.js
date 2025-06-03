@@ -35,7 +35,7 @@ jest.unstable_mockModule('../schemas/WeeklyListening.js', () => ({
     create: jest.fn().mockResolvedValue({}),
   },
 }));
-// Now dynamically import axios and the app
+// dynamically import axios and the app
 const axios = (await import('axios')).default;
 const app = (await import('../backend.js')).default;
 const WeeklyListening = (await import('../schemas/WeeklyListening.js')).default;
@@ -282,5 +282,97 @@ describe('Spotify Routes', () => {
     expect(res.statusCode).toBe(403);
     expect(res.body).toHaveProperty('error', 'Failed to fetch playlists');
   });
+
+  test('GET /spotify/stats/top-albums - success', async () => {
+    // Mock top tracks response (with duplicate album IDs)
+    const mockTopTracks = {
+      items: [
+        { album: { id: 'a1' } },
+        { album: { id: 'a2' } },
+        { album: { id: 'a3' } },
+        { album: { id: 'a1' } }, // duplicate
+        { album: { id: 'a4' } },
+        { album: { id: 'a5' } },
+        { album: { id: 'a6' } }, // will get sliced off
+      ],
+    };
   
+    const mockAlbumData = (id) => ({
+      id,
+      name: `Album ${id}`,
+      images: [{ url: `http://img/${id}.jpg` }],
+      artists: [{ name: `Artist ${id}` }],
+      release_date: '2020-01-01',
+      total_tracks: 10,
+      label: `Label ${id}`,
+      popularity: 50,
+      external_urls: { spotify: `https://spotify.com/album/${id}` },
+    });
+  
+    // First call = top tracks
+    axios.get.mockResolvedValueOnce({ data: mockTopTracks });
+  
+    // Next 5 calls = albums/a1 to albums/a5
+    const albumResponses = ['a1', 'a2', 'a3', 'a4', 'a5'].map((id) => ({
+      data: mockAlbumData(id),
+    }));
+    albumResponses.forEach((res) => axios.get.mockResolvedValueOnce(res));
+  
+    const res = await request(app)
+      .get('/spotify/stats/top-albums')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+    expect(res.statusCode).toBe(200);
+    expect(res.body.items).toHaveLength(5);
+    expect(res.body.items[0]).toHaveProperty('name');
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://api.spotify.com/v1/me/top/tracks?limit=50',
+      expect.any(Object)
+    );
+  });
+
+  test('GET /spotify/stats/top-albums - top tracks fetch error', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: { error: 'Invalid token' },
+      },
+    });
+  
+    const res = await request(app)
+      .get('/spotify/stats/top-albums')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty('error', 'Failed to fetch top albums');
+  });
+
+  test('GET /spotify/stats/playlists - network error (no response)', async () => {
+    axios.get.mockRejectedValueOnce(new Error('Network down'));
+  
+    const res = await request(app)
+      .get('/spotify/stats/playlists')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toEqual({ error: 'Failed to fetch playlists' });
+  });
+
+  test('GET /spotify/stats/top-albums - network error (no response)', async () => {
+    axios.get.mockRejectedValueOnce(new Error('Network error'));
+  
+    const res = await request(app)
+      .get('/spotify/stats/top-albums')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toEqual({
+      error: 'Failed to fetch top albums',
+      details: 'Network error',
+    });
+  });
 });

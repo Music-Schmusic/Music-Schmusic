@@ -190,31 +190,6 @@ router.get('/playlists', checkSpotifyToken, async (req, res) => {
   }
 });
 
-//route for adding time to database to test bar chart (Can be removed later to improve test coverage)
-router.post('/test-insert-week', authenticateUser, async (req, res) => {
-  const { weekOffset, durationMs } = req.body; // e.g., { weekOffset: 2, durationMs: 3600000 }
-
-  const username = req.user.username;
-
-  const startOfWeek = new Date();
-  startOfWeek.setDate(
-    startOfWeek.getDate() - startOfWeek.getDay() - 7 * weekOffset
-  );
-  startOfWeek.setHours(0, 0, 0, 0);
-
-  try {
-    const result = await WeeklyListening.findOneAndUpdate(
-      { username, weekStart: startOfWeek },
-      { $set: { durationMs } },
-      { upsert: true, new: true }
-    );
-    res.json({ message: 'Inserted test data', result });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Test insert failed' });
-  }
-});
-
 // Get user's top albums (based on top tracks)
 router.get('/top-albums', checkSpotifyToken, async (req, res) => {
   try {
