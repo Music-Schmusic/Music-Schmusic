@@ -54,7 +54,7 @@ const Signup = () => {
         console.log('Username already in use');
         setError('Username already in use');
       } else {
-        setError(err.response?.data?.message || 'Signup failed');
+        setError(err.response?.data?.message || 'Sign Up failed');
       }
     }
   };
