@@ -80,7 +80,7 @@ app.use(cookieParser());
 app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
-app.use('/recommend', spotifySearch);
+app.use('/spotify/recommend', spotifySearch);
 
 app.get('/', (req, res) => res.status(200).send('API Running'));
 
