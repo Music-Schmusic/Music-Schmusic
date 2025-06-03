@@ -48,34 +48,45 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   return (
     <nav className="navbar">
       <div className="logo">
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <Link
+          to="/"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        >
           <StatsIcon size={40} />
         </Link>
       </div>
-  
+
       <button className="hamburger" onClick={toggleMenu}>
         &#9776;
       </button>
-  
+
       <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
         {isLoggedIn ? (
           <>
-            <Link to="/dashboard" className="nav-button">Dashboard</Link>
-            <Link to="/recs" className="nav-button">Recommended</Link>
-            <button onClick={handleLogout} className="nav-button">Logout</button>
+            <Link to="/dashboard" className="nav-button">
+              Dashboard
+            </Link>
+            <Link to="/recs" className="nav-button">
+              Recommended
+            </Link>
+            <button onClick={handleLogout} className="nav-button">
+              Logout
+            </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="nav-button">Login</Link>
-            <Link to="/signup" className="nav-button">Sign Up</Link>
+            <Link to="/login" className="nav-button">
+              Login
+            </Link>
+            <Link to="/signup" className="nav-button">
+              Sign Up
+            </Link>
           </>
         )}
       </div>
     </nav>
   );
-  
 };
-
 
 const Footer = () => (
   <nav className="footer">
@@ -98,23 +109,28 @@ const Home = ({ isLoggedIn, setIsLoggedIn }) => {
 
   return (
     <div className="splash-container">
-  <div className="background-wrapper">
-    <div className="background-gradient"></div>
-    <div className="background-overlay"></div>
-  </div>
+      <div className="background-wrapper">
+        <div className="background-gradient"></div>
+        <div className="background-overlay"></div>
+      </div>
 
-  {/* This sits ABOVE the background, not inside it */}
-  <div className="splash-hero">
-    <h1 className="splash-title">Music Schmusic</h1>
-    <p className="splash-subtitle">
-      Your personalized music dashboard powered by Spotify.
-    </p>
-    <Lottie animationData={defaultAnim} loop autoplay className="genre-lottie" />
-    <button className="get-started-btn" onClick={handleGetStarted}>
-      Get Started
-    </button>
-  </div>
-</div>
+      {/* This sits ABOVE the background, not inside it */}
+      <div className="splash-hero">
+        <h1 className="splash-title">Music Schmusic</h1>
+        <p className="splash-subtitle">
+          Your personalized music dashboard powered by Spotify.
+        </p>
+        <Lottie
+          animationData={defaultAnim}
+          loop
+          autoplay
+          className="genre-lottie"
+        />
+        <button className="get-started-btn" onClick={handleGetStarted}>
+          Get Started
+        </button>
+      </div>
+    </div>
   );
 };
 
@@ -242,7 +258,6 @@ const AppContent = ({
         tempLogin={tempLogin}
         setTempLogin={setTempLogin}
       />
-      
     </>
   );
 };

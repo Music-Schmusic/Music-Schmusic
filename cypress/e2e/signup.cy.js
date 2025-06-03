@@ -16,7 +16,7 @@ describe('Signup User', () => {
       });
       cy.wait('@signup');
       cy.wait('@authorize').then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
+        assert.equal(interception.response.statusCode, 200);
         const authUrl = interception.response.body.authUrl;
         expect(authUrl).to.include('accounts.spotify.com');
       });
@@ -61,8 +61,6 @@ describe('Signup User', () => {
         'THEN I am shown an error telling me that the user already exists'
       );
       cy.contains('Username already in use').should('be.visible');
-    });
-    after(() => {
       cy.request('POST', `http://127.0.0.1:8000/test-utils/delete-user`, {
         username: 'CypressTestingUser',
       });

@@ -5,9 +5,11 @@ import prettierConfig from 'eslint-config-prettier';
 import node from 'eslint-plugin-node';
 import jest from 'eslint-plugin-jest';
 import cypressPlugin from 'eslint-plugin-cypress';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default [
   js.configs.recommended,
+  globalIgnores(['./cypress']),
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
