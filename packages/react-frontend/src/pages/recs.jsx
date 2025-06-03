@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const Recommended = () => {
@@ -6,6 +7,36 @@ const Recommended = () => {
   const [coverImage, setCoverImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [recommends, setRecommends] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const spotifyToken = localStorage.getItem('spotifyToken');
+        if (!spotifyToken) {
+          setLoading(false);
+          return;
+        }
+
+        const headers = {
+          Authorization: `Bearer ${spotifyToken}`,
+          'x-username': localStorage.getItem('username'),
+        };
+
+        const recommendedSongs = await axios.get(
+          `${API_URL}/spotify/recommend`,
+          { headers }
+        );
+
+        setRecommends(recommendedSongs.data);
+        console.log(recommends);
+        console.log('^ recommends');
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   // 2. Create the same AI cover fetch function
   const getAICover = async () => {
@@ -40,9 +71,13 @@ const Recommended = () => {
         <section className="recommended-songs">
           <h2>Recommended Songs</h2>
           <ul>
-            <li>Song Title 1</li>
-            <li>Song Title 2</li>
-            <li>Song Title 3</li>
+            {recommends.map((item, index) => (
+              <li key={item.id}>
+                <a href={item.url} target="_blank" rel="noopener noreferrer">
+                  {item.name + ' - ' + item.artist}
+                </a>
+              </li>
+            ))}
           </ul>
         </section>
 
