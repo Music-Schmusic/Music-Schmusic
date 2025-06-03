@@ -392,7 +392,11 @@ const Dashboard = () => {
             {playlists.slice(0, 5).map((playlist) => (
               <div key={playlist.id} className="music-item">
                 <img
-                  src={playlist.images[0]?.url}
+                  src={
+                    playlist.image
+                      ? playlist.images[0]?.url
+                      : 'react-frontend/public/pfp.png'
+                  }
                   alt={playlist.name}
                   className="music-image"
                 />
