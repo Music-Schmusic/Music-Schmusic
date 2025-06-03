@@ -25,14 +25,14 @@ router.get('/', checkSpotifyToken, async (req, res) => {
       throw new Error('Failed to fetch top artists');
     }
 
-    const artistJson = await response.json();
+    const json = await response.json();
 
-    let names = artistJson.items.map((item) => item.name);
+    let names = json.items.map((item) => item.name);
     let searchUrl = '';
     const results = [];
     for (const name of names) {
       const offset = Math.floor(Math.random() * 30);
-      const limit = Math.floor(Math.random() * 8 + 1);
+      const limit = Math.floor(Math.random() * 15 + 3);
       searchUrl = `https://api.spotify.com/v1/search?q=${name}&type=track&limit=${limit}&offset=${offset}`;
       try {
         const response = await fetch(searchUrl, {
