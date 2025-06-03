@@ -66,38 +66,4 @@ router.get('/', checkSpotifyToken, async (req, res) => {
   }
 });
 
-async function seqFetch(queries, token) {
-  let results = {};
-  let searchUrl = '';
-  let x = 0;
-  for (const query of queries) {
-    searchUrl = `https://api.spotify.com/v1/search?q=${query.artist}&type=track&limit=5&offset=15`;
-    try {
-      const response = await fetch(searchUrl, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const json = await response.json();
-      console.log(json);
-      const tracks = parseItems(json.tracks.items);
-      results[x++] = tracks;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-}
-
-function parseItems(tracks) {
-  let result = {};
-  for (let i = 0; i < tracks.length; i++) {
-    result[i] = {
-      name: tracks[i].name,
-      id: tracks[i].id,
-      album: tracks[i].album.name,
-      artist: tracks[i].artists[0].name,
-    };
-  }
-  return result;
-}
-
 export default router;
