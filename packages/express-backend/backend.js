@@ -15,6 +15,7 @@ import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import spotifySearch from './routes/spotifySearch.js';
 
 console.log('backend.js starting up');
 dotenv.config();
@@ -79,6 +80,7 @@ app.use(cookieParser());
 app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
+app.use('/spotify/recommend', spotifySearch);
 
 app.get('/', (req, res) => res.status(200).send('API Running'));
 

@@ -541,7 +541,11 @@ const Dashboard = () => {
                 } style={{ cursor: 'pointer' }}
               >
                 <img
-                  src={playlist.images[0]?.url}
+                  src={
+                    playlist.image
+                      ? playlist.images[0]?.url
+                      : 'react-frontend/public/pfp.png'
+                  }
                   alt={playlist.name}
                   className="music-image"
                 />
