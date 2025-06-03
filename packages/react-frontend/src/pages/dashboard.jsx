@@ -174,7 +174,7 @@ const Dashboard = () => {
             ...prev.thisWeek,
             timeSpent: formattedTime,
             favoriteArtist: artistsRes.data.items[0]?.name || 'No data',
-            favoriteGenre: artistsRes.data.items[0]?.genres[0] || 'No data',
+            favoriteGenre: artistsRes.data.items.find((artist) => artist.genres.length > 0)?.genres[0] || 'No data',
           },
         }));
       } catch (err) {
