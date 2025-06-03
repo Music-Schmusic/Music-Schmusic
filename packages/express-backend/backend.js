@@ -131,11 +131,19 @@ if (process.env.Runtime == 'cypress') {
 
 app.post('/accountrecovery', async (req, res) => {
   const id = crypto.randomBytes(32).toString('hex');
-  res.cookie('CRSFtoken', id, {
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: false,
-  });
+  if (req.hostname == 'localhost' || req.hostname == '127.0.0.1') {
+    res.cookie('CRSFtoken', id, {
+      httpOnly: true,
+      sameSite: 'Strict',
+      secure: false,
+    });
+  } else {
+    res.cookie('CRSFtoken', id, {
+      httpOnly: true,
+      sameSite: 'None',
+      secure: true,
+    });
+  }
 
   try {
     const { username, email } = req.body;
