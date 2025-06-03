@@ -19,11 +19,6 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowContainer(true), 1800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     setCurrentScene('scene2.splinecode');
   }, [setCurrentScene]);
 
@@ -52,9 +47,6 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       setError(err.response?.data?.message || 'Invalid Login Information');
     }
   };
-
-  if (!showContainer) return null;
-
   return (
     <div className="splash-container">
       <div className="login-container">
