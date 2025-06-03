@@ -66,6 +66,11 @@ const Dashboard = () => {
   const [playlists, setPlaylists] = useState([]);
   const [profilePic, setProfilePic] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [selectedTrack, setSelectedTrack] = useState(null);
+  const [selectedArtist, setSelectedArtist] = useState(null);
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [selectedPlayed, setSelectedPlayed] = useState(null);
   const [chartData, setChartData] = useState([
     { name: '5 Weeks Ago', timeSpent: 0 },
     { name: '4 Weeks Ago', timeSpent: 0 },
@@ -276,6 +281,112 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
+            {selectedTrack && (
+        <div
+          className="track-modal-overlay"
+          onClick={() => setSelectedTrack(null)}
+        > 
+          <div className="track-modal" onClick={e => e.stopPropagation()}>
+            <button className ="close-button" onClick={() => setSelectedTrack(null)}>X</button>
+            <img
+              src={selectedTrack.album?.images[0]?.url}
+              alt={selectedTrack.name}
+              className="track-modal-image"
+            />
+            <h2>{selectedTrack.name}</h2>
+            <p>Artists: {selectedTrack.artists.map(a => a.name).join(', ')}</p>
+            <p>Album: {selectedTrack.album?.name}</p>
+            <p>Release Date: {selectedTrack.album?.release_date}</p>
+            <a
+              href={selectedTrack.external_urls?.spotify}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open in Spotify
+            </a>
+          
+          </div>
+        </div>
+      )}
+      {selectedArtist && (
+        <div
+          className="track-modal-overlay"
+          onClick={() => setSelectedArtist(null)}
+        >
+          <div className="track-modal" onClick={e => e.stopPropagation()}>
+            <button className ="close-button" onClick={() => setSelectedArtist(null)}>X</button>
+            {/* If your artist object has an image, replace the src below accordingly */}
+            <img
+              src={selectedArtist.images?.[0]?.url}
+              alt={selectedArtist.name}
+              className="track-modal-image"
+            />
+            <h2>{selectedArtist.name}</h2>
+            {/* Example: show artist’s genres */}
+            <p>Genres: {selectedArtist.genres?.join(', ')}</p>
+            <p>Popularity: {selectedArtist.popularity}</p>
+          </div>
+        </div>
+      )}
+
+      {selectedAlbum && (
+        <div
+          className="track-modal-overlay"
+          onClick={() => setSelectedAlbum(null)}
+        >
+          <div className="track-modal" onClick={e => e.stopPropagation()}>
+            <button className ="close-button" onClick={() => setSelectedAlbum(null)}>X</button>
+            <img
+              src={selectedAlbum.image}
+              alt={selectedAlbum.name}
+              className="track-modal-image"
+            />
+            <h2>{selectedAlbum.name}</h2>
+            <p>Artists: {selectedAlbum.artists}</p>
+            <p>Released: {selectedAlbum.release_date}</p>
+            <p>Label: {selectedAlbum.label}</p>
+          </div>
+        </div>
+      )}
+
+      {selectedPlayed && (
+        <div
+          className="track-modal-overlay"
+          onClick={() => setSelectedPlayed(null)}
+        >
+          <div className="track-modal" onClick={e => e.stopPropagation()}>
+            <button className ="close-button" onClick={() => setSelectedPlayed(null)}>X</button>
+            <img
+              src={selectedPlayed.album?.images[0]?.url}
+              alt={selectedPlayed.name}
+              className="track-modal-image"
+            />
+            <h2>{selectedPlayed.name}</h2>
+            <p>Artists: {selectedPlayed.artists.map(a => a.name).join(', ')}</p>
+            <p>Album: {selectedPlayed.album?.name}</p>
+            <p>Played At: {new Date(selectedPlayed.played_at).toLocaleString()}</p>
+          </div>
+        </div>
+      )}
+
+      {selectedPlaylist && (
+        <div
+          className="track-modal-overlay"
+          onClick={() => setSelectedPlaylist(null)}
+        >
+          <div className="track-modal" onClick={e => e.stopPropagation()}>
+            <button className ="close-button" onClick={() => setSelectedPlaylist(null)}>X</button>
+            <img
+              src={selectedPlaylist.images?.[0]?.url}
+              alt={selectedPlaylist.name}
+              className="track-modal-image"
+            />
+            <h2>{selectedPlaylist.name}</h2>
+            <p>Total Tracks: {selectedPlaylist.tracks.total}</p>
+            <p>Description: {selectedPlaylist.description || 'N/A'}</p>
+          </div>
+        </div>
+      )}
       <div className="dashboard-content">
         <h1>Welcome back, {displayName || 'Guest'}</h1>
         {profilePic && (
@@ -290,7 +401,14 @@ const Dashboard = () => {
           <h2>Your Top Tracks</h2>
           <div className="music-grid">
             {topTracks.slice(0, 5).map((track, index) => (
-              <div key={`${track.id}-top-${index}`} className="music-item">
+              <div key={`${track.id}-top-${index}`} 
+              className="music-item"
+              onClick={() => {
+                console.log('clicked track:', track.name);
+                setSelectedTrack(track);
+              }
+              } style={{ cursor: 'pointer' }}
+              >
                 <img
                   src={track.album?.images[0]?.url}
                   alt={track.name}
@@ -315,7 +433,14 @@ const Dashboard = () => {
           <h2>Your Top Artists</h2>
           <div className="music-grid">
             {topArtists.slice(0, 5).map((artist) => (
-              <div key={artist.id} className="music-item">
+              <div 
+              key={artist.id}
+               className="music-item"
+                onClick={() => {
+                  console.log('clicked artist:', artist.name);
+                  setSelectedArtist(artist);
+                }}
+               >
                 <img
                   src={artist.images[0]?.url}
                   alt={artist.name}
@@ -338,7 +463,15 @@ const Dashboard = () => {
           <h2>Your Favorite Albums</h2>
           <div className="music-grid">
             {topAlbums.map((album) => (
-              <div key={album.id} className="music-item">
+              <div 
+                key={album.id} 
+                className="music-item"
+                onClick={() => {
+                  console.log('clicked album:', album.name);
+                  setSelectedAlbum(album);
+                }}
+                style={{ cursor: 'pointer' }}
+                >
                 <img
                   src={album.image}
                   alt={album.name}
@@ -368,7 +501,15 @@ const Dashboard = () => {
           <h2>Recently Played</h2>
           <div className="music-grid">
             {recentlyPlayed.slice(0, 5).map((item, index) => (
-              <div key={`${item.track.id}-${index}`} className="music-item">
+              <div 
+                key={`${item.track.id}-${index}`} 
+                className="music-item"
+                onClick={() => {
+                  console.log('clicked recently played:', item.track.name);
+                  setSelectedPlayed(item.track);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
                 <img
                   src={item.track.album?.images[0]?.url}
                   alt={item.track.name}
@@ -390,7 +531,15 @@ const Dashboard = () => {
           <h2>Your Playlists</h2>
           <div className="music-grid">
             {playlists.slice(0, 5).map((playlist) => (
-              <div key={playlist.id} className="music-item">
+              <div 
+                key={playlist.id} 
+                className="music-item"
+                onClick={() => {
+                  console.log('clicked playlist:', playlist.name);
+                  setSelectedPlaylist(playlist);
+                }
+                } style={{ cursor: 'pointer' }}
+              >
                 <img
                   src={
                     playlist.image

@@ -110,12 +110,11 @@ router.get('/recently-played', checkSpotifyToken, async (req, res) => {
     const newTracks = response.data.items.filter(
       (item) => new Date(item.played_at) > lastUpdated
     );
-    
+
     const deltaMs = newTracks.reduce(
       (acc, item) => acc + item.track.duration_ms,
       0
     );
-    
 
     if (!record) {
       await WeeklyListening.create({
@@ -131,7 +130,7 @@ router.get('/recently-played', checkSpotifyToken, async (req, res) => {
     }
 
     // res.json({ items: newTracks });
-    res.json({ items: response.data.items })
+    res.json({ items: response.data.items });
   } catch (error) {
     console.error('Error fetching recently played:', error.message);
     res.status(500).json({ error: 'Failed to fetch recently played tracks' });

@@ -110,5 +110,5 @@ export default {
   setDataBaseConn,
   setPrivacyState,
   updatePassword,
-  deleteUser
+  deleteUser,
 };

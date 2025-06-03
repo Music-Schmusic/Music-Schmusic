@@ -121,11 +121,13 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/test-utils/delete-user', async (req, res) => {
-  const { username } = req.body;
-  await dbrequests.deleteUser({ username });
-  res.status(200).json({ message: 'Test user deleted' });
-});
+if (process.env.Runtime == 'cypress') {
+  app.post('/test-utils/delete-user', async (req, res) => {
+    const { username } = req.body;
+    await dbrequests.deleteUser({ username });
+    res.status(200).json({ message: 'Test user deleted' });
+  });
+}
 
 app.post('/accountrecovery', async (req, res) => {
   const id = crypto.randomBytes(32).toString('hex');

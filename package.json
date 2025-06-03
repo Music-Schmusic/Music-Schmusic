@@ -24,7 +24,9 @@
   "scripts": {
     "start:frontend": "cd ./packages/react-frontend && npm run dev",
     "start:backend": "cd ./packages/express-backend && npm run dev",
-    "start:cypress": "cd ./packages/express-backend && npm run dev:cypress",
+    "start:front:cypress": "cd ./packages/react-frontend && npm run dev:cypress",
+    "start:back:cypress": "cd ./packages/express-backend && npm run dev:cypress",
+    "start:cypress": "cross-env Runtime=cypress npm-run-all --parallel start:front:cypress start:back:cypress",
     "start": "cross-env Runtime=development npm-run-all --parallel start:frontend start:backend",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules Runtime=test dotenv -e packages/express-backend/.env.test -- jest --coverage --coverageReporters=text",
     "format": "prettier --write .",

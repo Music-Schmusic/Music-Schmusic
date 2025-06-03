@@ -281,3 +281,59 @@ section h2 {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
 }
+
+.track-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.track-modal {
+  position: relative;
+  background: #858585;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 375px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+}
+
+.track-modal h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+.track-modal p {
+  font-size: 1.1rem;
+  color: #efefef;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+.track-modal-image {
+  width: 225px;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+.track-modal button {
+  margin-top: 1rem;
+}
+
+.track-modal .close-button {
+  position: absolute;
+  top: 1px;
+  right: 15px;
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}

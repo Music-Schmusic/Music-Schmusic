@@ -57,35 +57,35 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
 
   return (
     <div className="splash-container">
-    <div className="login-container">
-      <h1>Login</h1>
-      <p>Sign in to continue</p>
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          name="Username"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          name="Password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error && <p className="error-message">{error}</p>}
-        <button type="submit" name="Login">
-          Login
+      <div className="login-container">
+        <h1>Login</h1>
+        <p>Sign in to continue</p>
+        <form onSubmit={handleLogin}>
+          <input
+            type="text"
+            name="Username"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            name="Password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && <p className="error-message">{error}</p>}
+          <button type="submit" name="Login">
+            Login
+          </button>
+        </form>
+        <button type="nav-accountRecovery" onClick={handleNav}>
+          Forgot password?
         </button>
-      </form>
-      <button type="nav-accountRecovery" onClick={handleNav}>
-        Forgot password?
-      </button>
-    </div>
+      </div>
     </div>
   );
 };
