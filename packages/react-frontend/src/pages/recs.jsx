@@ -74,7 +74,7 @@ const Recommended = () => {
             {recommends.map((item, index) => (
               <li key={item.id}>
                 <a href={item.url} target="_blank" rel="noopener noreferrer">
-                  {item.name + ' - ' + item.artist}
+                  {item.name + ' | ' + item.artist}
                 </a>
               </li>
             ))}
