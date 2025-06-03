@@ -77,6 +77,24 @@ describe('Spotify Routes', () => {
     expect(res.body).toEqual(mockArtistsResponse.data);
   });
 
+  test('GET /spotify/stats/top-artists - failure', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: { error: 'Invalid token' },
+      },
+    });
+
+    const res = await request(app)
+      .get('/spotify/stats/top-artists')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty('error', 'Failed to fetch top artists');
+    expect(res.body.details).toEqual({ error: 'Invalid token' });
+  });
+
   test('GET /spotify/stats/recently-played - success', async () => {
     axios.get.mockResolvedValueOnce(mockRecentResponse);
 
@@ -88,6 +106,17 @@ describe('Spotify Routes', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(mockRecentResponse.data);
   });
+
+  test('GET /spotify/stats/recently-played - missing username', async () => {
+    const res = await request(app)
+      .get('/spotify/stats/recently-played')
+      .set('Authorization', mockToken);
+  
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Missing username in headers');
+    expect(axios.get).not.toHaveBeenCalled();
+  });
+  
 
   test('GET /spotify/stats/top-tracks - missing token', async () => {
     const res = await request(app).get('/spotify/stats/top-tracks');
@@ -132,4 +161,126 @@ describe('Spotify Routes', () => {
       'Failed to fetch recently played tracks'
     );
   });
+
+  test('GET /spotify/stats/recently-played - updates existing record', async () => {
+    const existingDate = new Date(Date.now() - 1000 * 60 * 60); // 1 hour ago
+    const mockSave = jest.fn();
+  
+    const mockExistingRecord = {
+      durationMs: 1000,
+      lastUpdated: existingDate,
+      save: mockSave,
+    };
+  
+    // Replace mock for this specific case
+    WeeklyListening.findOne.mockResolvedValue(mockExistingRecord);
+  
+    axios.get.mockResolvedValueOnce({
+      data: {
+        items: [
+          { played_at: new Date().toISOString(), track: { duration_ms: 60000 } },
+          { played_at: new Date().toISOString(), track: { duration_ms: 60000 } },
+        ],
+      },
+    });
+  
+    const res = await request(app)
+      .get('/spotify/stats/recently-played')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+    expect(res.statusCode).toBe(200);
+    expect(mockSave).toHaveBeenCalled();
+    expect(mockExistingRecord.durationMs).toBeGreaterThan(1000);
+  }); 
+  
+  test('GET /spotify/stats/listening-history - missing username', async () => {
+    const res = await request(app)
+      .get('/spotify/stats/listening-history')
+      .set('Authorization', mockToken);
+  
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Missing username in headers');
+  });
+
+  test('GET /spotify/stats/listening-history - success', async () => {
+    const mockHistory = [
+      { username: 'unittestuser', weekStart: new Date('2024-07-01'), durationMs: 120000 },
+      { username: 'unittestuser', weekStart: new Date('2024-07-08'), durationMs: 180000 },
+    ];
+  
+    const sortMock = jest.fn().mockResolvedValue(mockHistory);
+    const findMock = jest.fn().mockReturnValue({ sort: sortMock });
+  
+    WeeklyListening.find = findMock;
+  
+    const res = await request(app)
+      .get('/spotify/stats/listening-history')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+      expect(res.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ username: 'unittestuser', durationMs: 120000 }),
+          expect.objectContaining({ username: 'unittestuser', durationMs: 180000 }),
+        ])
+      );      
+  });
+
+  test('GET /spotify/stats/listening-history - DB error', async () => {
+    WeeklyListening.find.mockImplementationOnce(() => {
+      throw new Error('DB read failed');
+    });
+  
+    const res = await request(app)
+      .get('/spotify/stats/listening-history')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toHaveProperty('error', 'Failed to fetch listening history');
+  });
+
+  test('GET /spotify/stats/playlists - success', async () => {
+    const mockPlaylists = {
+      items: [{ name: 'Playlist 1' }, { name: 'Playlist 2' }],
+    };
+  
+    axios.get.mockResolvedValueOnce({ data: mockPlaylists });
+  
+    const res = await request(app)
+      .get('/spotify/stats/playlists')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual(mockPlaylists);
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://api.spotify.com/v1/me/playlists?limit=10',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: `Bearer mocked_token`,
+        }),
+      })
+    );
+  });  
+
+
+  test('GET /spotify/stats/playlists - Spotify API error', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: { error: 'Invalid token' },
+      },
+    });
+  
+    const res = await request(app)
+      .get('/spotify/stats/playlists')
+      .set('Authorization', mockToken)
+      .set('x-username', 'unittestuser');
+  
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toHaveProperty('error', 'Failed to fetch playlists');
+  });
+  
 });
