@@ -56,6 +56,7 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   if (!showContainer) return null;
 
   return (
+    <div className="splash-container">
     <div className="login-container">
       <h1>Login</h1>
       <p>Sign in to continue</p>
@@ -84,6 +85,7 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
       <button type="nav-accountRecovery" onClick={handleNav}>
         Forgot password?
       </button>
+    </div>
     </div>
   );
 };

@@ -60,6 +60,7 @@ const Signup = () => {
   };
 
   return (
+    <div className="splash-container">
     <div className="signup-container">
       <h3>Create an account to get started</h3>
       <h1>Sign Up</h1>
@@ -106,6 +107,7 @@ const Signup = () => {
       <button onClick={() => navigate('/')} className="back-btn">
         Back to Home
       </button>
+    </div>
     </div>
   );
 };

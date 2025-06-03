@@ -74,7 +74,7 @@ const Dashboard = () => {
     { name: 'Last Week', timeSpent: 0 },
     { name: 'This Week', timeSpent: 0 },
   ]);
-  
+
   const handleConnectSpotify = async () => {
     const verifier = generateCodeVerifier();
     const challenge = await generateCodeChallenge(verifier);
@@ -119,19 +119,19 @@ const Dashboard = () => {
         setDisplayName(profileRes.data.display_name || 'Guest');
         setProfilePic(profileRes.data.images[0]?.url || '');
 
-        
-        const [tracksRes, artistsRes, recentRes, playlistsRes, albumsRes] = await Promise.all([
-          axios.get(`${API_URL}/spotify/stats/top-tracks`, { headers }),
-          axios.get(`${API_URL}/spotify/stats/top-artists`, { headers }),
-          axios.get(`${API_URL}/spotify/stats/recently-played`, { headers }),
-          axios.get(`${API_URL}/spotify/stats/playlists`, { headers }),
-          axios.get(`${API_URL}/spotify/stats/top-albums`, { headers }),
-        ]);
-        
+        const [tracksRes, artistsRes, recentRes, playlistsRes, albumsRes] =
+          await Promise.all([
+            axios.get(`${API_URL}/spotify/stats/top-tracks`, { headers }),
+            axios.get(`${API_URL}/spotify/stats/top-artists`, { headers }),
+            axios.get(`${API_URL}/spotify/stats/recently-played`, { headers }),
+            axios.get(`${API_URL}/spotify/stats/playlists`, { headers }),
+            axios.get(`${API_URL}/spotify/stats/top-albums`, { headers }),
+          ]);
+
         setTopTracks(tracksRes.data.items);
         setTopArtists(artistsRes.data.items);
         setRecentlyPlayed(recentRes.data.items);
-        setTopAlbums(albumsRes.data.items);       
+        setTopAlbums(albumsRes.data.items);
         setPlaylists(playlistsRes.data.items);
         setLoading(false);
 
@@ -142,14 +142,19 @@ const Dashboard = () => {
         const hours = Math.floor(totalMs / 3600000);
         const minutes = Math.floor((totalMs % 3600000) / 60000);
         const formattedTime = `${hours}h ${minutes}m`;
-        const historyRes = await axios.get(`${API_URL}/spotify/stats/listening-history`, { headers });
+        const historyRes = await axios.get(
+          `${API_URL}/spotify/stats/listening-history`,
+          { headers }
+        );
         const history = historyRes.data;
         const now = new Date();
         const updatedChartData = [...chartData];
 
         for (const item of history) {
           const weekStart = new Date(item.weekStart);
-          const diffWeeks = Math.floor((now - weekStart) / (7 * 24 * 60 * 60 * 1000));
+          const diffWeeks = Math.floor(
+            (now - weekStart) / (7 * 24 * 60 * 60 * 1000)
+          );
           if (diffWeeks >= 0 && diffWeeks <= 5) {
             const hours = item.durationMs / 3600000;
             updatedChartData[5 - diffWeeks].timeSpent = hours;
@@ -189,7 +194,6 @@ const Dashboard = () => {
     const minutes = Math.round((value - hours) * 60);
     return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
   };
-  
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload?.length) {
@@ -206,10 +210,13 @@ const Dashboard = () => {
     return null;
   };
 
-  const genreData = topArtists.filter(artist => artist.genres.length  > 0).slice(0, 4).map((artist) => ({
-    name: artist.genres[0],
-    value: artist.popularity,
-  }));
+  const genreData = topArtists
+    .filter((artist) => artist.genres.length > 0)
+    .slice(0, 4)
+    .map((artist) => ({
+      name: artist.genres[0],
+      value: artist.popularity,
+    }));
 
   const COLORS = ['#30e849', '#8884d8', '#82ca9d', '#ff8042'];
   const [user, setUser] = useState('');
@@ -219,13 +226,12 @@ const Dashboard = () => {
     if (popularity >= 41) return '🌱 Emerging';
     return '🌑 Indie';
   };
-  
 
-    useEffect(() => {
-      const storedUser = localStorage.getItem('username');
-      console.log('Loaded user from localStorage:', storedUser); 
-      if (storedUser) setUser(storedUser);
-    }, []);
+  useEffect(() => {
+    const storedUser = localStorage.getItem('username');
+    console.log('Loaded user from localStorage:', storedUser);
+    if (storedUser) setUser(storedUser);
+  }, []);
 
   const spotifyToken = localStorage.getItem('spotifyToken');
 
@@ -271,13 +277,9 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-content">
-        <h1>Welcome back, {displayName || "Guest"}</h1>
+        <h1>Welcome back, {displayName || 'Guest'}</h1>
         {profilePic && (
-          <img
-            src={profilePic}
-            alt="Profile"
-            className="profile-picture"
-          />
+          <img src={profilePic} alt="Profile" className="profile-picture" />
         )}
         <h1>Your Music Dashboard</h1>
         <h5>Gain insights into your listening habits and discover trends.</h5>
@@ -304,9 +306,9 @@ const Dashboard = () => {
         </section>
 
         <section className="favorite-genre-section">
-        <h2>Your Favorite Genre</h2>
-        <FavoriteGenreTile genre={userStats.thisWeek.favoriteGenre} />
-      </section>
+          <h2>Your Favorite Genre</h2>
+          <FavoriteGenreTile genre={userStats.thisWeek.favoriteGenre} />
+        </section>
 
         {/* Top Artists Section */}
         <section className="top-artists">
@@ -322,9 +324,11 @@ const Dashboard = () => {
                 <div className="music-info">
                   <h3>{artist.name}</h3>
                   <p>{artist.genres.slice(0, 2).join(', ')}</p>
-                  <p>{getPopularityBadge(artist.popularity)} ({artist.popularity}/100)</p>
+                  <p>
+                    {getPopularityBadge(artist.popularity)} ({artist.popularity}
+                    /100)
+                  </p>
                 </div>
-
               </div>
             ))}
           </div>
@@ -345,13 +349,12 @@ const Dashboard = () => {
                   <h3>{album.name}</h3>
                   <p>{album.artists}</p>
                   <p>Released: {album.release_date}</p>
-                  <p>{getPopularityBadge(album.popularity)} ({album.popularity}/100)</p>
+                  <p>
+                    {getPopularityBadge(album.popularity)} ({album.popularity}
+                    /100)
+                  </p>
                   <p>Label: {album.label}</p>
-                  <a
-                    href={album.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={album.url} target="_blank" rel="noopener noreferrer">
                     Listen on Spotify
                   </a>
                 </div>

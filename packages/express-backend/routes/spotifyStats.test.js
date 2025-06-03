@@ -3,14 +3,23 @@ import { jest } from '@jest/globals';
 
 const mockTracksResponse = { data: { items: ['track1', 'track2'] } };
 const mockArtistsResponse = { data: { items: ['artist1', 'artist2'] } };
+const now = new Date().toISOString();
+
 const mockRecentResponse = {
   data: {
     items: [
-      { track: { duration_ms: 123000 } },
-      { track: { duration_ms: 98000 } }
-    ]
-  }
+      {
+        track: { duration_ms: 123000 },
+        played_at: now,
+      },
+      {
+        track: { duration_ms: 98000 },
+        played_at: now,
+      },
+    ],
+  },
 };
+
 
 // Mock the axios module before importing the app
 jest.unstable_mockModule('axios', () => ({
@@ -21,11 +30,11 @@ jest.unstable_mockModule('axios', () => ({
 
 jest.unstable_mockModule('../schemas/WeeklyListening.js', () => ({
   default: {
+    findOne: jest.fn().mockResolvedValue(null),
     findOneAndUpdate: jest.fn().mockResolvedValue({}),
+    create: jest.fn().mockResolvedValue({}),
   },
 }));
-
-
 // Now dynamically import axios and the app
 const axios = (await import('axios')).default;
 const app = (await import('../backend.js')).default;
@@ -70,15 +79,15 @@ describe('Spotify Routes', () => {
 
   test('GET /spotify/stats/recently-played - success', async () => {
     axios.get.mockResolvedValueOnce(mockRecentResponse);
-  
+
     const res = await request(app)
       .get('/spotify/stats/recently-played')
       .set('Authorization', mockToken)
-      .set('x-username', 'unittestuser'); 
-  
+      .set('x-username', 'unittestuser');
+
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(mockRecentResponse.data);
-  });  
+  });
 
   test('GET /spotify/stats/top-tracks - missing token', async () => {
     const res = await request(app).get('/spotify/stats/top-tracks');
@@ -99,7 +108,6 @@ describe('Spotify Routes', () => {
       .set('Authorization', mockToken)
       .set('x-username', 'unittestuser');
 
-
     expect(res.statusCode).toBe(403);
     expect(res.body).toHaveProperty('error', 'Failed to fetch top tracks');
     expect(res.body.details).toEqual({ error: 'Invalid token' });
@@ -112,14 +120,16 @@ describe('Spotify Routes', () => {
         data: { error: 'Invalid token' },
       },
     });
-  
+
     const res = await request(app)
       .get('/spotify/stats/recently-played')
       .set('Authorization', mockToken)
       .set('x-username', 'unittestuser');
-  
+
     expect(res.statusCode).toBe(500);
-    expect(res.body).toHaveProperty('error', 'Failed to fetch recently played tracks');
+    expect(res.body).toHaveProperty(
+      'error',
+      'Failed to fetch recently played tracks'
+    );
   });
-  
 });

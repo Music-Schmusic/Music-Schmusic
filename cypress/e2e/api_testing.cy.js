@@ -1,5 +1,4 @@
 const BACKEND_URL = 'http://127.0.0.1:8000';
-
 describe('Backend API is listening', () => {
   context('Backend loads and runs successfully', () => {
     it('GIVEN the backend is running, WHEN I visit the root endpoint', () => {
@@ -28,10 +27,12 @@ describe('API Sends account recovery email', () => {
             'THEN I receive a status code of 200'
           );
           assert.equal(
-            response.body,
+            response.body.message,
             `Email sent to ${user.email}`,
             'AND an email is sent to the email associated with that account'
           );
+          Cypress.env('token', response.body.token);
+          Cypress.env('csrf', response.body.id);
         }
       );
     });
@@ -85,6 +86,47 @@ describe('API Sends account recovery email', () => {
           `Email does not match`,
           "AND I recive a messsage saying the email doesn't match"
         );
+      });
+    });
+  });
+});
+
+describe('User clicks recovery email', () => {
+  context('Successfully validated', () => {
+    it('Given the user clicks the link and is in the same browser session', () => {
+      cy.visit(`${BACKEND_URL}`);
+      const token = Cypress.env('token');
+      const id = Cypress.env('csrf');
+      cy.log(`Token: ${token}`);
+      cy.log(`CRSFtoken: ${id}`);
+      cy.setCookie('CRSFtoken', id).then(() => {
+        cy.request({
+          method: 'POST',
+          url: `${BACKEND_URL}/resetvalidation`,
+          body: { token },
+          withCredentials: true,
+        }).then((res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body.user, 't3');
+        });
+      });
+    });
+  });
+  context('Not validated', () => {
+    it('Given the user clicks the link and is not in the same browser session', () => {
+      const token = Cypress.env('token');
+      const id = 'NOTTHERIGHTCOOKIE';
+      cy.setCookie('CRSFtoken', id).then(() => {
+        cy.request({
+          method: 'POST',
+          url: `${BACKEND_URL}/resetvalidation`,
+          body: { token },
+          withCredentials: true,
+          failOnStatusCode: false,
+        }).then((res) => {
+          assert.equal(res.status, 401);
+          assert.equal(res.body, 'Invalid Credentials');
+        });
       });
     });
   });

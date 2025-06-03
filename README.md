@@ -10,19 +10,23 @@ Frontend Deployment Link: https://ashy-water-04166691e.6.azurestaticapps.net/
 
 Backend Deployment Link: musicschmusic-d6avcjatgcdtf8b3.westus3-01.azurewebsites.net
 
-Figma Link: https://www.figma.com/team_invite/redeem/LNI3ySfmzrSdn48fP8a2Hb \
+Figma Link: https://www.figma.com/team_invite/redeem/LNI3ySfmzrSdn48fP8a2Hb 
 
-UML: https://lucid.app/lucidchart/862496ad-73c0-4e79-958d-8db5cd017bc2/edit?viewport_loc=-10%2C-10%2C1707%2C844%2C0_0&invitationId=inv_6075f452-37a3-4106-9986-106b4ec9017e \
+UML: https://lucid.app/lucidchart/862496ad-73c0-4e79-958d-8db5cd017bc2/edit?viewport_loc=-10%2C-10%2C1707%2C844%2C0_0&invitationId=inv_6075f452-37a3-4106-9986-106b4ec9017e 
 
-Use Case Diagram: https://lucid.app/lucidchart/6e59db40-5738-41c8-bf19-e89843d0836d/edit?view_items=GJASVEUX6jo5&invitationId=inv_f65cae87-4e53-4e01-9ca8-17606ef9e51a \
+Use Case Diagram: https://lucid.app/lucidchart/6e59db40-5738-41c8-bf19-e89843d0836d/edit?view_items=GJASVEUX6jo5&invitationId=inv_f65cae87-4e53-4e01-9ca8-17606ef9e51a 
 
-Activity UML Diagram: https://lucid.app/lucidchart/2a15c796-0234-4499-9d15-3d2dab03d937/edit?viewport_loc=-11%2C-11%2C665%2C913%2C0_0&invitationId=inv_c944cd61-25db-460e-9d02-2ba6454ae07e \
+Activity UML Diagram: https://lucid.app/lucidchart/2a15c796-0234-4499-9d15-3d2dab03d937/edit?viewport_loc=-11%2C-11%2C665%2C913%2C0_0&invitationId=inv_c944cd61-25db-460e-9d02-2ba6454ae07e 
+
+UML Sequence Diagram: https://lucid.app/lucidchart/5c0c9fa8-7e9f-4eb9-940e-cdb51eb25723/edit?viewport_loc=-1634%2C-744%2C4466%2C2224%2C0_0&invitationId=inv_267fe2b4-09ff-4397-811f-9d5149333bb8 
 
 Spotify Authentication: https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 
 Tech Spec: https://docs.google.com/document/d/1rmt0jja06XbG2fdikjKd7vPXWtoIRsLaYJIko4LYlxQ/edit?usp=sharing\
 
 Acceptance Criteria: https://docs.google.com/document/d/1k2PE1fFzcKwBVmqG2P83pgTkExbzyHHkGJTv9_v_5Mk/edit?usp=sharing
+
+In order to run Cypress API Tests: npm run start:cypress
 
 Code Coverage Report as of 03/13/25\
 <img width="709" alt="Screenshot 2025-03-14 at 2 22 42 AM" src="https://github.com/user-attachments/assets/a1ff0a59-a9fd-4c0d-8c1d-bcb667ab63ce" />

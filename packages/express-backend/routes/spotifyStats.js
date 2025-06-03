@@ -3,8 +3,6 @@ import axios from 'axios';
 import WeeklyListening from '../schemas/WeeklyListening.js';
 import authenticateUser from '../authMiddleware.js';
 
-
-
 const router = express.Router();
 
 // Middleware to check for Spotify token
@@ -83,41 +81,57 @@ router.get('/top-artists', checkSpotifyToken, async (req, res) => {
 // Get user's recently played tracks
 router.get('/recently-played', checkSpotifyToken, async (req, res) => {
   try {
-    const username = req.headers['x-username']; // Sent from frontend
+    const username = req.headers['x-username'];
     if (!username) {
       return res.status(400).json({ error: 'Missing username in headers' });
     }
-
-    console.log('Fetching recently played with token:', req.spotifyToken.substring(0, 10) + '...');
 
     const response = await axios.get(
       'https://api.spotify.com/v1/me/player/recently-played?limit=50',
       {
         headers: {
           Authorization: `Bearer ${req.spotifyToken}`,
-          'Content-Type': 'application/json',
         },
       }
     );
 
-    const totalMs = response.data.items.reduce(
-      (acc, item) => acc + item.track.duration_ms,
-      0
-    );
-
-    // Get the start of the current week (Sunday)
     const now = new Date();
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
-    await WeeklyListening.findOneAndUpdate(
-      { username, weekStart: startOfWeek },
-      { $inc: { durationMs: totalMs } },
-      { upsert: true, new: true }
-    );
+    let record = await WeeklyListening.findOne({
+      username,
+      weekStart: startOfWeek,
+    });
 
-    res.json(response.data);
+    const lastUpdated = record?.lastUpdated ?? new Date(0);
+
+    const newTracks = response.data.items.filter(
+      (item) => new Date(item.played_at) > lastUpdated
+    );
+    
+    const deltaMs = newTracks.reduce(
+      (acc, item) => acc + item.track.duration_ms,
+      0
+    );
+    
+
+    if (!record) {
+      await WeeklyListening.create({
+        username,
+        weekStart: startOfWeek,
+        durationMs: deltaMs,
+        lastUpdated: now,
+      });
+    } else {
+      record.durationMs += deltaMs;
+      record.lastUpdated = now;
+      await record.save();
+    }
+
+    // res.json({ items: newTracks });
+    res.json({ items: response.data.items })
   } catch (error) {
     console.error('Error fetching recently played:', error.message);
     res.status(500).json({ error: 'Failed to fetch recently played tracks' });
@@ -141,11 +155,10 @@ router.get('/listening-history', async (req, res) => {
 
     res.json(history);
   } catch (err) {
-    console.error("Error fetching listening history:", err);
-    res.status(500).json({ error: "Failed to fetch listening history" });
+    console.error('Error fetching listening history:', err);
+    res.status(500).json({ error: 'Failed to fetch listening history' });
   }
 });
-
 
 // Get user's playlists
 router.get('/playlists', checkSpotifyToken, async (req, res) => {
@@ -184,7 +197,9 @@ router.post('/test-insert-week', authenticateUser, async (req, res) => {
   const username = req.user.username;
 
   const startOfWeek = new Date();
-  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() - (7 * weekOffset));
+  startOfWeek.setDate(
+    startOfWeek.getDate() - startOfWeek.getDay() - 7 * weekOffset
+  );
   startOfWeek.setHours(0, 0, 0, 0);
 
   try {
@@ -203,7 +218,10 @@ router.post('/test-insert-week', authenticateUser, async (req, res) => {
 // Get user's top albums (based on top tracks)
 router.get('/top-albums', checkSpotifyToken, async (req, res) => {
   try {
-    console.log('Fetching top albums with token:', req.spotifyToken.substring(0, 10) + '...');
+    console.log(
+      'Fetching top albums with token:',
+      req.spotifyToken.substring(0, 10) + '...'
+    );
 
     const topTracksRes = await axios.get(
       'https://api.spotify.com/v1/me/top/tracks?limit=50',
@@ -216,24 +234,28 @@ router.get('/top-albums', checkSpotifyToken, async (req, res) => {
     );
 
     // Extract unique album IDs
-    const albumIds = [...new Set(topTracksRes.data.items.map(track => track.album.id))].slice(0, 5);
+    const albumIds = [
+      ...new Set(topTracksRes.data.items.map((track) => track.album.id)),
+    ].slice(0, 5);
 
     // Fetch full album data for each
     const albumDetails = await Promise.all(
-      albumIds.map(id =>
-        axios.get(`https://api.spotify.com/v1/albums/${id}`, {
-          headers: {
-            Authorization: `Bearer ${req.spotifyToken}`,
-          },
-        }).then(res => res.data)
+      albumIds.map((id) =>
+        axios
+          .get(`https://api.spotify.com/v1/albums/${id}`, {
+            headers: {
+              Authorization: `Bearer ${req.spotifyToken}`,
+            },
+          })
+          .then((res) => res.data)
       )
     );
 
-    const formattedAlbums = albumDetails.map(album => ({
+    const formattedAlbums = albumDetails.map((album) => ({
       id: album.id,
       name: album.name,
       image: album.images[0]?.url,
-      artists: album.artists.map(a => a.name).join(', '),
+      artists: album.artists.map((a) => a.name).join(', '),
       release_date: album.release_date,
       total_tracks: album.total_tracks,
       label: album.label,
@@ -242,16 +264,16 @@ router.get('/top-albums', checkSpotifyToken, async (req, res) => {
     }));
 
     res.json({ items: formattedAlbums });
-
   } catch (error) {
-    console.error('Error fetching top albums:', error.response?.data || error.message);
+    console.error(
+      'Error fetching top albums:',
+      error.response?.data || error.message
+    );
     res.status(error.response?.status || 500).json({
       error: 'Failed to fetch top albums',
       details: error.response?.data || error.message,
     });
   }
 });
-
-
 
 export default router;

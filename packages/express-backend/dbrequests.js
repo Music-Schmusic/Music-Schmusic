@@ -94,6 +94,12 @@ async function updatePassword(username, newpassword) {
   return updated;
 }
 
+async function deleteUser(username) {
+  const db = await getdbcon();
+  const usermodel = db.model('User', AccountSchema);
+  await usermodel.deleteOne(username);
+}
+
 export default {
   getAccount,
   addAccount,
@@ -104,4 +110,5 @@ export default {
   setDataBaseConn,
   setPrivacyState,
   updatePassword,
+  deleteUser
 };

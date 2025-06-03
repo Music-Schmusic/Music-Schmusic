@@ -6,6 +6,7 @@
     "dotenv-cli": "^8.0.0",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-cypress": "^5.0.0",
     "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
@@ -23,6 +24,7 @@
   "scripts": {
     "start:frontend": "cd ./packages/react-frontend && npm run dev",
     "start:backend": "cd ./packages/express-backend && npm run dev",
+    "start:cypress": "cd ./packages/express-backend && npm run dev:cypress",
     "start": "cross-env Runtime=development npm-run-all --parallel start:frontend start:backend",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules Runtime=test dotenv -e packages/express-backend/.env.test -- jest --coverage --coverageReporters=text",
     "format": "prettier --write .",

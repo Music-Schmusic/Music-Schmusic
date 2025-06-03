@@ -39,7 +39,7 @@ router.post('/generate', async (req, res) => {
       instances: [
         {
           prompt:
-            'Generate a creative playlist cover image based on the genres: bunny.',
+            'Generate a creative playlist cover image based on the genres: Metal, and Country',
         },
       ],
       parameters: { sampleCount: 1, aspectRatio: '1:1' },

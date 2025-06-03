@@ -121,6 +121,12 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.post('/test-utils/delete-user', async (req, res) => {
+  const { username } = req.body;
+  await dbrequests.deleteUser({ username });
+  res.status(200).json({ message: 'Test user deleted' });
+});
+
 app.post('/accountrecovery', async (req, res) => {
   const id = crypto.randomBytes(32).toString('hex');
   res.cookie('CRSFtoken', id, {
@@ -152,7 +158,11 @@ app.post('/accountrecovery', async (req, res) => {
       'Password Recovery'
     );
 
-    res.status(200).send(`Email sent to ${email}`);
+    if (process.env.Runtime == 'cypress') {
+      res.status(200).send({ message: `Email sent to ${email}`, token, id });
+    } else {
+      res.status(200).send(`Email sent to ${email}`);
+    }
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error.message);
@@ -166,6 +176,8 @@ app.post('/resetvalidation', async (req, res) => {
 
   try {
     const record = await dbrequests.getRecoveryToken(token);
+    console.log('From request: ', CRSFtoken);
+    console.log('Expected: ', record.CRSFtoken);
     if (
       record &&
       token === record.token &&
