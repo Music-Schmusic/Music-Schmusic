@@ -15,6 +15,7 @@ import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import spotifySearch from './routes/spotifySearch.js';
 
 console.log('backend.js starting up');
 dotenv.config();
@@ -79,6 +80,7 @@ app.use(cookieParser());
 app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
+app.use('/spotify/recommend', spotifySearch);
 
 app.get('/', (req, res) => res.status(200).send('API Running'));
 
@@ -119,19 +121,29 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/test-utils/delete-user', async (req, res) => {
-  const { username } = req.body;
-  await dbrequests.deleteUser({ username });
-  res.status(200).json({ message: 'Test user deleted' });
-});
+if (process.env.Runtime == 'cypress') {
+  app.post('/test-utils/delete-user', async (req, res) => {
+    const { username } = req.body;
+    await dbrequests.deleteUser({ username });
+    res.status(200).json({ message: 'Test user deleted' });
+  });
+}
 
 app.post('/accountrecovery', async (req, res) => {
   const id = crypto.randomBytes(32).toString('hex');
-  res.cookie('CRSFtoken', id, {
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: false,
-  });
+  if (req.hostname == 'localhost' || req.hostname == '127.0.0.1') {
+    res.cookie('CRSFtoken', id, {
+      httpOnly: true,
+      sameSite: 'Strict',
+      secure: false,
+    });
+  } else {
+    res.cookie('CRSFtoken', id, {
+      httpOnly: true,
+      sameSite: 'None',
+      secure: true,
+    });
+  }
 
   try {
     const { username, email } = req.body;

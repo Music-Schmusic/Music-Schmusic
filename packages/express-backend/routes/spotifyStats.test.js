@@ -20,7 +20,6 @@ const mockRecentResponse = {
   },
 };
 
-
 // Mock the axios module before importing the app
 jest.unstable_mockModule('axios', () => ({
   default: {
