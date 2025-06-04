@@ -15,6 +15,7 @@ import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import playlistRecommendRoutes from './routes/playlistRecommendRoutes.js';
 import spotifySearch from './routes/spotifySearch.js';
 
 console.log('backend.js starting up');
@@ -80,6 +81,7 @@ app.use(cookieParser());
 app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
+app.use('/api/playlist-recommendations', playlistRecommendRoutes);
 app.use('/spotify/recommend', spotifySearch);
 
 app.get('/', (req, res) => res.status(200).send('API Running'));
@@ -131,6 +133,14 @@ if (process.env.Runtime == 'cypress') {
     const { username } = req.body;
     await dbrequests.deleteUser({ username });
     res.status(200).json({ message: 'Test user deleted' });
+  });
+  app.post('/test-utils/add-token', async (req, res) => {
+    await dbrequests.addRecoveryToken(req.body);
+    res.status(200).json({ message: 'Test token created' });
+  });
+  app.post('/test-utils/delete-token', async (req, res) => {
+    await dbrequests.deleteRecoveryToken(req.body);
+    res.status(200).json({ message: 'Test token created' });
   });
 }
 

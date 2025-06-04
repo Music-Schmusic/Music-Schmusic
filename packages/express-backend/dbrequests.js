@@ -98,6 +98,14 @@ async function deleteUser(username) {
   const db = await getdbcon();
   const usermodel = db.model('User', AccountSchema);
   await usermodel.deleteOne(username);
+  return 0;
+}
+
+async function deleteRecoveryToken(token) {
+  const db = await getdbcon();
+  const tokenmodel = db.model('RecoveryTokens', RecoveryToken);
+  await tokenmodel.deleteOne(token);
+  return 0;
 }
 
 export default {
@@ -111,4 +119,5 @@ export default {
   setPrivacyState,
   updatePassword,
   deleteUser,
+  deleteRecoveryToken,
 };
