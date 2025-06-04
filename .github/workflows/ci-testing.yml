@@ -12,7 +12,7 @@ jobs:
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
-      GAI_KEY: ${{secrets.GAI_KEY}}
+      GAI_KEY: ${secrets.GAI_KEY}
 
     steps:
       - uses: actions/checkout@v4
