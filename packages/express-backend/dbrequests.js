@@ -105,7 +105,7 @@ async function deleteRecoveryToken(token) {
   const db = await getdbcon();
   const tokenmodel = db.model('RecoveryTokens', RecoveryToken);
   await tokenmodel.deleteOne(token);
-  return 0
+  return 0;
 }
 
 export default {
@@ -119,5 +119,5 @@ export default {
   setPrivacyState,
   updatePassword,
   deleteUser,
-  deleteRecoveryToken
+  deleteRecoveryToken,
 };
