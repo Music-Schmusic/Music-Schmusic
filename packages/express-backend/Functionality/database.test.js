@@ -3,6 +3,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import db_req from '../dbrequests.js';
 import connectDB from '../db.js';
 import { jest } from '@jest/globals';
+import account from './account.js';
 jest.setTimeout(120000);
 
 let mongoServer;
@@ -99,4 +100,33 @@ test('get recovery token', async () => {
   expect(res.expiration.getTime()).toBe(date);
   expect(res.CRSFtoken).toBe(token.CRSFtoken);
   expect(res.user).toBe(token.user);
+});
+
+test('delete user', async () => {
+  process.env.Runtime = 'development';
+  process.env.MONGO_URI = mongoServer.getUri();
+  await connectDB();
+  const user = await account.createAccount({
+    username: 'deletemePLEASE',
+    email: 'test@gmail.com',
+    password: 'Password123!',
+  });
+  await db_req.addAccount(user);
+  const res = await db_req.deleteUser({ username: user.username });
+  expect(res).toBe(0);
+});
+
+test('delete token', async () => {
+  process.env.Runtime = 'development';
+  process.env.MONGO_URI = mongoServer.getUri();
+  await connectDB();
+  const token = {
+    user: 'deletemePLEASE',
+    token: 'test@gmail.com',
+    CRSFtoken: 'AOUBSFOSDFASDAgsdfhstfjd',
+    expiration: Date.now(),
+  };
+  await db_req.addRecoveryToken(token);
+  const res = await db_req.deleteRecoveryToken({ token: token.token });
+  expect(res).toBe(0);
 });
