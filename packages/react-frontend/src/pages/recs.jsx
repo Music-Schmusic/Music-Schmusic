@@ -142,7 +142,8 @@ const Recommended = () => {
 
           <div className="playlist-box" style={{ marginTop: '10px' }}>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {coverImage ? (
+            {loading ? <div className="loading-spinner song-spinner" /> : ''}
+            {coverImage && !loading ? (
               <img
                 src={coverImage}
                 alt="AI Generated Playlist Cover"
