@@ -4,17 +4,44 @@ import './recs.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const Recommended = () => {
-  // state for AI cover
+  // 1. Create local state for the cover image
   const [coverImage, setCoverImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [recommends, setRecommends] = useState([]);
+  const [isFetchingSongs, setIsFetchingSongs] = useState(true);
+  const [loadingSongIndexes, setLoadingSongIndexes] = useState([]);
 
-  //  state for playlist recommendations
-  const [recommendations, setRecommendations] = useState([]);
-  const [recLoading, setRecLoading] = useState(false);
-  const [recError, setRecError] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const spotifyToken = localStorage.getItem('spotifyToken');
+        if (!spotifyToken) {
+          setIsFetchingSongs(false);
+          return;
+        }
 
-  // AI cover fetch function
+        const headers = {
+          Authorization: `Bearer ${spotifyToken}`,
+          'x-username': localStorage.getItem('username'),
+        };
+
+        const recommendedSongs = await axios.get(
+          `${API_URL}/spotify/recommend`,
+          { headers }
+        );
+
+        setRecommends(recommendedSongs.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsFetchingSongs(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // 2. Create the same AI cover fetch function
   const getAICover = async () => {
     setLoading(true);
     setError(null);
@@ -63,38 +90,6 @@ const Recommended = () => {
       console.error('Failed to respin:', err);
     } finally {
       setLoadingSongIndexes((prev) => prev.filter((i) => i !== index));
-    }
-  };
-
-  // Function to fetch playlist recommendations (static for now)
-  const getRecommendations = () => {
-    setRecLoading(true);
-    setRecError(null);
-    try {
-      // Static sample data
-      const staticRecs = [
-        {
-          title: 'Rock Anthem',
-          artist: 'Band A',
-          spotifyUrl: 'https://open.spotify.com/track/trackId1',
-        },
-        {
-          title: 'Hip Hop Beat',
-          artist: 'Artist B',
-          spotifyUrl: 'https://open.spotify.com/track/trackId2',
-        },
-        {
-          title: 'Metal Riff',
-          artist: 'Group C',
-          spotifyUrl: 'https://open.spotify.com/track/trackId3',
-        },
-      ];
-      setRecommendations(staticRecs);
-    } catch (err) {
-      console.error('Error fetching recommendations:', err);
-      setRecError('Failed to load recommendations.');
-    } finally {
-      setRecLoading(false);
     }
   };
 
@@ -174,39 +169,6 @@ const Recommended = () => {
               />
             ) : (
               !loading && <span style={{ fontSize: '2rem' }}>?</span>
-            )}
-          </div>
-        </section>
-
-        {/* New Column: Generated Recommendations */}
-        <section
-          className="playlist-recommendations"
-          style={{ padding: '0 20px' }}
-        >
-          <h2>Generated Playlist</h2>
-          <button onClick={getRecommendations} disabled={recLoading}>
-            {recLoading ? 'Loading...' : 'Get Recommendations'}
-          </button>
-
-          <div style={{ marginTop: '10px' }}>
-            {recError && <p style={{ color: 'red' }}>{recError}</p>}
-            {recommendations.length > 0 ? (
-              <ul>
-                {recommendations.map((song, i) => (
-                  <li key={i} style={{ marginBottom: '0.5rem' }}>
-                    <strong>{song.title}</strong> — {song.artist}{' '}
-                    <a
-                      href={song.spotifyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Listen
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              !recLoading && <span style={{ fontSize: '2rem' }}>?</span>
             )}
           </div>
         </section>
