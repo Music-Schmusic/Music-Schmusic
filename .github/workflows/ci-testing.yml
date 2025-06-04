@@ -21,14 +21,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Write GAI_KEY to file
-        run: |
-          echo "${{ secrets.GAI_KEY }}" > gai-key.json
-        shell: bash
-
-      - name: Set GOOGLE_APPLICATION_CREDENTIALS env var
-        run: echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gai-key.json" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: npm ci
 
