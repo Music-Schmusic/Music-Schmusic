@@ -3,3 +3,4 @@ node_modules/
 .vs/
 packages/express-backend/auth/spotify-stat-ai-8587b4801d2d.json
 cypress.env.json
+package-lock.json

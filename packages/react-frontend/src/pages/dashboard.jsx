@@ -81,6 +81,11 @@ const Dashboard = () => {
     { name: 'This Week', timeSpent: 0 },
   ]);
 
+  // AI cover state
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverLoading, setCoverLoading] = useState(false);
+  const [coverError, setCoverError] = useState(null);
+
   const handleConnectSpotify = async () => {
     const verifier = generateCodeVerifier();
     const challenge = await generateCodeChallenge(verifier);
@@ -196,6 +201,27 @@ const Dashboard = () => {
 
     fetchData();
   }, []);
+
+  // Generate AI cover based on top 3 genres
+  const generateCover = async () => {
+    const top3 = genreData
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 3)
+      .map((g) => g.name);
+    setCoverLoading(true);
+    setCoverError(null);
+    try {
+      const res = await axios.post(`${API_URL}/api/playlist-cover/generate`, {
+        genres: top3,
+      });
+      setCoverImage(res.data.image);
+    } catch (err) {
+      console.error(err);
+      setCoverError('Failed to generate cover');
+    } finally {
+      setCoverLoading(false);
+    }
+  };
 
   const formatYAxis = (value) => {
     const hours = Math.floor(value);
@@ -428,6 +454,30 @@ const Dashboard = () => {
         <h1>Your Music Dashboard</h1>
         <h5>Gain insights into your listening habits and discover trends.</h5>
       </div>
+
+      {/* AI Cover Section */}
+      <section
+        className="ai-cover-section"
+        style={{ textAlign: 'center', margin: '2rem 0' }}
+      >
+        <h1>AI Playlist Cover</h1>
+        <button onClick={generateCover} disabled={coverLoading}>
+          {coverLoading ? 'Generating…' : 'Generate Cover from Top Genres'}
+        </button>
+        {coverError && <p style={{ color: 'red' }}>{coverError}</p>}
+        {coverImage && (
+          <img
+            src={coverImage}
+            alt="AI Cover"
+            style={{
+              maxWidth: '300px',
+              marginTop: '1rem',
+              borderRadius: '8px',
+            }}
+          />
+        )}
+      </section>
+
       <div className="sections-container">
         {/* Top Tracks Section */}
         <section className="top-tracks">

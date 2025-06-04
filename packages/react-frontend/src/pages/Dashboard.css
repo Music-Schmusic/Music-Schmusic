@@ -128,7 +128,9 @@
 
 .dashboard-content h1 {
   color: #fff;
-  margin-bottom: 1rem;
+  margin: 0 auto 1rem auto;
+  width: 100%;
+  text-align: center;
 }
 
 .dashboard-content h5 {
