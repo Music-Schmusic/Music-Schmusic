@@ -542,9 +542,7 @@ const Dashboard = () => {
               >
                 <img
                   src={
-                    playlist.image
-                      ? playlist.images[0]?.url
-                      : 'react-frontend/public/pfp.png'
+                    playlist.images?.[0]?.url || process.env.PUBLIC_URL + '/pfp.png'
                   }
                   alt={playlist.name}
                   className="music-image"

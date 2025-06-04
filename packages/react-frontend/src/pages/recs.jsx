@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import "./recs.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const Recommended = () => {
@@ -8,31 +9,34 @@ const Recommended = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [recommends, setRecommends] = useState([]);
+  const [isFetchingSongs, setIsFetchingSongs] = useState(true);
+  const [loadingSongIndexes, setLoadingSongIndexes] = useState([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const spotifyToken = localStorage.getItem('spotifyToken');
         if (!spotifyToken) {
-          setLoading(false);
+          setIsFetchingSongs(false);
           return;
         }
-
+  
         const headers = {
           Authorization: `Bearer ${spotifyToken}`,
           'x-username': localStorage.getItem('username'),
         };
-
+  
         const recommendedSongs = await axios.get(
           `${API_URL}/spotify/recommend`,
           { headers }
         );
-
+  
         setRecommends(recommendedSongs.data);
-        console.log(recommends);
-        console.log('^ recommends');
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsFetchingSongs(false);
       }
     };
     fetchData();
@@ -60,6 +64,35 @@ const Recommended = () => {
     }
   };
 
+  const handleRemove = (index) => {
+    setRecommends((prev) => prev.filter((_, i) => i !== index));
+  };
+  
+  const handleRespin = async (index) => {
+    setLoadingSongIndexes((prev) => [...prev, index]);
+    try {
+      const spotifyToken = localStorage.getItem('spotifyToken');
+      const headers = {
+        Authorization: `Bearer ${spotifyToken}`,
+        'x-username': localStorage.getItem('username'),
+      };
+  
+      const response = await axios.get(`${API_URL}/spotify/recommend`, {
+        headers,
+      });
+  
+      const newTrack = response.data[Math.floor(Math.random() * response.data.length)];
+  
+      setRecommends((prev) =>
+        prev.map((item, i) => (i === index ? newTrack : item))
+      );
+    } catch (err) {
+      console.error('Failed to respin:', err);
+    } finally {
+      setLoadingSongIndexes((prev) => prev.filter((i) => i !== index));
+    }
+  };  
+
   return (
     <div className="recommended-container">
       <header className="header">
@@ -70,15 +103,34 @@ const Recommended = () => {
         {/* Left Column: Recommended Songs */}
         <section className="recommended-songs">
           <h2>Recommended Songs</h2>
-          <ul>
-            {recommends.map((item, index) => (
-              <li key={item.id}>
-                <a href={item.url} target="_blank" rel="noopener noreferrer">
-                  {item.name + ' | ' + item.artist}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div className="song-grid">
+            {isFetchingSongs ? (
+              <div className="mini-spinner-container">
+                <div className="loading-spinner" />
+                <p>Loading recommendations...</p>
+              </div>
+            ) : (
+              recommends.map((item, index) => (
+                <div key={item.id || index} className="song-card">
+                  {loadingSongIndexes.includes(index) ? (
+                    <div className="loading-spinner song-spinner" />
+                  ) : (
+                    <>
+                      <div className="song-details">
+                        <h3>{item.name}</h3>
+                        <p>{item.artist}</p>
+                        <div className="song-actions">
+                          <button className="remove" onClick={() => handleRemove(index)}>Remove</button>
+                          <button className="respin" onClick={() => handleRespin(index)}>Respin</button>
+                        </div>
+                      </div>
+                      <img src={item.image} alt={item.name} className="song-cover" />
+                    </>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
         </section>
 
         {/* Center: AI Playlist Cover */}
