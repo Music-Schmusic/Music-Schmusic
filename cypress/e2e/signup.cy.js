@@ -10,8 +10,8 @@ describe('Signup User', () => {
       cy.get('form').within(() => {
         cy.get('input[name="username"]').type('CypressTestingUser');
         cy.get('input[name="email"]').type('CypressTest@gmail.com');
-        cy.get('input[name="password"]').type('CypressPassword');
-        cy.get('input[name="confirmPassword"]').type('CypressPassword');
+        cy.get('input[name="password"]').type('CypressPassword1!');
+        cy.get('input[name="confirmPassword"]').type('CypressPassword1!');
         cy.get('button[type="submit"]').click();
       });
       cy.wait('@signup');
@@ -33,14 +33,36 @@ describe('Signup User', () => {
       cy.get('form').within(() => {
         cy.get('input[name="username"]').type('CypressTestingUser');
         cy.get('input[name="email"]').type('CypressTest@gmail.com');
-        cy.get('input[name="password"]').type('CypressPassword');
-        cy.get('input[name="confirmPassword"]').type('CypressPassword2');
+        cy.get('input[name="password"]').type('CypressPassword1!');
+        cy.get('input[name="confirmPassword"]').type('CypressPassword2!');
         cy.get('button[type="submit"]').click();
       });
       cy.log(
         'THEN I am shown an error telling me that my passwords did not match'
       );
       cy.contains('Passwords do not match').should('be.visible');
+    });
+  });
+
+  context('Unsuccessful signup - Password does not meet requirement', () => {
+    it('GIVEN I navigate to the signup Page', () => {});
+
+    it('WHEN I enter a unique username that is not in the database, a valid email, and two different passwords', () => {
+      cy.visit('http://localhost:5173/signup');
+      cy.intercept('POST', 'http://127.0.0.1:8000/signup').as('signup');
+      cy.get('form').within(() => {
+        cy.get('input[name="username"]').type('CypressTestingUser');
+        cy.get('input[name="email"]').type('CypressTest@gmail.com');
+        cy.get('input[name="password"]').type('CypressPassword');
+        cy.get('input[name="confirmPassword"]').type('CypressPassword');
+        cy.get('button[type="submit"]').click();
+      });
+      cy.log(
+        "THEN I am shown an error telling me that my password wasn't strong enough"
+      );
+      cy.contains(
+        'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and one special character'
+      ).should('be.visible');
     });
   });
 
@@ -53,8 +75,8 @@ describe('Signup User', () => {
       cy.get('form').within(() => {
         cy.get('input[name="username"]').type('CypressTestingUser');
         cy.get('input[name="email"]').type('CypressTest@gmail.com');
-        cy.get('input[name="password"]').type('CypressPassword2');
-        cy.get('input[name="confirmPassword"]').type('CypressPassword2');
+        cy.get('input[name="password"]').type('CypressPassword2!');
+        cy.get('input[name="confirmPassword"]').type('CypressPassword2!');
         cy.get('button[type="submit"]').click();
       });
       cy.log(

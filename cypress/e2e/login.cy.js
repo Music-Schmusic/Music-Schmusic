@@ -4,6 +4,8 @@ describe('Login User', () => {
     it('GIVEN I navigate to the Login Page', () => {});
 
     it('WHEN I enter a valid username that is in the database and the password associated with it', () => {
+      //Note t3 is a legacy account and password wont meet requirements when creating new accounts as of 6/3/2025
+      //Doesn't affect the validity of the test 
       const password = Cypress.env('password');
       cy.visit('http://localhost:5173/login');
       cy.intercept('POST', 'http://127.0.0.1:8000/login').as('login');
