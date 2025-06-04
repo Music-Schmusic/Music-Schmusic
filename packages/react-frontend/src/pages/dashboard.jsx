@@ -16,6 +16,7 @@ import axios from 'axios';
 import '../components/Dashboard.css';
 import FavoriteGenreTile from '../components/FavoriteGenreTile';
 const API_URL = import.meta.env.VITE_API_URL;
+const PUBLIC_URL = import.meta.env.PUBLIC_URL;
 
 // PKCE helper functions
 function generateCodeVerifier(length = 128) {
@@ -574,9 +575,7 @@ const Dashboard = () => {
                 style={{ cursor: 'pointer' }}
               >
                 <img
-                  src={
-                    playlist.images?.[0]?.url || process.env.PUBLIC_URL + '/pfp.png'
-                  }
+                  src={playlist.images?.[0]?.url || PUBLIC_URL + '/pfp.png'}
                   alt={playlist.name}
                   className="music-image"
                 />

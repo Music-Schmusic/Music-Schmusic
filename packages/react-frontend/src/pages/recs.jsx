@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import "./recs.css";
+import './recs.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const Recommended = () => {
@@ -12,7 +12,6 @@ const Recommended = () => {
   const [isFetchingSongs, setIsFetchingSongs] = useState(true);
   const [loadingSongIndexes, setLoadingSongIndexes] = useState([]);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,17 +20,17 @@ const Recommended = () => {
           setIsFetchingSongs(false);
           return;
         }
-  
+
         const headers = {
           Authorization: `Bearer ${spotifyToken}`,
           'x-username': localStorage.getItem('username'),
         };
-  
+
         const recommendedSongs = await axios.get(
           `${API_URL}/spotify/recommend`,
           { headers }
         );
-  
+
         setRecommends(recommendedSongs.data);
       } catch (error) {
         console.log(error);
@@ -67,7 +66,7 @@ const Recommended = () => {
   const handleRemove = (index) => {
     setRecommends((prev) => prev.filter((_, i) => i !== index));
   };
-  
+
   const handleRespin = async (index) => {
     setLoadingSongIndexes((prev) => [...prev, index]);
     try {
@@ -76,13 +75,14 @@ const Recommended = () => {
         Authorization: `Bearer ${spotifyToken}`,
         'x-username': localStorage.getItem('username'),
       };
-  
+
       const response = await axios.get(`${API_URL}/spotify/recommend`, {
         headers,
       });
-  
-      const newTrack = response.data[Math.floor(Math.random() * response.data.length)];
-  
+
+      const newTrack =
+        response.data[Math.floor(Math.random() * response.data.length)];
+
       setRecommends((prev) =>
         prev.map((item, i) => (i === index ? newTrack : item))
       );
@@ -91,7 +91,7 @@ const Recommended = () => {
     } finally {
       setLoadingSongIndexes((prev) => prev.filter((i) => i !== index));
     }
-  };  
+  };
 
   return (
     <div className="recommended-container">
@@ -120,11 +120,25 @@ const Recommended = () => {
                         <h3>{item.name}</h3>
                         <p>{item.artist}</p>
                         <div className="song-actions">
-                          <button className="remove" onClick={() => handleRemove(index)}>Remove</button>
-                          <button className="respin" onClick={() => handleRespin(index)}>Respin</button>
+                          <button
+                            className="remove"
+                            onClick={() => handleRemove(index)}
+                          >
+                            Remove
+                          </button>
+                          <button
+                            className="respin"
+                            onClick={() => handleRespin(index)}
+                          >
+                            Respin
+                          </button>
                         </div>
                       </div>
-                      <img src={item.image} alt={item.name} className="song-cover" />
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="song-cover"
+                      />
                     </>
                   )}
                 </div>
