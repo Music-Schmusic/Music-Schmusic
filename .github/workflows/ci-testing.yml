@@ -12,7 +12,6 @@ jobs:
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
-      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gai-key.json
 
     steps:
       - uses: actions/checkout@v4
@@ -26,6 +25,9 @@ jobs:
         run: |
           echo "${{ secrets.GAI_KEY }}" > gai-key.json
         shell: bash
+
+      - name: Set GOOGLE_APPLICATION_CREDENTIALS env var
+        run: echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gai-key.json" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: npm ci
