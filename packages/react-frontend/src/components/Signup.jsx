@@ -53,6 +53,13 @@ const Signup = () => {
       if (err.status === 409) {
         console.log('Username already in use');
         setError('Username already in use');
+      } else if (err.status === 406) {
+        console.log(
+          'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+        );
+        setError(
+          'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+        );
       } else {
         setError(err.response?.data?.message || 'Sign Up failed');
       }

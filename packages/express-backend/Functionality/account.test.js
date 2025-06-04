@@ -31,9 +31,9 @@ afterEach(async () => {
 });
 
 test('Hash password', () => {
-  const target = src.hashPassword('examplePassword');
+  const target = src.hashPassword('examplePassword1!');
   const result =
-    'c668bfca4f595524053592d642cf97373d4fc778372bbd2364fbbe1b4b9eaafd';
+    'be54fba43cbfd044155e7a681dfecd7689533452ab15df47e2f16866b102465e';
   expect(target).toBe(result);
 });
 
@@ -41,7 +41,7 @@ test('Create account with nothing in database', async () => {
   const body = {
     username: 'testuser2',
     email: 'user2@example.com',
-    password: 'examplePassword2',
+    password: 'examplePassword1!',
   };
 
   const target = await src.createAccount(body);
@@ -50,7 +50,7 @@ test('Create account with nothing in database', async () => {
   expect(target.username).toBe(body.username);
   expect(target.email).toBe(body.email);
   expect(target.password).toBe(
-    '032de0b851df44c2e1eb09c0237e8fc9669c239d4c58f91c6a8d68084772607b'
+    'be54fba43cbfd044155e7a681dfecd7689533452ab15df47e2f16866b102465e'
   );
 });
 
@@ -58,7 +58,7 @@ test('Create account with user in database', async () => {
   const existinguser = {
     username: 'testuser',
     email: 'user@example.com',
-    password: src.hashPassword('examplePassword'),
+    password: src.hashPassword('examplePassword1!'),
     following: [],
     blocked: [],
     privacyStatus: 'Private',
@@ -69,7 +69,7 @@ test('Create account with user in database', async () => {
   const body = {
     username: 'testuser2',
     email: 'user2@example.com',
-    password: 'examplePassword2',
+    password: 'examplePassword1!',
   };
 
   const target = await src.createAccount(body);
@@ -78,7 +78,7 @@ test('Create account with user in database', async () => {
   expect(target.username).toBe(body.username);
   expect(target.email).toBe(body.email);
   expect(target.password).toBe(
-    '032de0b851df44c2e1eb09c0237e8fc9669c239d4c58f91c6a8d68084772607b'
+    'be54fba43cbfd044155e7a681dfecd7689533452ab15df47e2f16866b102465e'
   );
 });
 
@@ -86,7 +86,7 @@ test('Attempt to create account with username already in use', async () => {
   const existinguser = {
     username: 'testuser2',
     email: 'user@example.com',
-    password: src.hashPassword('examplePassword'),
+    password: src.hashPassword('examplePassword!2'),
     following: [],
     blocked: [],
     privacyStatus: 'Private',
@@ -97,7 +97,7 @@ test('Attempt to create account with username already in use', async () => {
   const body = {
     username: 'testuser2',
     email: 'user2@example.com',
-    password: 'examplePassword2',
+    password: 'examplePassword2!',
   };
 
   await expect(src.createAccount(body)).rejects.toThrow(
@@ -105,17 +105,69 @@ test('Attempt to create account with username already in use', async () => {
   );
 });
 
+test('Attempt to create account with bad password strength', async () => {
+  const body1 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: 'abcdefghi',
+  };
+  const body2 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: 'abcdefghi1',
+  };
+  const body3 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: 'abcdefghi!',
+  };
+  const body4 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '12345678!',
+  };
+  const body5 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '12345678!a',
+  };
+  const body6 = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '12345678!A',
+  };
+
+  await expect(src.createAccount(body1)).rejects.toThrow(
+    'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+  );
+  await expect(src.createAccount(body2)).rejects.toThrow(
+    'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+  );
+  await expect(src.createAccount(body3)).rejects.toThrow(
+    'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+  );
+  await expect(src.createAccount(body4)).rejects.toThrow(
+    'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+  );
+  await expect(src.createAccount(body5)).rejects.toThrow(
+    'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+  );
+  await expect(src.createAccount(body6)).rejects.toThrow(
+    'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+  );
+});
+
 test('Successful login', async () => {
   const body = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const account = await src.createAccount(body);
 
   await db_req.addAccount(account);
 
-  const target = await src.login('testuser', '1234forever');
+  const target = await src.login('testuser', '1234Forever!');
   const result = { username: 'testuser', email: 'user@example.com' };
 
   expect(target).toStrictEqual(result);
@@ -125,14 +177,14 @@ test('failed login', async () => {
   const body = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
 
   const account = await src.createAccount(body);
 
   await db_req.addAccount(account);
 
-  await expect(src.login('testuser', '1234never')).rejects.toThrow(
+  await expect(src.login('testuser', '1234never!')).rejects.toThrow(
     'Invalid password.'
   );
 });
@@ -147,7 +199,7 @@ test('set privacy status', async () => {
   const body = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const user = await src.createAccount(body);
   const _account = await db_req.addAccount(user);
@@ -160,7 +212,7 @@ test('failed to set privacy status', async () => {
   const body = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const user = await src.createAccount(body);
   const _account = await db_req.addAccount(user);
@@ -173,7 +225,7 @@ test('user does not exist', async () => {
   const body = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const user = await src.createAccount(body);
   const _account = await db_req.addAccount(user);
@@ -186,12 +238,12 @@ test('Successfull follow', async () => {
   const body1 = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const body2 = {
     username: 'bemyfriend',
     email: 'user2@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
 
   const user1 = await src.createAccount(body1);
@@ -210,12 +262,12 @@ test('Other set to private', async () => {
   const body1 = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const body2 = {
     username: 'bemyfriend',
     email: 'user2@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
 
   const user1 = await src.createAccount(body1);
@@ -231,7 +283,7 @@ test('User does not exist', async () => {
   const body1 = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
 
   const user1 = await src.createAccount(body1);
@@ -246,12 +298,12 @@ test('Successfull unfollow', async () => {
   const body1 = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const body2 = {
     username: 'bemyfriend',
     email: 'user2@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
 
   const user1 = await src.createAccount(body1);
@@ -271,7 +323,7 @@ test('failed unfollow', async () => {
   const body1 = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
 
   const user1 = await src.createAccount(body1);
@@ -287,16 +339,16 @@ test('Update password', async () => {
   const body = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const user = await src.createAccount(body);
   const account = await db_req.addAccount(user);
-  const updatedaccount = await src.resetPassword('testuser', '1234never');
+  const updatedaccount = await src.resetPassword('testuser', '1234Never!');
   expect(account.password === updatedaccount.password).toBe(false);
 });
 
 test('Failed to update password', async () => {
-  await expect(src.resetPassword('user', 'does not matter')).rejects.toThrow(
+  await expect(src.resetPassword('user', 'does not Matter!2')).rejects.toThrow(
     "User doesn't exist"
   );
 });
@@ -305,11 +357,23 @@ test('Failed same password', async () => {
   const body = {
     username: 'testuser',
     email: 'user@example.com',
-    password: '1234forever',
+    password: '1234Forever!',
   };
   const user = await src.createAccount(body);
   const _account = await db_req.addAccount(user);
-  await expect(src.resetPassword('testuser', '1234forever')).rejects.toThrow(
+  await expect(src.resetPassword('testuser', '1234Forever!')).rejects.toThrow(
     'New password cannot be the same as the existing'
+  );
+});
+test('Failed bad password', async () => {
+  const body = {
+    username: 'testuser',
+    email: 'user@example.com',
+    password: '1234Forever!',
+  };
+  const user = await src.createAccount(body);
+  const _account = await db_req.addAccount(user);
+  await expect(src.resetPassword('testuser', 'abcdefgh')).rejects.toThrow(
+    'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
   );
 });

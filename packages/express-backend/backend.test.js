@@ -30,7 +30,7 @@ describe('Backend API tests', () => {
     const res = await request(app).post('/signup').send({
       username: 'unittestuser',
       email: 'testuser@example.com',
-      password: 'testpass123',
+      password: 'Testpass123!',
     });
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('username', 'unittestuser');
@@ -41,12 +41,12 @@ describe('Backend API tests', () => {
     await request(app).post('/signup').send({
       username: 'unittestuser',
       email: 'testuser@example.com',
-      password: 'testpass123',
+      password: 'Testpass123!',
     });
 
     const res = await request(app).post('/login').send({
       username: 'unittestuser',
-      password: 'testpass123',
+      password: 'Testpass123!',
     });
 
     expect(res.statusCode).toBe(200);
@@ -58,12 +58,12 @@ describe('Backend API tests', () => {
     await request(app).post('/signup').send({
       username: 'unittestuser',
       email: 'testuser@example.com',
-      password: 'testpass123',
+      password: 'Testpass123!',
     });
 
     const loginRes = await request(app).post('/login').send({
       username: 'unittestuser',
-      password: 'testpass123',
+      password: 'Testpass123!',
     });
 
     const token = loginRes.body.token;
@@ -80,7 +80,7 @@ describe('Backend API tests', () => {
     const user = {
       username: 'dupeuser',
       email: 'dupe@example.com',
-      password: 'password123',
+      password: 'Password123!',
     };
 
     // First signup should succeed
