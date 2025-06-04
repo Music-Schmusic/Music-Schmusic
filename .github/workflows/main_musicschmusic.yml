@@ -14,6 +14,7 @@ jobs:
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      GAI_KEY: ${{ secrets.GAI_KEY }}
 
     steps:
       - name: Checkout code
@@ -45,8 +46,7 @@ jobs:
           cd release-dist
           npm install --omit=dev
           zip -r ../release.zip .
-      
-      
+
       - name: List ZIP contents for debug
         run: unzip -l release.zip | grep node_modules
 
