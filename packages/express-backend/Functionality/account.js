@@ -1,6 +1,19 @@
 import db_req from '../dbrequests.js';
 import hash from 'crypto';
+
 async function createAccount(body) {
+  let password = body.password;
+  if (
+    password.length < 8 ||
+    !/\d/.test(password) ||
+    !/[!@#$%^&*()\-+={}[\]:;"'<>,.?\/|\\]/.test(password) ||
+    !/[a-z]/.test(password) ||
+    !/[A-Z]/.test(password)
+  ) {
+    throw new Error(
+      'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+    );
+  }
   const hashed = hashPassword(body.password);
   const isuser = await db_req.getAccount(body.username);
 
@@ -65,6 +78,17 @@ async function setPrivacyStatus(username, status) {
 }
 
 async function resetPassword(username, password) {
+  if (
+    password.length < 8 ||
+    !/\d/.test(password) ||
+    !/[!@#$%^&*()\-+={}[\]:;"'<>,.?\/|\\]/.test(password) ||
+    !/[a-z]/.test(password) ||
+    !/[A-Z]/.test(password)
+  ) {
+    throw new Error(
+      'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+    );
+  }
   const hashed = hashPassword(password);
   const current = await db_req.getAccount(username);
   if (current === null) {

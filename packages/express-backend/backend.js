@@ -93,6 +93,11 @@ app.post('/signup', async (req, res) => {
     console.log(error);
     if (error.message === 'Username already exists') {
       res.status(409).send('Username already in use');
+    } else if (
+      error.message ==
+      'Password must be at least 8 characters and contain at least one uppercase and lowercase letter, one number and  one special character'
+    ) {
+      res.status(406).send(error.message);
     } else {
       res.status(400).send(error.message);
     }
