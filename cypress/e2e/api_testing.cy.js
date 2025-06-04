@@ -65,7 +65,8 @@ describe('API Sends account recovery email', () => {
   });
 
   context('Failed to send recovery email - Email does not match', () => {
-    it('GIVEN a user enters a username that is not in the database and an email, WHEN I post to /accountrecovery', () => {
+    it('GIVEN a user enters a username that is in the database and an email that is not\
+       associated with the account, WHEN I post to /accountrecovery', () => {
       const user = {
         username: 't3',
         email: 'nottherightemail@gmail.com',
@@ -93,7 +94,7 @@ describe('API Sends account recovery email', () => {
 
 describe('User clicks recovery email', () => {
   context('Successfully validated', () => {
-    it('Given the user clicks the link and is in the same browser session', () => {
+    it('Given the user clicks the linl, WHEN the user is in the same browser session', () => {
       cy.visit(`${BACKEND_URL}`);
       const token = Cypress.env('token');
       const id = Cypress.env('csrf');
@@ -106,14 +107,18 @@ describe('User clicks recovery email', () => {
           body: { token },
           withCredentials: true,
         }).then((res) => {
-          assert.equal(res.status, 200);
+          assert.equal(
+            res.status,
+            200,
+            'THEN I recieve a response code of 200'
+          );
           assert.equal(res.body.user, 't3');
         });
       });
     });
   });
-  context('Not validated', () => {
-    it('Given the user clicks the link and is not in the same browser session', () => {
+  context('Not validated - different browser session', () => {
+    it('Given the user clicks the link, WHEN the user is not in the same browser session', () => {
       const token = Cypress.env('token');
       const id = 'NOTTHERIGHTCOOKIE';
       cy.setCookie('CRSFtoken', id).then(() => {
@@ -124,9 +129,42 @@ describe('User clicks recovery email', () => {
           withCredentials: true,
           failOnStatusCode: false,
         }).then((res) => {
-          assert.equal(res.status, 401);
+          assert.equal(res.status, 401, 'THEN the response code is 401');
           assert.equal(res.body, 'Invalid Credentials');
         });
+      });
+    });
+  });
+  context('Not validated - expired token', () => {
+    it('Given the user clicks the link, WHEN the user in the same browser session but after the token expires', () => {
+      cy.visit(`${BACKEND_URL}`);
+      const token = 'ANEWTOKEN';
+      const Recoverytoken = {
+        token: 'ANEWTOKEN',
+        expiration: Date.now() - 10000,
+        CRSFtoken: 'abc',
+        user: 't3',
+      };
+      cy.request({
+        method: 'POST',
+        url: `${BACKEND_URL}/test-utils/add-token`,
+        body: Recoverytoken,
+        failOnStatusCode: false,
+      });
+      cy.setCookie('CRSFtoken', 'abc').then(() => {
+        cy.request({
+          method: 'POST',
+          url: `${BACKEND_URL}/resetvalidation`,
+          body: { token },
+          withCredentials: true,
+          failOnStatusCode: false,
+        }).then((res) => {
+          assert.equal(res.status, 401, 'THEN the response code is 401');
+          assert.equal(res.body, 'Invalid Credentials');
+        });
+      });
+      cy.request('POST', `http://127.0.0.1:8000/test-utils/delete-token`, {
+        token: token,
       });
     });
   });

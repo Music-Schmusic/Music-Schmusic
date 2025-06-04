@@ -132,6 +132,14 @@ if (process.env.Runtime == 'cypress') {
     await dbrequests.deleteUser({ username });
     res.status(200).json({ message: 'Test user deleted' });
   });
+  app.post('/test-utils/add-token', async (req, res) => {
+    await dbrequests.addRecoveryToken(req.body);
+    res.status(200).json({ message: 'Test token created' });
+  });
+  app.post('/test-utils/delete-token', async (req, res) => {
+    await dbrequests.deleteRecoveryToken(req.body);
+    res.status(200).json({ message: 'Test token created' });
+  });
 }
 
 app.post('/accountrecovery', async (req, res) => {
