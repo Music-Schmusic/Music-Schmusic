@@ -6,7 +6,7 @@ async function createAccount(body) {
   if (
     password.length < 8 ||
     !/\d/.test(password) ||
-    !/[!@#$%^&*()\-+={}[\]:;"'<>,.?\/|\\]/.test(password) ||
+    !/[!@#$%^&*()\-+={}[\]:;"'<>,.?/|\\]/.test(password) ||
     !/[a-z]/.test(password) ||
     !/[A-Z]/.test(password)
   ) {
@@ -81,7 +81,7 @@ async function resetPassword(username, password) {
   if (
     password.length < 8 ||
     !/\d/.test(password) ||
-    !/[!@#$%^&*()\-+={}[\]:;"'<>,.?\/|\\]/.test(password) ||
+    !/[!@#$%^&*()\-+={}[\]:;"'<>,.?/|\\]/.test(password) ||
     !/[a-z]/.test(password) ||
     !/[A-Z]/.test(password)
   ) {
