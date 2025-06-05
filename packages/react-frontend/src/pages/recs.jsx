@@ -15,6 +15,7 @@ const Recommended = () => {
   const [topArtists, setTopArtists] = useState([]);
   const [artistRecs, setArtistRecs] = useState([]);
   const [loadingArtists, setLoadingArtists] = useState(false);
+  const genresReady = topArtists.length > 0;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,15 +47,6 @@ const Recommended = () => {
     fetchData();
   }, []);
 
-  // === Extract top genres from topArtists ===
-  const genreSet = new Set();
-  topArtists.forEach((artist) => {
-    artist.genres.forEach((genre) => {
-      if (genreSet.size < 5) genreSet.add(genre);
-    });
-  });
-  const genreData = Array.from(genreSet);
-
   // === Fetch Artist Recommendations using Gemini ===
   const getArtistRecs = async () => {
     if (!genreData.length) return;
@@ -77,6 +69,23 @@ const Recommended = () => {
   const getAICover = async () => {
     setLoading(true);
     setError(null);
+
+    // Build genreData dynamically when the button is clicked
+    const genreSet = new Set();
+    topArtists.forEach((artist) => {
+      artist.genres.forEach((genre) => {
+        if (genreSet.size < 5) genreSet.add(genre);
+      });
+    });
+    const genreData = Array.from(genreSet);
+
+    // Prevent invalid API call
+    if (genreData.length === 0) {
+      setError('Genres are still loading. Try again in a few seconds.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await axios.post(`${API_URL}/api/playlist-cover/generate`, {
         genres: genreData,
@@ -126,7 +135,8 @@ const Recommended = () => {
         <h1>Your Personalized Picks</h1>
         <h4>Your Next Favorite Tracks, Curated from Your Listening Habits</h4>
         <h5>
-          Discover new music tailored to your taste, with AI-generated playlist covers and artist recommendations.
+          Discover new music tailored to your taste, with AI-generated playlist
+          covers and artist recommendations.
         </h5>
       </header>
 
@@ -181,16 +191,18 @@ const Recommended = () => {
         {/* Center: AI Playlist Cover */}
         <section className="generate-playlist">
           <h2>Generate Playlist Cover</h2>
-          <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-          <button onClick={getAICover} disabled={loading}>
-            {loading ? 'Generating...' : 'Generate Playlist Cover'}
-          </button>
+          <div
+            style={{ display: 'flex', justifyContent: 'center', width: '100%' }}
+          >
+            <button onClick={getAICover} disabled={loading || !genresReady}>
+              {loading ? 'Generating...' : 'Generate Playlist Cover'}
+            </button>
           </div>
           <div className="playlist-box" style={{ marginTop: '30px' }}>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {loading ? <div className="loading-spinner song-spinner" /> : ''}
             {coverImage && !loading ? (
-              <div className = "cover-image-container">
+              <div className="cover-image-container">
                 <img
                   src={coverImage}
                   alt="AI Generated Playlist Cover"
@@ -206,7 +218,8 @@ const Recommended = () => {
                   download="playlist-cover.jpg"
                   className="download-cover-btn"
                   style={{
-                    display: 'flex', justifyContent: 'center',
+                    display: 'flex',
+                    justifyContent: 'center',
                     marginTop: '40px',
                     padding: '8px 16px',
                     background: '#1db954',

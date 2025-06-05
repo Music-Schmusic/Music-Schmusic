@@ -36,8 +36,8 @@ router.post('/generate', async (req, res) => {
     );
 
     const prompt = `
-      Based on these top genres: ${genres.join(', ')}, recommend 10 different music artists.
-      For each artist, list 5 songs that best represent their style.
+      Based on these top genres: ${genres.join(', ')}, recommend 5 different music artists.
+      For each artist, list 2 songs that best represent their style.
       Return the response as a JSON array with this structure:
 
       [
