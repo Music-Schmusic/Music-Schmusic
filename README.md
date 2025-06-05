@@ -30,7 +30,8 @@ In order to run Cypress API Tests: npm run start:cypress
 IMPORTANT: Cypress tests work with live data, if a test suite is interrupted in the middle of running tests will fail. To fix: run tests completely in order to flush data. The tests should now succeed.
 
 Code Coverage Report as of 03/13/25\
-<img width="709" alt="Screenshot 2025-03-14 at 2 22 42 AM" src="https://github.com/user-attachments/assets/a1ff0a59-a9fd-4c0d-8c1d-bcb667ab63ce" />
+<img width="709" alt="Screenshot 2025-03-14 at 2 22 42 AM" src="https://github.com/user-attachments/assets/9cae45a0-23d8-47d1-b26a-8cffcb38f0f8" />
+
 
 ## 📌 Code Style Guide
 
