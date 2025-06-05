@@ -12,6 +12,10 @@ const Recommended = () => {
   const [isFetchingSongs, setIsFetchingSongs] = useState(true);
   const [loadingSongIndexes, setLoadingSongIndexes] = useState([]);
 
+  const [topArtists, setTopArtists] = useState([]);
+  const [artistRecs, setArtistRecs] = useState([]);
+  const [loadingArtists, setLoadingArtists] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,12 +30,13 @@ const Recommended = () => {
           'x-username': localStorage.getItem('username'),
         };
 
-        const recommendedSongs = await axios.get(
-          `${API_URL}/spotify/recommend`,
-          { headers }
-        );
+        const [recommendedSongs, artistRes] = await Promise.all([
+          axios.get(`${API_URL}/spotify/recommend`, { headers }),
+          axios.get(`${API_URL}/spotify/stats/top-artists`, { headers }),
+        ]);
 
         setRecommends(recommendedSongs.data);
+        setTopArtists(artistRes.data.items);
       } catch (error) {
         console.log(error);
       } finally {
@@ -41,20 +46,42 @@ const Recommended = () => {
     fetchData();
   }, []);
 
-  // 2. Create the same AI cover fetch function
+  // === Extract top genres from topArtists ===
+  const genreSet = new Set();
+  topArtists.forEach((artist) => {
+    artist.genres.forEach((genre) => {
+      if (genreSet.size < 5) genreSet.add(genre);
+    });
+  });
+  const genreData = Array.from(genreSet);
+
+  // === Fetch Artist Recommendations using Gemini ===
+  const getArtistRecs = async () => {
+    if (!genreData.length) return;
+    setLoadingArtists(true);
+    try {
+      const res = await axios.post(
+        `${API_URL}/api/playlist-recommendations/generate`,
+        {
+          genres: genreData,
+        }
+      );
+      setArtistRecs(res.data.recommendations || []);
+    } catch (err) {
+      console.error('Error fetching artist recs:', err);
+    } finally {
+      setLoadingArtists(false);
+    }
+  };
+
   const getAICover = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/api/playlist-cover/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 'test-user' }),
+      const res = await axios.post(`${API_URL}/api/playlist-cover/generate`, {
+        genres: genreData,
       });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
-      console.log('AI Cover Response:', data);
-      setCoverImage(data.image);
+      setCoverImage(res.data.image);
     } catch (err) {
       console.error('Error fetching AI cover:', err);
       setError('Failed to generate cover.');
@@ -176,11 +203,28 @@ const Recommended = () => {
         {/* Right Column: Find New Artists */}
         <section className="new-artists">
           <h2>Find New Artists</h2>
-          <ul>
-            <li>Artist Name 1</li>
-            <li>Artist Name 2</li>
-            <li>Artist Name 3</li>
-          </ul>
+          <button onClick={getArtistRecs} disabled={loadingArtists}>
+            {loadingArtists ? 'Loading...' : 'Generate Artist Recommendations'}
+          </button>
+
+          {loadingArtists ? (
+            <div className="loading-spinner" />
+          ) : (
+            <div className="artist-rec-grid">
+              {artistRecs.map((artistObj, idx) => (
+                <div key={idx} className="artist-block">
+                  <h3>{artistObj.artist}</h3>
+                  <ul>
+                    {artistObj.songs.map((song, i) => (
+                      <li key={i}>
+                        <span>{song.title}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>

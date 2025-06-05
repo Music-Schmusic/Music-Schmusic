@@ -25,22 +25,51 @@ const model = vertexAI.getGenerativeModel(
 // POST /api/playlist-recommendations/generate
 router.post('/generate', async (req, res) => {
   try {
-    // Static prompt for now
-    const prompt =
-      'Recommend a playlist of 5 songs based on these favorite genres: rock, hip hop, metal. ' +
-      'Return a JSON array of objects with keys: title, artist, spotifyUrl.';
+    const { genres } = req.body;
+    if (!Array.isArray(genres) || genres.length < 1) {
+      return res.status(400).json({ error: 'Missing or invalid genres' });
+    }
+
+    console.log(
+      '🎯 Gemini recommendation triggered manually with genres:',
+      genres
+    );
+
+    const prompt = `
+      Based on these top genres: ${genres.join(', ')}, recommend 10 different music artists.
+      For each artist, list 5 songs that best represent their style.
+      Return the response as a JSON array with this structure:
+
+      [
+        {
+          "artist": "Artist Name",
+          "songs": [
+            { "title": "Song 1", "spotifyUrl": "..." },
+            { "title": "Song 2", "spotifyUrl": "..." },
+            ...
+          ]
+        },
+        ...
+      ]
+    `;
 
     const result = await model.generateContent({
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
-    const text =
+    let text =
       result?.response?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+
+    // ✅ Strip markdown (```json ... ```) if present
+    if (text.startsWith('```')) {
+      text = text.replace(/```json|```/g, '').trim();
+    }
+
     let recommendations;
     try {
       recommendations = JSON.parse(text);
-    } catch {
-      // fallback if model returned plain text
+    } catch (err) {
+      console.warn('⚠️ Failed to parse AI response. Raw text:', text);
       recommendations = [];
     }
 
