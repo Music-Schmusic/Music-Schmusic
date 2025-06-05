@@ -49,7 +49,16 @@ const Recommended = () => {
 
   // === Fetch Artist Recommendations using Gemini ===
   const getArtistRecs = async () => {
+    const genreSet = new Set();
+    topArtists.forEach((artist) => {
+      artist.genres.forEach((genre) => {
+        if (genreSet.size < 5) genreSet.add(genre);
+      });
+    });
+    const genreData = Array.from(genreSet);
+
     if (!genreData.length) return;
+
     setLoadingArtists(true);
     try {
       const res = await axios.post(
