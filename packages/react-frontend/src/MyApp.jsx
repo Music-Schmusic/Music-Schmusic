@@ -9,8 +9,6 @@ import {
   useLocation,
 } from 'react-router-dom';
 import './main.css';
-// import Spline from '@splinetool/react-spline';
-// import SplineBackground from './SplineBackground';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
 import Settings from './pages/settings.jsx';
@@ -245,11 +243,9 @@ const AppContent = ({
   setTempLogin,
 }) => {
   const location = useLocation();
-  // const showSpline = ['/', '/login', '/signup'].includes(location.pathname);
 
   return (
     <>
-      {/* {showSpline && <SplineBackground currentScene={currentScene} />} */}
       <AppRoutes
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}

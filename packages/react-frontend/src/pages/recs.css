@@ -50,12 +50,12 @@
     margin-top: 8px;
   }
 
-  .remove {
-    background-color: red;
+  .listen {
+    background-color: #1db954;
   }
 
   .respin {
-    background-color: #1db954;
+    background-color: red;
   }
   
   .song-actions button {
