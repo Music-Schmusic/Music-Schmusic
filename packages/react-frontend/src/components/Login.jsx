@@ -19,9 +19,11 @@ const Login = ({ setIsLoggedIn, setCurrentScene }) => {
   }, []);
 
   useEffect(() => {
-    setCurrentScene('scene2.splinecode');
-  }, [setCurrentScene]);
+    const timer = setTimeout(() => setShowContainer(true), 1800);
+    return () => clearTimeout(timer);
+  }, []);
 
+  
   function handleNav() {
     navigate('/accountrecovery');
   }

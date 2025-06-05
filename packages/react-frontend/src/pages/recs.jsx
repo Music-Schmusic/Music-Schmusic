@@ -123,7 +123,11 @@ const Recommended = () => {
   return (
     <div className="recommended-container">
       <header className="header">
-        <h1>Recommended Music</h1>
+        <h1>Your Personalized Picks</h1>
+        <h4>Your Next Favorite Tracks, Curated from Your Listening Habits</h4>
+        <h5>
+          Discover new music tailored to your taste, with AI-generated playlist covers and artist recommendations.
+        </h5>
       </header>
 
       <main className="main-content">
@@ -148,10 +152,10 @@ const Recommended = () => {
                         <p>{item.artist}</p>
                         <div className="song-actions">
                           <button
-                            className="remove"
-                            onClick={() => handleRemove(index)}
+                            className="listen"
+                            onClick={() => window.open(item.url, '_blank')}
                           >
-                            Remove
+                            Listen
                           </button>
                           <button
                             className="respin"
@@ -176,24 +180,46 @@ const Recommended = () => {
 
         {/* Center: AI Playlist Cover */}
         <section className="generate-playlist">
-          <h2>Generate Playlist</h2>
+          <h2>Generate Playlist Cover</h2>
+          <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
           <button onClick={getAICover} disabled={loading}>
             {loading ? 'Generating...' : 'Generate Playlist Cover'}
           </button>
-
-          <div className="playlist-box" style={{ marginTop: '10px' }}>
+          </div>
+          <div className="playlist-box" style={{ marginTop: '30px' }}>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {loading ? <div className="loading-spinner song-spinner" /> : ''}
             {coverImage && !loading ? (
-              <img
-                src={coverImage}
-                alt="AI Generated Playlist Cover"
-                style={{
-                  maxWidth: '200px',
-                  border: '2px solid #fff',
-                  borderRadius: '4px',
-                }}
-              />
+              <div className = "cover-image-container">
+                <img
+                  src={coverImage}
+                  alt="AI Generated Playlist Cover"
+                  style={{
+                    maxWidth: '250px',
+                    border: '10px solid #fff',
+                    borderRadius: '4px',
+                  }}
+                />
+                <br />
+                <a
+                  href={coverImage}
+                  download="playlist-cover.jpg"
+                  className="download-cover-btn"
+                  style={{
+                    display: 'flex', justifyContent: 'center',
+                    marginTop: '40px',
+                    padding: '8px 16px',
+                    background: '#1db954',
+                    color: '#fff',
+                    borderRadius: '4px',
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                  }}
+                >
+                  Download Cover Image
+                </a>
+              </div>
             ) : (
               !loading && <span style={{ fontSize: '2rem' }}>?</span>
             )}
