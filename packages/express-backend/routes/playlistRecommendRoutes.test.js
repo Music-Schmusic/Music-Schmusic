@@ -275,7 +275,7 @@ describe('Playlist Recommend Routes', () => {
           parts: [
             {
               text: expect.stringContaining(
-                `Based on these top genres: ${genres.join(', ')}, recommend 10 different music artists`
+                `recommend 5 different music artists`
               ),
             },
           ],
