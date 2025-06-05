@@ -3,6 +3,7 @@ import cors from 'cors';
 import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
 import db from './db.js';
+import authRoutes from './routes/authorize.js';
 import playlistCoverRoutes from './routes/playlistCoverRoutes.js';
 import spotifyStatsRoutes from './routes/spotifyStats.js';
 import jwt from 'jsonwebtoken';
@@ -77,6 +78,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // API routes
+app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
 app.use('/api/playlist-recommendations', playlistRecommendRoutes);
