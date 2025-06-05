@@ -11,7 +11,6 @@ import {
 import './main.css';
 import Dashboard from './pages/dashboard';
 import Friends from './pages/friends';
-import Settings from './pages/settings.jsx';
 import Recommended from './pages/recs';
 import Form from './components/Form';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -222,7 +221,6 @@ function AppRoutes({
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/recs" element={<Recommended />} />
-          <Route path="/settings" element={<Settings />} />
         </Route>
         <Route
           path="/oauths"
