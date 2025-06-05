@@ -1,7 +1,6 @@
 import express from 'express';
 import querystring from 'querystring';
 import dotenv from 'dotenv';
-import Account from '../schemas/account.js';
 import spotifyFetch from './authorizehelper.js'; // abstracted fetch function
 
 dotenv.config();
@@ -79,18 +78,6 @@ router.get('/callback', async (req, res) => {
 
     const json = await response.json();
     const { access_token, refresh_token, expires_in } = json;
-
-    if (username) {
-      const user = await Account.findOne({ username });
-      if (user) {
-        user.spotifyAccessToken = access_token;
-        user.spotifyRefreshToken = refresh_token;
-        user.spotifyTokenExpiresAt = new Date(Date.now() + expires_in * 1000);
-        await user.save();
-      }
-    } else {
-      throw new Error('No user provided in query');
-    }
 
     const redirectFrontend = `${frontend_url}/oauth-success?access_token=${access_token}`;
     console.log('Redirecting to:', redirectFrontend);

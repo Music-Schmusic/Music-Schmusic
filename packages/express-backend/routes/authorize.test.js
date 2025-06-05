@@ -1,12 +1,6 @@
 import request from 'supertest';
 import { jest } from '@jest/globals';
 
-// Mock modules before import
-jest.unstable_mockModule('../schemas/account.js', () => ({
-  default: {
-    findOne: jest.fn(),
-  },
-}));
 
 jest.unstable_mockModule('./authorizehelper.js', () => ({
   default: async (url, options) => {
@@ -25,7 +19,6 @@ global.fetch = jest.fn(); // fallback if anything uses fetch
 
 // Load modules after mocks
 const express = (await import('express')).default;
-const Account = (await import('../schemas/account.js')).default;
 const spotifyRouter = (await import('./authorize.js')).default;
 
 const app = express();
@@ -55,15 +48,7 @@ describe('Spotify OAuth Routes', () => {
     expect(res.headers.location).toContain('state_mismatch');
   });
 
-  test('GET /callback fetches tokens and saves to user', async () => {
-    const mockUser = {
-      spotifyAccessToken: '',
-      spotifyRefreshToken: '',
-      spotifyTokenExpiresAt: null,
-      save: jest.fn(),
-    };
-
-    Account.findOne.mockResolvedValue(mockUser);
+  test('GET /callback fetches tokens', async () => {
 
     const res = await request(app).get('/callback').query({
       code: 'valid-code',
@@ -73,7 +58,6 @@ describe('Spotify OAuth Routes', () => {
 
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toContain('oauth-success?access_token=');
-    expect(mockUser.save).toHaveBeenCalled();
   });
 
   test('GET /callback returns 500 if fetch fails', async () => {
@@ -102,7 +86,6 @@ describe('Spotify OAuth Routes', () => {
   });
 
   test('GET /callback skips user save if user not found', async () => {
-    Account.findOne.mockResolvedValue(null);
 
     const res = await request(app).get('/callback').query({
       code: 'valid-code',
@@ -112,15 +95,5 @@ describe('Spotify OAuth Routes', () => {
 
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toContain('oauth-success?access_token=');
-  });
-
-  test('GET /callback returns 500 if username is not provided', async () => {
-    const res = await request(app).get('/callback').query({
-      code: 'valid-code',
-      state: 'valid',
-    });
-
-    expect(res.statusCode).toBe(500);
-    expect(res.text).toContain('Error retrieving access token');
   });
 });
