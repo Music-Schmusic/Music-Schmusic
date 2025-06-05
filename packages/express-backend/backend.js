@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from './routes/authorize.js';
 import dbrequests from './dbrequests.js';
 import AccountFuncs from './Functionality/account.js';
 import db from './db.js';
@@ -78,7 +77,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 // API routes
-app.use('/authorize', authRoutes);
 app.use('/api/playlist-cover', playlistCoverRoutes);
 app.use('/spotify/stats', spotifyStatsRoutes);
 app.use('/api/playlist-recommendations', playlistRecommendRoutes);

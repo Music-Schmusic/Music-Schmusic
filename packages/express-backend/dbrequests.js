@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-import listeningDataModel from './schemas/listeningData.js';
-import playlistModel from './schemas/playlist.js';
 import connectDB from './db.js';
 import AccountSchema from './schemas/user.js';
 import RecoveryToken from './schemas/recoveryToken.js';
